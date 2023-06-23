@@ -90,6 +90,11 @@ public class BlogServiceTest {
         // given
         // 서비스 레이어에서의 테스트이므로 DTO 만 제작
         BlogCreateRequestDTO blogCreateRequestDTO = new BlogCreateRequestDTO( "Writer 1", "Title 1", "Content 1");
+        /*
+         Blog savedBlog = new Blog(1, "Writer 1", "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now(), 0);
+         Mockito.when(blogRepository.save(Mockito.any(Blog.class))).thenReturn(savedBlog); => 만약 save 메소드가 리턴값이 있을 경우에는 이렇게 진행하는 것이 훨씬 정확.
+         그러나, 현재 save 는 void method 이므로 doNothing() 사용
+         */
         Mockito.doNothing().when(blogRepository).save(argThat(blog -> blog.getBlogTitle().equals("Title 1"))); // save(any(Blog.class))
 
         // when

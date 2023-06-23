@@ -27,7 +27,7 @@ public class BlogController {
         this.blogService = blogService;
     }
 
-    // 1. 블로그 목록 조회 : /blog/list
+    // 1. 블로그 목록 조회 : GET /blog/list
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String list(Model model){
         List<BlogResponseDTO> blogList = blogService.findAll(); // Service 객체를 이용해 게시글 전체를 얻어온다.
@@ -35,7 +35,7 @@ public class BlogController {
         return "board/list"; // /WEB-INF/views/board/list.jsp
     }
 
-    // 2. 블로그 디테일 페이지 : /blog/detail/글번호
+    // 2. 블로그 디테일 페이지 : GET /blog/detail/글번호
     @RequestMapping(value = "/detail/{blogId}", method = RequestMethod.GET)
     public String detail(@PathVariable long blogId, Model model){
         BlogResponseDTO blogFindByIdDTO = blogService.findById(blogId);
@@ -51,11 +51,11 @@ public class BlogController {
         }
 
         model.addAttribute("blog", blogFindByIdDTO); // 데이터 전달하여 뷰에 뿌려주기
-        // model.addAttribute("blog", blogService.findById(blogId));
+
         return "blog/detail"; // /WEB-INF/views/blog/detail.jsp
     }
 
-    // 3. 블로그 생성
+    // 3. 블로그 생성 : GET /blog/insert , POST /blog/insert
     @RequestMapping(value = "/insert", method = RequestMethod.GET)
     public String insert(){
         return "blog/blog-form"; // /WEB-INF/views/blog/blog-form.jsp
@@ -67,14 +67,15 @@ public class BlogController {
         return "redirect:/blog/list";
     }
 
-    // 4. 블로그 삭제
+    // 4. 블로그 삭제 : POST /blog/delete
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public String delete(long blogId){
         blogService.deleteById(blogId);
         return "redirect:/blog/list";
     }
 
-    // 5. 블로그 업데이트
+    // 5. 블로그 업데이트 : POST /blog/updateform , POST /blog/update
+    // form 페이지에 자료를 채운 채 연결
     @RequestMapping(value="/updateform", method = RequestMethod.POST)
     public String update(long blogId, Model model){
         BlogResponseDTO blog = blogService.findById(blogId);
@@ -83,6 +84,7 @@ public class BlogController {
         return "blog/blog-update-form"; // /WEB-INF/views/blog/blog-update-form.jsp
     }
 
+    // /blog/update 주소로 POST요청을 넣으면 글이 수정됨
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String update(BlogUpdateRequestDTO blogUpdateRequestDTO){
         log.info(blogUpdateRequestDTO);
