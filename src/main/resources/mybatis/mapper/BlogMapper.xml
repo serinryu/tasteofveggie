@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.blog.repository.BlogRepository">
+    <select id="findAll" resultType="com.example.blog.entity.Blog"> <!--리턴타입이 entity 등의 클래스 인 경우, 패키지명부터 적어준다 -->
+        SELECT
+            blog_id as blogId,
+            writer,
+            blog_title as blogTitle,
+            blog_content as blogContent,
+            published_at as publishedAt,
+            updated_at as updatedAt,
+            blog_count as blogCount
+        FROM blog
+        ORDER BY blog_id DESC
+    </select>
+    <select id="findById" resultType="com.example.blog.entity.Blog" parameterType="long">
+        SELECT
+            blog_id as blogId,
+            writer,
+            blog_title as blogTitle,
+            blog_content as blogContent,
+            published_at as publishedAt,
+            updated_at as updatedAt,
+            blog_count as blogCount
+        FROM blog
+        WHERE blog_id = #{blogId}
+    </select>
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM
+            blog
+        WHERE
+            blog_id = #{blogId}
+    </delete>
+    <insert id="save" parameterType="com.example.blog.entity.Blog"> <!-- parameter type 이 클래스이므로 자료형 지정 필요 -->
+        INSERT INTO
+            blog (writer, blog_title, blog_content)
+        VALUES
+            (#{writer}, #{blogTitle}, #{blogContent})
+    </insert>
+    <update id="update" parameterType="com.example.blog.entity.Blog">
+        UPDATE
+            blog
+        SET
+            blog_title = #{blogTitle},
+            blog_content = #{blogContent},
+            updated_at = #{updatedAt}
+        WHERE
+            blog_id = #{blogId}
+    </update>
+</mapper>

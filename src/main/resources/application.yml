@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    active: test
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+  datasource:
+    driver-class-name: ${driver-class-name}
+    url: ${url}
+    username: ${adminname}
+    password: ${password}
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/**/**.xml
