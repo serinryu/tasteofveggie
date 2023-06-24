@@ -27,8 +27,8 @@
         </div>
 
     <div class="col-1">
-        <form action="/blog/delete" method="POST">
-            <input type="hidden" name="blogId" value="${blog.blogId}">
+        <form action="/blog/delete/${blog.blogId}" method="POST">
+            <input type="hidden" name="blogId"> <!--value="${blog.blogId}"-->
             <input type="submit" value="삭제하기" class="btn btn-warning">
         </form>
     </div>

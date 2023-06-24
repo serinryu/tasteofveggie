@@ -51,6 +51,7 @@ public class ReplyServiceTest {
         // then
         assertEquals(1, result.size());
         assertEquals(1, result.get(0).getReplyId());
+        Mockito.verify(replyRepository).findAllByBlogId(blogId);
     }
 
     @Test
@@ -67,6 +68,7 @@ public class ReplyServiceTest {
         // then
         assertEquals("a", result.getReplyWriter());
         assertEquals("a apple is wow", result.getReplyContent());
+        Mockito.verify(replyRepository).findByReplyId(replyId);
     }
 
     @Test

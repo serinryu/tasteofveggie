@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
-@Controller // 빈 등록 + URL Mapping 처리 기능
+@Controller
 @RequestMapping("/blog")
 @Log4j2
 public class BlogController {
@@ -55,7 +55,14 @@ public class BlogController {
         return "blog/detail"; // /WEB-INF/views/blog/detail.jsp
     }
 
-    // 3. 블로그 생성 : GET /blog/insert , POST /blog/insert
+    // 3. 블로그 삭제 : POST /blog/delete/{blogId}
+    @RequestMapping(value = "/delete/{blogId}", method = RequestMethod.POST)
+    public String delete(@PathVariable long blogId){
+        blogService.deleteById(blogId);
+        return "redirect:/blog/list";
+    }
+
+    // 4. 블로그 생성 : GET /blog/insert , POST /blog/insert
     @RequestMapping(value = "/insert", method = RequestMethod.GET)
     public String insert(){
         return "blog/blog-form"; // /WEB-INF/views/blog/blog-form.jsp
@@ -64,13 +71,6 @@ public class BlogController {
     @RequestMapping(value = "/insert", method = RequestMethod.POST)
     public String insert(BlogCreateRequestDTO blogCreateRequestDTO){
         blogService.save(blogCreateRequestDTO);
-        return "redirect:/blog/list";
-    }
-
-    // 4. 블로그 삭제 : POST /blog/delete
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    public String delete(long blogId){
-        blogService.deleteById(blogId);
         return "redirect:/blog/list";
     }
 

@@ -98,15 +98,15 @@ public class ReplyControllerTest {
     public void insertReplyTest() throws Exception {
         // given
         ReplyCreateRequestDTO replyCreateRequestDTO = new ReplyCreateRequestDTO(1, "writer 1", "content 1");
-        Mockito.doNothing().when(replyService).save(argThat(reply -> reply.getReplyContent().equals("content 1")));
-        String url = "/reply";
+        Mockito.doNothing().when(replyService).save(replyCreateRequestDTO);
 
         // when
         // 직렬화된 데이터를 이용해 post방식으로 url에 요청
-        ResultActions response = mockMvc.perform(post(url)
+        ResultActions response = mockMvc.perform(post("/reply")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replyCreateRequestDTO)));  // java object -> json
 
+        // then
         response.andExpect(status().isOk())
                         .andDo(print());
 

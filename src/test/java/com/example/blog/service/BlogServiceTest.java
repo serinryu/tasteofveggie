@@ -52,6 +52,7 @@ public class BlogServiceTest {
         // then
         assertEquals(3, blogList.size());
         assertEquals(2, blogList.get(1).getBlogId());
+        Mockito.verify(blogRepository).findAll(); // blogRepository.findAll 메소드 호출되었는지 확인
     }
 
     @Test
@@ -66,6 +67,7 @@ public class BlogServiceTest {
         // then
         assertEquals("Writer 1", result.getWriter());
         assertEquals("Title 1", result.getBlogTitle());
+        Mockito.verify(blogRepository).findById(1); // blogRepository.findById 메소드 호출되었는지 확인
     }
 
     @Test
@@ -74,7 +76,6 @@ public class BlogServiceTest {
         // deleteById 시 reply 전체 삭제 메소드와 blog삭제 메소드 모두 호출되는지만 테스트 (verify 이용)
         // given
         long blogId = 2;
-        // Mock the behavior of the blogRepository : ensure that it doesn't perform any action when called with the provided blogId.
         Mockito.doNothing().when(blogRepository).deleteById(blogId);
         // when
         blogService.deleteById(blogId);
