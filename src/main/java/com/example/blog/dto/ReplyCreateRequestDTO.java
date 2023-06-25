@@ -1,13 +1,19 @@
 package com.example.blog.dto;
 
 import com.example.blog.entity.Reply;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @AllArgsConstructor @Getter @Setter
 @Builder @ToString @NoArgsConstructor
 public class ReplyCreateRequestDTO {
+    @NotNull
     private long blogId;
+
+    @NotNull
     private String replyWriter;
+
+    @NotNull
     private String replyContent;
 
     // Entity -> DTO
