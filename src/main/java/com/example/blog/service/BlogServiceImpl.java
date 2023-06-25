@@ -4,7 +4,9 @@ import com.example.blog.dto.BlogCreateRequestDTO;
 import com.example.blog.dto.BlogResponseDTO;
 import com.example.blog.dto.BlogUpdateRequestDTO;
 import com.example.blog.entity.Blog;
+import com.example.blog.entity.Reply;
 import com.example.blog.exception.NotFoundBlogIdException;
+import com.example.blog.exception.NotFoundReplyByReplyIdException;
 import com.example.blog.repository.BlogRepository;
 import com.example.blog.repository.ReplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,13 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public void deleteById(long blogId) {
+
+        // Exception Handling
+        Blog blog = blogRepository.findById(blogId);
+        if (blog == null){
+            throw new NotFoundBlogIdException("Not Found blogId : " + blogId);
+        }
+
         // MyBatis 에서 한 메소드당 쿼리문 1개 사용이 보편적이므로 이 두 로직을 합치는 것은
         // Repository 가 아니라 Service 단에서 진행했음.
         replyRepository.deleteAllByBlodId(blogId);

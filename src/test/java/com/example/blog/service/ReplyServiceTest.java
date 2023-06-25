@@ -4,6 +4,7 @@ import com.example.blog.dto.ReplyCreateRequestDTO;
 import com.example.blog.dto.ReplyResponseDTO;
 import com.example.blog.dto.ReplyUpdateRequestDTO;
 import com.example.blog.entity.Reply;
+import com.example.blog.exception.NotFoundReplyByReplyIdException;
 import com.example.blog.repository.ReplyRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -61,7 +61,7 @@ public class ReplyServiceTest {
         // 응답을 제대로 받는지 테스트
         // given
         long replyId = 1;
-        Reply reply = new Reply(1, 1, "a", "a apple is wow", LocalDateTime.now(), LocalDateTime.now());
+        Reply reply = new Reply(replyId, 1, "a", "a apple is wow", LocalDateTime.now(), LocalDateTime.now());
         Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(reply);
         // when
         ReplyResponseDTO result = replyService.findByReplyId(replyId);
@@ -73,17 +73,44 @@ public class ReplyServiceTest {
 
     @Test
     @Transactional
+    public void findByReplyIdTest_ReplyNotFound(){
+        // given
+        long replyId = 123;
+        Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(null);
+        // when
+        // then
+        assertThrows(NotFoundReplyByReplyIdException.class,
+                () -> replyService.findByReplyId(replyId));
+    }
+
+    @Test
+    @Transactional
     public void deleteByReplyIdTest(){
         // 이 메소드 호출 시 Repository의 deleteByReplyId 가 불러와지는지 테스트 (verify 만 이용)
         // 요청을 제대로 주는지 테스트
         // given
         // 서비스 레이어에서 데이터 넘겨주는지의 테스트이므로 DTO 만 제작
         long replyId = 2;
-        Mockito.doNothing().when(replyRepository).deleteByReplyId(replyId);
+        Reply reply =  new Reply(replyId, 1, "a", "a apple is wow", LocalDateTime.now(), LocalDateTime.now());
+        Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(reply);
+        // Mockito.doNothing().when(replyRepository).deleteByReplyId(replyId);
         // when
         replyService.deleteByReplyId(replyId);
         // then
         Mockito.verify(replyRepository).deleteByReplyId(replyId);
+        assertDoesNotThrow(() -> replyService.deleteByReplyId(replyId));
+    }
+
+    @Test
+    @Transactional
+    public void deleteByReplyIdTest_ReplyNotFound(){
+        // given
+        long replyId = 123;
+        Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(null);
+        // when
+        // then
+        assertThrows(NotFoundReplyByReplyIdException.class,
+                () -> replyService.deleteByReplyId(replyId));
     }
 
     @Test

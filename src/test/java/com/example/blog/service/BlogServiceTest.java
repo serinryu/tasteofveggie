@@ -4,6 +4,7 @@ import com.example.blog.dto.BlogCreateRequestDTO;
 import com.example.blog.dto.BlogResponseDTO;
 import com.example.blog.dto.BlogUpdateRequestDTO;
 import com.example.blog.entity.Blog;
+import com.example.blog.exception.NotFoundBlogIdException;
 import com.example.blog.repository.ReplyRepository;
 import com.example.blog.repository.BlogRepository;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.argThat;
 
 /**
@@ -60,14 +61,27 @@ public class BlogServiceTest {
     public void findByIdTest(){
         // Mock 객체를 사용하여 findById 로 조회시 조회한 id 에 해당되는 Mock 객체를 잘 가져오는지 테스트 (assertEquals)
         // given
-        Blog blog = new Blog(1L, "Writer 1", "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now(), 0);
-        Mockito.when(blogRepository.findById(1)).thenReturn(blog);
+        long blogId = 1;
+        Blog blog = new Blog(blogId, "Writer 1", "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now(), 0);
+        Mockito.when(blogRepository.findById(blogId)).thenReturn(blog);
         // when
-        BlogResponseDTO result = blogService.findById(1);
+        BlogResponseDTO result = blogService.findById(blogId);
         // then
         assertEquals("Writer 1", result.getWriter());
         assertEquals("Title 1", result.getBlogTitle());
-        Mockito.verify(blogRepository).findById(1); // blogRepository.findById 메소드 호출되었는지 확인
+        Mockito.verify(blogRepository).findById(blogId); // blogRepository.findById 메소드 호출되었는지 확인
+    }
+
+    @Test
+    @Transactional
+    public void findByIdTest_BlogNotFound(){
+        // given
+        long blogId = 123;
+        Mockito.when(blogRepository.findById(blogId)).thenReturn(null);
+        // when
+        // then
+        assertThrows(NotFoundBlogIdException.class,
+                () -> blogService.findById(blogId));
     }
 
     @Test
@@ -76,12 +90,27 @@ public class BlogServiceTest {
         // deleteById 시 reply 전체 삭제 메소드와 blog삭제 메소드 모두 호출되는지만 테스트 (verify 이용)
         // given
         long blogId = 2;
-        Mockito.doNothing().when(blogRepository).deleteById(blogId);
+        Blog blog = new Blog(blogId, "Writer 1", "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now(), 0);
+        Mockito.when(blogRepository.findById(blogId)).thenReturn(blog);
+        // Mockito.doNothing().when(blogRepository).deleteById(blogId);
         // when
         blogService.deleteById(blogId);
         // then
         Mockito.verify(replyRepository).deleteAllByBlodId(blogId);
         Mockito.verify(blogRepository).deleteById(blogId);
+        assertDoesNotThrow(() -> blogService.deleteById(blogId));
+    }
+
+    @Test
+    @Transactional
+    public void deleteByIdTest_BlogNotFound(){
+        // given
+        long blogId = 123;
+        Mockito.when(blogRepository.findById(blogId)).thenReturn(null);
+        // when
+        // then
+        assertThrows(NotFoundBlogIdException.class,
+                () -> blogService.deleteById(blogId));
     }
 
     @Test

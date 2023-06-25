@@ -45,7 +45,7 @@ public class ReplyServiceImpl implements ReplyService {
 
         // Exception Handling
         if(reply == null) {
-            throw new NotFoundReplyByReplyIdException("없는 리플 번호를 조회했습니다");
+            throw new NotFoundReplyByReplyIdException("Not Found replyId : " + replyId);
         }
 
         return new ReplyResponseDTO(reply);
@@ -53,6 +53,13 @@ public class ReplyServiceImpl implements ReplyService {
 
     @Override
     public void deleteByReplyId(long replyId) {
+
+        // Exception Handling
+        Reply reply = replyRepository.findByReplyId(replyId);
+        if (reply == null){
+            throw new NotFoundReplyByReplyIdException("Not Found replyId : " + replyId);
+        }
+
         replyRepository.deleteByReplyId(replyId);
     }
 
