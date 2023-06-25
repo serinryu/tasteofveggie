@@ -18,7 +18,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.never;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -95,7 +97,7 @@ public class ReplyControllerTest {
 
     @Test
     // 3. 댓글 작성 등록 : POST /reply
-    public void insertReplyTest() throws Exception {
+    public void insertReplyTest_ValidData() throws Exception {
         // given
         ReplyCreateRequestDTO replyCreateRequestDTO = new ReplyCreateRequestDTO(1, "writer 1", "content 1");
         Mockito.doNothing().when(replyService).save(replyCreateRequestDTO);
@@ -111,6 +113,22 @@ public class ReplyControllerTest {
                         .andDo(print());
 
         Mockito.verify(replyService).save(argThat(reply -> reply.getReplyContent().equals("content 1")));
+    }
+
+    @Test
+    public void insertReplyTest_InvalidData() throws Exception {
+        // given
+        ReplyCreateRequestDTO replyCreateRequestDTO = new ReplyCreateRequestDTO(1, null, "content 1");
+
+        // when
+        ResultActions response = mockMvc.perform(post("/reply")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(replyCreateRequestDTO)));  // java object -> json
+
+        // then
+        response.andExpect(status().isBadRequest());
+
+        Mockito.verify(replyService, never()).save(any());
     }
 
     @Test

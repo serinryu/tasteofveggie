@@ -58,7 +58,7 @@ public class BlogServiceTest {
 
     @Test
     @Transactional
-    public void findByIdTest(){
+    public void findByIdTest_FoundBlog(){
         // Mock 객체를 사용하여 findById 로 조회시 조회한 id 에 해당되는 Mock 객체를 잘 가져오는지 테스트 (assertEquals)
         // given
         long blogId = 1;
@@ -74,7 +74,7 @@ public class BlogServiceTest {
 
     @Test
     @Transactional
-    public void findByIdTest_BlogNotFound(){
+    public void findByIdTest_NotFoundBlog(){
         // given
         long blogId = 123;
         Mockito.when(blogRepository.findById(blogId)).thenReturn(null);
@@ -86,7 +86,7 @@ public class BlogServiceTest {
 
     @Test
     @Transactional
-    public void deleteByIdTest(){
+    public void deleteByIdTest_FoundBlog(){
         // deleteById 시 reply 전체 삭제 메소드와 blog삭제 메소드 모두 호출되는지만 테스트 (verify 이용)
         // given
         long blogId = 2;
@@ -103,7 +103,7 @@ public class BlogServiceTest {
 
     @Test
     @Transactional
-    public void deleteByIdTest_BlogNotFound(){
+    public void deleteByIdTest_NotFoundBlog(){
         // given
         long blogId = 123;
         Mockito.when(blogRepository.findById(blogId)).thenReturn(null);

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.any;
+import static org.mockito.Mockito.never;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -107,7 +108,7 @@ public class BlogControllerTest {
 
     @Test
     // 3. 블로그 생성 : POST /blog/insert
-    public void insertTest() throws Exception {
+    public void insertTest_ValidData() throws Exception {
 
         /*
         The arguments passed to the save method in the BlogService mock do not match the expected arguments in the test.
@@ -116,25 +117,49 @@ public class BlogControllerTest {
 
         // given
         BlogCreateRequestDTO blogCreateRequestDTO = new BlogCreateRequestDTO("writer", "title", "content");
-        // Mockito.doNothing().when(blogService).save(blogCreateRequestDTO);
+        // BindingResult bindingResult = mock(BindingResult.class);
+        // Mockito.when(bindingResult.hasErrors()).thenReturn(false);
 
         // when
+
+        /*
+         If your controller expects JSON payloads in the request body, use the `content` method.
+         If your controller relies on flash attributes or if you are testing a scenario involving redirects, use the `flashAttr` method.
+         */
+
         ResultActions response = mockMvc.perform(post("/blog/insert")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(blogCreateRequestDTO)));  // java object -> json
+                .flashAttr("blogCreateRequestDTO", blogCreateRequestDTO)); // Flash attributes are temporary storage and often used for passing data between 'redirects'.
+                // .flashAttr("bindingResult", bindingResult));
 
         // then
         response.andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/blog/list"))
                 .andDo(print());
 
-        // Mockito.verify(blogService).save(blogCreateRequestDTO);
+        Mockito.verify(blogService).save(blogCreateRequestDTO);
+    }
+
+    @Test
+    public void insertTest_InvalidData() throws Exception {
+        // given
+        BlogCreateRequestDTO blogCreateRequestDTO = new BlogCreateRequestDTO("writer", null, "content");
+
+        // when
+        ResultActions response = mockMvc.perform(post("/blog/insert")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(blogCreateRequestDTO))); // serializes the blogCreateRequestDTO object into JSON using the ObjectMapper. It simulates sending a JSON payload in the request body.
+
+        // then
+        response.andExpect(view().name("blog/blog-form"));
+
+        Mockito.verify(blogService, never()).save(blogCreateRequestDTO);
     }
 
 
     @Test
     // 5. 블로그 업데이트 : POST /blog/updateform , POST /blog/update
-    public void updateTest() throws Exception {
+    public void updateTest_ValidData() throws Exception {
         // given
 
         /*
@@ -142,19 +167,41 @@ public class BlogControllerTest {
         and the expected arguments in the test can occur due to serialization and deserialization of the BlogUpdateRequestDTO object.
          */
 
-        // BlogResponseDTO blog = new BlogResponseDTO(1, "Writer 1", "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now(), 0);
-        // Mockito.when(blogService.findById(blog.getBlogId())).thenReturn(blog);
         BlogUpdateRequestDTO blogUpdateRequestDTO = new BlogUpdateRequestDTO(1, "title", "content");
+        // BindingResult bindingResult = mock(BindingResult.class);
+        // Mockito.when(bindingResult.hasErrors()).thenReturn(false);
 
         // when
         ResultActions response = mockMvc.perform(post("/blog/update")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(blogUpdateRequestDTO)));
+                .flashAttr("blogUpdateRequestDTO", blogUpdateRequestDTO)); // Flash attributes are temporary storage and often used for passing data between 'redirects'.
+                // .flashAttr("bindingResult", bindingResult));
 
         // then
         response.andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/blog/list"))
+                .andExpect(redirectedUrl("/blog/detail/" + blogUpdateRequestDTO.getBlogId()))
                 .andDo(print());
+
+        Mockito.verify(blogService).update(blogUpdateRequestDTO);
+    }
+
+    @Test
+    public void updateTest_InvalidData() throws Exception {
+        // Arrange
+        BlogUpdateRequestDTO blogUpdateRequestDTO = new BlogUpdateRequestDTO(1, null, "content");
+        // BindingResult bindingResult = mock(BindingResult.class);
+        // Mockito.when(bindingResult.hasErrors()).thenReturn(true);
+
+        // when
+        ResultActions response = mockMvc.perform(post("/blog/update")
+                .contentType(MediaType.APPLICATION_JSON)
+                .flashAttr("blogUpdateRequestDTO", blogUpdateRequestDTO)); // Flash attributes are temporary storage and often used for passing data between 'redirects'.
+                //.flashAttr("bindingResult", bindingResult));
+
+        // then
+        response.andExpect(redirectedUrl("/blog/detail/" + blogUpdateRequestDTO.getBlogId()));
+
+        Mockito.verify(blogService, never()).update(blogUpdateRequestDTO);
     }
 
 }

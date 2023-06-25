@@ -83,15 +83,14 @@ public class BlogController {
     // /blog/update 주소로 POST요청을 넣으면 글이 수정됨
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String update(@Valid BlogUpdateRequestDTO blogUpdateRequestDTO, BindingResult bindingResult){
+        long blogId = blogUpdateRequestDTO.getBlogId();
         if(bindingResult.hasErrors()){
             /*
             에러 메세지 추가 필요
              */
-            long blogId = blogUpdateRequestDTO.getBlogId();
             return "redirect:/blog/detail/" + blogId;
         }
         blogService.update(blogUpdateRequestDTO);
-        long blogId = blogUpdateRequestDTO.getBlogId();
         return "redirect:/blog/detail/" + blogId;
     }
 

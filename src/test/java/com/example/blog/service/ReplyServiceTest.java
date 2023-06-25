@@ -56,7 +56,7 @@ public class ReplyServiceTest {
 
     @Test
     @Transactional
-    public void findByReplyIdTest(){
+    public void findByReplyIdTest_FoundReply(){
         // Mock 객체를 사용하여 findByReplyId 로 조회시 조회한 id 에 해당되는 Mock 객체를 잘 가져오는지 테스트 (assertEquals)
         // 응답을 제대로 받는지 테스트
         // given
@@ -73,7 +73,7 @@ public class ReplyServiceTest {
 
     @Test
     @Transactional
-    public void findByReplyIdTest_ReplyNotFound(){
+    public void findByReplyIdTest_NotFoundReply(){
         // given
         long replyId = 123;
         Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(null);
@@ -85,7 +85,7 @@ public class ReplyServiceTest {
 
     @Test
     @Transactional
-    public void deleteByReplyIdTest(){
+    public void deleteByReplyIdTest_FoundReply(){
         // 이 메소드 호출 시 Repository의 deleteByReplyId 가 불러와지는지 테스트 (verify 만 이용)
         // 요청을 제대로 주는지 테스트
         // given
@@ -103,7 +103,7 @@ public class ReplyServiceTest {
 
     @Test
     @Transactional
-    public void deleteByReplyIdTest_ReplyNotFound(){
+    public void deleteByReplyIdTest_NotFoundReply(){
         // given
         long replyId = 123;
         Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(null);
