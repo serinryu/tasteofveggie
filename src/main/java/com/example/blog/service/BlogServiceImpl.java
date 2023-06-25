@@ -4,6 +4,7 @@ import com.example.blog.dto.BlogCreateRequestDTO;
 import com.example.blog.dto.BlogResponseDTO;
 import com.example.blog.dto.BlogUpdateRequestDTO;
 import com.example.blog.entity.Blog;
+import com.example.blog.exception.NotFoundBlogIdException;
 import com.example.blog.repository.BlogRepository;
 import com.example.blog.repository.ReplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,12 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public BlogResponseDTO findById(long blogId) {
         Blog blog = blogRepository.findById(blogId); // Repository 에서 Entity 를 리턴함
+
+        // Exception Handling
+        if(blog == null){
+            throw new NotFoundBlogIdException("Not Found blogId : " + blogId);
+        }
+
         // Entity to DTO
         return new BlogResponseDTO(blog);
     }

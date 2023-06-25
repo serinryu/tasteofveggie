@@ -4,8 +4,11 @@ import com.example.blog.dto.ReplyCreateRequestDTO;
 import com.example.blog.dto.ReplyResponseDTO;
 import com.example.blog.dto.ReplyUpdateRequestDTO;
 import com.example.blog.entity.Reply;
+import com.example.blog.exception.ErrorCode;
+import com.example.blog.exception.NotFoundReplyByReplyIdException;
 import com.example.blog.repository.ReplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -39,6 +42,12 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     public ReplyResponseDTO findByReplyId(long replyId) {
         Reply reply = replyRepository.findByReplyId(replyId);
+
+        // Exception Handling
+        if(reply == null) {
+            throw new NotFoundReplyByReplyIdException("없는 리플 번호를 조회했습니다");
+        }
+
         return new ReplyResponseDTO(reply);
     }
 

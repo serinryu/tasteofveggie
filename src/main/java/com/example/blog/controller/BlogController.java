@@ -39,19 +39,7 @@ public class BlogController {
     @RequestMapping(value = "/detail/{blogId}", method = RequestMethod.GET)
     public String detail(@PathVariable long blogId, Model model){
         BlogResponseDTO blogFindByIdDTO = blogService.findById(blogId);
-
-        if(blogFindByIdDTO == null){
-            // Exception Handling (에러 메세지만 보고 알 수 있도록 custom)
-            try {
-                throw new NotFoundBlogIdException("Not Found blogId : " + blogId);
-            } catch (NotFoundBlogIdException e) {
-                e.printStackTrace(); // tracing (예외메세지 체크). 그러나, 현재 같은 경우는 어떤 예외메세지인지 알고 있으므로 해줄 필요는 없음
-                return "blog/NotFoundBlogIdExceptionResultPage";
-            }
-        }
-
         model.addAttribute("blog", blogFindByIdDTO); // 데이터 전달하여 뷰에 뿌려주기
-
         return "blog/detail"; // /WEB-INF/views/blog/detail.jsp
     }
 

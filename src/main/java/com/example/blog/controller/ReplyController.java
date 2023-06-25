@@ -33,18 +33,7 @@ public class ReplyController {
     // http://localhost:8080/reply/5
     @RequestMapping(value = "/{replyId}", method = RequestMethod.GET)
     public ResponseEntity<?> findByReplyId(@PathVariable long replyId){
-        System.out.println(replyId);
-        // 서비스에서 특정 번호 리플을 가져옵니다.
         ReplyResponseDTO replyFindByIdDTO = replyService.findByReplyId(replyId);
-        if(replyFindByIdDTO == null) {
-            try {
-                throw new NotFoundReplyByReplyIdException("없는 리플 번호를 조회했습니다");
-            } catch (NotFoundReplyByReplyIdException e) {
-                e.printStackTrace();
-                return ResponseEntity.badRequest().body("찾는 댓글 번호가 없습니다.");
-            }
-        }
-        //return new ResponseEntity<ReplyFindByIdDTO>(replyFindByIdDTO, HttpStatus.OK);
         return ResponseEntity.ok().body(replyFindByIdDTO);
     }
 
