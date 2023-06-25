@@ -5,10 +5,12 @@ import com.example.blog.dto.BlogCreateRequestDTO;
 import com.example.blog.dto.BlogUpdateRequestDTO;
 import com.example.blog.exception.NotFoundBlogIdException;
 import com.example.blog.service.BlogService;
+import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,7 +59,13 @@ public class BlogController {
     }
 
     @RequestMapping(value = "/insert", method = RequestMethod.POST)
-    public String insert(BlogCreateRequestDTO blogCreateRequestDTO){
+    public String insert(@Valid BlogCreateRequestDTO blogCreateRequestDTO, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            /*
+            에러 메세지 추가 필요
+             */
+            return "blog/blog-form";
+        }
         blogService.save(blogCreateRequestDTO);
         return "redirect:/blog/list";
     }
@@ -74,10 +82,17 @@ public class BlogController {
 
     // /blog/update 주소로 POST요청을 넣으면 글이 수정됨
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public String update(BlogUpdateRequestDTO blogUpdateRequestDTO){
-        log.info(blogUpdateRequestDTO);
+    public String update(@Valid BlogUpdateRequestDTO blogUpdateRequestDTO, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            /*
+            에러 메세지 추가 필요
+             */
+            long blogId = blogUpdateRequestDTO.getBlogId();
+            return "redirect:/blog/detail/" + blogId;
+        }
         blogService.update(blogUpdateRequestDTO);
-        return "redirect:/blog/list";
+        long blogId = blogUpdateRequestDTO.getBlogId();
+        return "redirect:/blog/detail/" + blogId;
     }
 
 }

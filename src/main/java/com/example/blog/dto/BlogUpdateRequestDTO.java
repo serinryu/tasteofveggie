@@ -1,6 +1,8 @@
 package com.example.blog.dto;
 
 import com.example.blog.entity.Blog;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 
@@ -13,9 +15,14 @@ import lombok.*;
 public class BlogUpdateRequestDTO {
     // UPDATE 시 필요한 데이터 : 글쓴이, 글제목, 글본문, 글번호
 
+    @NotNull
     private long blogId;
     //private String writer;
+
+    @NotEmpty
     private String blogTitle;
+
+    @NotEmpty
     private String blogContent;
     //private LocalDateTime publishedAt;
     //private LocalDateTime updatedAt;

@@ -1,6 +1,7 @@
 package com.example.blog.dto;
 
 import com.example.blog.entity.Reply;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -10,10 +11,10 @@ public class ReplyCreateRequestDTO {
     @NotNull
     private long blogId;
 
-    @NotNull
+    @NotEmpty
     private String replyWriter;
 
-    @NotNull
+    @NotEmpty
     private String replyContent;
 
     // Entity -> DTO

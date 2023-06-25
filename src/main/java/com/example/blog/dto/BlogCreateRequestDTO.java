@@ -1,6 +1,7 @@
 package com.example.blog.dto;
 
 import com.example.blog.entity.Blog;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 @Getter
@@ -11,8 +12,13 @@ import lombok.*;
 public class BlogCreateRequestDTO {
     // Save 시에 필요한 멤버변수
     //private long blogId;
+    @NotEmpty
     private String writer;
+
+    @NotEmpty
     private String blogTitle;
+
+    @NotEmpty
     private String blogContent;
     //private LocalDateTime publishedAt;
     //private LocalDateTime updatedAt;
