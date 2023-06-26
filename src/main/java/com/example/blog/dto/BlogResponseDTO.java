@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class BlogResponseDTO {
     // SELECT 요청 (FindAll, FindById) 시에 필요한 멤버변수만 가져옴 -> DB에서 데이터 가져온 후, 화면단으로 보여줄 데이터
     private long blogId;
-    private String writer;
+    private String blogWriter;
     private String blogTitle;
     private String blogContent;
     private LocalDateTime publishedAt;
@@ -22,7 +22,7 @@ public class BlogResponseDTO {
     // Entity -> DTO
     public BlogResponseDTO(Blog blog){
         this.blogId = blog.getBlogId();
-        this.writer = blog.getWriter();
+        this.blogWriter = blog.getBlogWriter();
         this.blogTitle = blog.getBlogTitle();
         this.blogContent = blog.getBlogContent();
         this.publishedAt = blog.getPublishedAt();

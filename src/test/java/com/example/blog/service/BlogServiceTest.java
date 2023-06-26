@@ -67,7 +67,7 @@ public class BlogServiceTest {
         // when
         BlogResponseDTO result = blogService.findById(blogId);
         // then
-        assertEquals("Writer 1", result.getWriter());
+        assertEquals("Writer 1", result.getBlogWriter());
         assertEquals("Title 1", result.getBlogTitle());
         Mockito.verify(blogRepository).findById(blogId); // blogRepository.findById 메소드 호출되었는지 확인
     }

@@ -16,7 +16,7 @@
                 ${blog.blogId}
             </div>
             <div class = "col-1">
-                ${blog.writer}
+                ${blog.blogWriter}
             </div>
             <div class = "col-2">
                 ${blog.blogCount}

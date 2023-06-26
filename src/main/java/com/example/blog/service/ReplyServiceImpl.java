@@ -68,7 +68,7 @@ public class ReplyServiceImpl implements ReplyService {
         // DTO -> Entity (DB 수정하는 로직이기 때문에 불가피하게 필요)
         Reply reply = Reply.builder()
                         .blogId(replyCreateRequestDTO.getBlogId())
-                                .replyWriter(replyCreateRequestDTO.getReplyWriter())
+                                .replyWriter(replyCreateRequestDTO.getReplyWriter()) // 이후 로그인한 사람의 이름으로 수정 필요
                                         .replyContent(replyCreateRequestDTO.getReplyContent())
                                                 .build();
         replyRepository.save(reply);

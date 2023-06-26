@@ -14,7 +14,7 @@
         <table class="table table-striped table-hover">
             <thead>
                 <th>blogId</th>
-                <th>writer</th>
+                <th>blogWriter</th>
                 <th>blogTitle</th>
                 <th>blogContent</th>
                 <th>publishedAt</th>
@@ -25,7 +25,7 @@
             <c:forEach var="blog" items="${blogList}">
                 <tr>
                     <td>${blog.blogId}</td>
-                    <td>${blog.writer}</td>
+                    <td>${blog.blogWriter}</td>
                     <td><a href="/blog/detail/${blog.blogId}">${blog.blogTitle}</a></td>
                     <td>${blog.blogContent}</td>
                     <td>${blog.publishedAt}</td>

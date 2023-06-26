@@ -4,9 +4,7 @@ import com.example.blog.dto.BlogCreateRequestDTO;
 import com.example.blog.dto.BlogResponseDTO;
 import com.example.blog.dto.BlogUpdateRequestDTO;
 import com.example.blog.entity.Blog;
-import com.example.blog.entity.Reply;
 import com.example.blog.exception.NotFoundBlogIdException;
-import com.example.blog.exception.NotFoundReplyByReplyIdException;
 import com.example.blog.repository.BlogRepository;
 import com.example.blog.repository.ReplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +72,7 @@ public class BlogServiceImpl implements BlogService {
         // DTO to Entity : 받은 DTO 를 Entity 로 변환이 불가피하게 필요. DB 수정하는 로직이기 때문...
         // DTO에서 받은 값을 사용하여 Blog의 빌더 패턴을 사용해 구현
         Blog blog = Blog.builder()
-                .writer(blogCreateRequestDTO.getWriter())
+                .blogWriter(blogCreateRequestDTO.getBlogWriter())
                 .blogTitle(blogCreateRequestDTO.getBlogTitle())
                 .blogContent(blogCreateRequestDTO.getBlogContent())
                 .publishedAt(LocalDateTime.now())

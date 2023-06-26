@@ -13,7 +13,7 @@ public class BlogCreateRequestDTO {
     // Save 시에 필요한 멤버변수
     //private long blogId;
     @NotEmpty
-    private String writer;
+    private String blogWriter;
 
     @NotEmpty
     private String blogTitle;
@@ -27,7 +27,7 @@ public class BlogCreateRequestDTO {
     // Entity -> DTO
     public BlogCreateRequestDTO(Blog blog){
         //this.blogId = blog.getBlogId();
-        this.writer = blog.getWriter();
+        this.blogWriter = blog.getBlogWriter();
         this.blogTitle = blog.getBlogTitle();
         this.blogContent = blog.getBlogContent();
         //this.publishedAt = blog.getPublishedAt();

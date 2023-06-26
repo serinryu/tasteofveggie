@@ -13,7 +13,7 @@
         <div class="row">
             <div class="col-3">
                 <label for="writer" class="form-label">글쓴이</label>
-                <input type="text" class="form-control" id="writer" name="writer" value="${blog.writer}" placeholder="글쓴이를 적어주세요." readonly>
+                <input type="text" class="form-control" id="writer" name="writer" value="${blog.blogWriter}" placeholder="글쓴이를 적어주세요." readonly>
             </div>
             <div class="col-3">
                 <label for="title" class="form-label">제목</label>

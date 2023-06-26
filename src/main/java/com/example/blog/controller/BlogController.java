@@ -64,6 +64,7 @@ public class BlogController {
             /*
             에러 메세지 추가 필요
              */
+            System.out.println(bindingResult.getAllErrors());
             return "blog/blog-form";
         }
         blogService.save(blogCreateRequestDTO);

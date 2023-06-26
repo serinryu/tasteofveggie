@@ -1,10 +1,7 @@
 package com.example.blog.entity;
 
 import lombok.*;
-import org.springframework.cglib.core.Local;
 
-import java.text.DateFormat;
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 // DB 테이블 구조 정의
@@ -17,7 +14,7 @@ public class Blog {
     // 역직렬화(DB->자바객체)가 가능하도록 blog 테이블 구조에 맞춰서 멤버변수를 선언
     // 네이밍 컨벤션에 맞춰서 변수명 바꿔 작성 (SQL 은 snake_case 을 사용했으나 저버 컨벤션에 맞춰서 camelCase로 작성. 단, 역직렬화를 했음에도 불구하고 변수명이 바뀌어 값이 자동으로 맵핑되지 않는 문제 발생하므로 해결해야 함.)
     private long blogId; // declared as AUTO_INCREMENT in MySQL
-    private String writer;
+    private String blogWriter;
     private String blogTitle;
     private String blogContent;
     private LocalDateTime publishedAt;

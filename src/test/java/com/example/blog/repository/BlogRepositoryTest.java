@@ -41,7 +41,7 @@ public class BlogRepositoryTest {
         Blog blog = blogRepository.findById(blogId);
         // then
         assertEquals(blogId, blog.getBlogId());
-        assertEquals("2번유저", blog.getWriter());
+        assertEquals("2번유저", blog.getBlogWriter());
         assertEquals("2번제목", blog.getBlogTitle());
     }
 
@@ -65,14 +65,14 @@ public class BlogRepositoryTest {
     @DisplayName("4번째 행 데이터 저장 후, 행 저장여부 및 전달데이터 저장 여부 확인")
     public void saveTest(){
         // given
-        String writer = "4번유저";
+        String blogWriter = "4번유저";
         String blogTitle = "4번제목";
         String blogContent = "4번내용";
 
         // 실제 Entity 를 제작해서 실제 DB 에 save 해보기
         Blog blog = Blog.builder()
                 .blogId(0) // 임시값. DB 에서 auto increment 될 것임.
-                .writer(writer)
+                .blogWriter(blogWriter)
                 .blogTitle(blogTitle)
                 .blogContent(blogContent)
                 .publishedAt(LocalDateTime.now())
@@ -87,7 +87,7 @@ public class BlogRepositoryTest {
         System.out.println(resultList);
         Blog result = resultList.get(0);
         assertEquals(4, resultList.size());
-        assertEquals(writer, result.getWriter());
+        assertEquals(blogWriter, result.getBlogWriter());
         assertEquals(blogTitle, result.getBlogTitle());
         assertEquals(blogContent, result.getBlogContent());
     }
