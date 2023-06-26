@@ -64,10 +64,12 @@
     </div><!-- .container -->
     <script>
         let blogId = "${blog.blogId}"; // 글 번호를 자바스크립트 변수에 저장
+        let $replies = document.getElementById("replies"); // 변수명 앞에 $ 를 하는 이유는 태그에 걸린 변수라는 의미를 담기 위함일 뿐
+        let $replySubmit = document.getElementById("replySubmit");
 
-        console.log(blogId);
-
-        // blogId 를 받아 전체 데이터를 JS 내부로 가져오는 함수 선언
+        /**
+         * getAllReplies
+         */
         function getAllReplies(id){
             // <%-- jsp와 js가 모두 ${변수명} 문법을 공유하고, 이 중 .jsp파일에서는
             // ${}의 해석을 jsp식으로 먼저 하기 때문에, 해당 ${}가 백틱 내부에서 쓰이는 경우
@@ -81,22 +83,112 @@
                 .then(replies => {
                     replies.map((reply, i) => {     // reply : target to map, i : order
                         str +=
-                            `<h3>\${i+1}번째 댓글 || 글쓴이: \${reply.replyWriter}, 댓글내용: \${reply.replyContent}
-                                <span class="deleteReplyBtn" data-replyId="\${reply.replyId}">
-                                    [삭제]
+                            `<span id="replyId\${reply.replyId}">\${i+1}번째 댓글 ||
+                                <span> 글쓴이:
+                                    <span id="replyWriter\${reply.replyId}">\${reply.replyWriter}</span>
                                 </span>
-                            </h3>`;
+                                <span> 댓글내용:
+                                    <span id="replyContent\${reply.replyId}">\${reply.replyContent}</span>
+                                </span>
+                                <span class="deleteReplyBtn" data-replyId="\${reply.replyId}">
+                                       삭제
+                                </span>
+                            </span>`;
                     });
-
-                    // 변수명 앞에 $ 를 하는 이유는 태그에 걸린 변수라는 의미를 담기 위함일 뿐
-                    const $replies = document.getElementById('replies');
                     // 저장된 #replies의 innerHTML 에 str을 대입해 실제 화면에 출력되게 해주세요.
                     $replies.innerHTML = str;
-
                 });
         }
 
+        /**
+         * deleteReply()
+         */
+        function deleteReply(replyId) {
+
+            if (confirm("정말로 삭제하시겠어요?")) {
+
+                // Send a DELETE request to the server
+                let url = `http://localhost:8080/reply/\${replyId}`;
+                fetch(url, {
+                    method: 'delete'
+                }).then((res) => {
+                    if (res.ok) {
+                        // Reply deleted successfully, update the UI
+                        const replyElement = document.getElementById(`replyId\${replyId}`);
+                        if (replyElement) {
+                            replyElement.remove();
+                        }
+                        alert('해당 댓글을 삭제했습니다.');
+                        //  혹은 전체 댓글 갱신도 가능
+                        // getAllReplies(blogId);
+                    } else {
+                        // Failed to delete the reply, handle the error
+                        console.error('Failed to delete the reply:', res.status);
+                    }
+                }).catch((error) => {
+                    console.error('Error while deleting the reply:', error);
+                });
+            }
+        }
+
+        /**
+         * insertReply()
+         */
+        function insertReply(){
+            if(document.getElementById("replyWriter").value.trim() === ""){
+                alert("글쓴이를 채워주셔야 합니다.");
+                return;
+            }
+            if(document.getElementById("replyContent").value.trim() === ""){
+                alert("본문을 채워주셔야 합니다.");
+                return;
+            }
+
+            // Send a INSERT request to the server
+            let url = `http://localhost:8080/reply`;
+            fetch(url, {
+                method:'post',
+                headers: {
+                    // header에는 보내는 데이터의 자료형에 대해서 기술
+                    // json 데이터를 요청과 함께 전달, @RequestBody를 입력받는 로직에 추가
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    // 요청과 함께 보낼 json정보
+                    replyWriter: document.getElementById("replyWriter").value,
+                    replyContent: document.getElementById("replyContent").value,
+                    blogId : "${blog.blogId}"
+                }), // insert 로직이기 때문에 response에 실제 화면에서 사용할 데이터 전송 X
+            }).then((res) => {
+                if(res.ok) {
+                    // Reply created successfully, update the UI
+                    document.getElementById("replyWriter").value = ""; // 댓글 작성 후 폼에 작성되어있던 내용 소거
+                    document.getElementById("replyContent").value = "";
+                    alert("댓글 작성이 완료되었습니다!");
+                    // 댓글 갱신
+                    getAllReplies(blogId);
+                } else {
+                    // Failed to insert the reply, handle the error
+                    console.error('Failed to insert the reply:', res.status);
+                }
+            })
+            .catch((error) => {
+                console.error('Error while deleting the reply:', error);
+            });
+        }
+
         getAllReplies(blogId);
+        $replySubmit.addEventListener("click", insertReply);
+
+        $replies.onclick = (e) => {
+            // 이벤트객체.target.matches는 클릭한 요소가 어떤 태그인지 검사
+            if(!e.target.matches('#replies .deleteReplyBtn')){ // 클릭한 요소가 #replies의 자손태그인 .deleteReplyBtn 인지 검사하기
+                return;
+            } else if(e.target.matches('#replies .deleteReplyBtn')){
+                const replyId = e.target.dataset['replyid']; // e의 target 속성의 dataset 속성 내부에 replyid 존재
+                deleteReply(replyId);
+            }
+        };
 
     </script>
 
