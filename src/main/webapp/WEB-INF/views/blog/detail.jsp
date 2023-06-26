@@ -61,11 +61,32 @@
         </div>
     </div>
 
+    <!-- Modal for updating reply -->
+    <div class="modal fade" id="replyUpdateModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">댓글 수정하기</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    댓글내용 : <input type="text" class="form-control" id="modalReplyContent">
+                    <input type="hidden" id="modalReplyId" value="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="replyUpdateBtn">수정하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     </div><!-- .container -->
     <script>
         let blogId = "${blog.blogId}"; // 글 번호를 자바스크립트 변수에 저장
         let $replies = document.getElementById("replies"); // 변수명 앞에 $ 를 하는 이유는 태그에 걸린 변수라는 의미를 담기 위함일 뿐
         let $replySubmit = document.getElementById("replySubmit");
+        let $replyUpdateBtn = document.getElementById('replyUpdateBtn');
 
         /**
          * getAllReplies
@@ -90,15 +111,22 @@
                                 <span> 댓글내용:
                                     <span id="replyContent\${reply.replyId}">\${reply.replyContent}</span>
                                 </span>
+                                <span class="updateReplyBtn" data-replyId="\${reply.replyId}"
+                                    data-bs-toggle="modal" data-bs-target="#replyUpdateModal">
+                                    [수정]
+                                </span>
                                 <span class="deleteReplyBtn" data-replyId="\${reply.replyId}">
-                                       삭제
+                                    [삭제]
                                 </span>
                             </span>`;
                     });
                     // 저장된 #replies의 innerHTML 에 str을 대입해 실제 화면에 출력되게 해주세요.
                     $replies.innerHTML = str;
-                });
-        }
+                })
+                .catch((error) => {
+                    console.error('Error while deleting the reply:', error);
+                })
+        };
 
         /**
          * deleteReply()
@@ -171,27 +199,82 @@
                     // Failed to insert the reply, handle the error
                     console.error('Failed to insert the reply:', res.status);
                 }
-            })
-            .catch((error) => {
+            }).catch((error) => {
                 console.error('Error while deleting the reply:', error);
             });
         }
 
+        /**
+         * openUpdateReplyModal()
+         */
+        function openUpdateReplyModal(replyId){
+
+            const $modalReplyId = document.getElementById("modalReplyId");
+            $modalReplyId.value = replyId; // put replyId in hidden tag(#modalReplyId)
+
+            const $replyContent = document.getElementById(`replyContent\${replyId}`);
+
+            let existingReplyContent = $replyContent.innerText; // 태그는 제거하고 내부 문자만 추출
+
+            // put data inside modal
+            const $modalReplyContent = document.getElementById("modalReplyContent");
+            $modalReplyContent.value =  existingReplyContent;
+        }
+
+        /**
+         * updateReply()
+         */
+        function updateReply(replyId){
+            let url = `http://localhost:8080/reply`;
+            fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    replyId : replyId,
+                    replyContent : document.querySelector("#modalReplyContent").value,
+                }),
+            }).then((res) => {
+                if(res.ok){
+                    // Reply updated successfully, update the UI
+                    document.getElementById("replyContent").value = "";
+                    getAllReplies(blogId); // 갱신
+                } else {
+                    // Failed to update the reply, handle the error
+                    console.error('Failed to update the reply:', res.status);
+                }
+            }).catch((error) => {
+                    console.error('Error while updating the reply:', error);
+            })
+        };
+
+
+        /**
+         * Invoke the functions
+         */
+
         getAllReplies(blogId);
         $replySubmit.addEventListener("click", insertReply);
 
-        $replies.onclick = (e) => {
-            // 이벤트객체.target.matches는 클릭한 요소가 어떤 태그인지 검사
-            if(!e.target.matches('#replies .deleteReplyBtn')){ // 클릭한 요소가 #replies의 자손태그인 .deleteReplyBtn 인지 검사하기
-                return;
-            } else if(e.target.matches('#replies .deleteReplyBtn')){
-                const replyId = e.target.dataset['replyid']; // e의 target 속성의 dataset 속성 내부에 replyid 존재
+        $replies.addEventListener("click", (e) => {
+            const replyId = e.target.dataset['replyid']; // e.target.dataset.replyid; 위와 동일
+            if(e.target.matches('#replies .deleteReplyBtn')){ // 이벤트객체.target.matches는 클릭한 요소가 어떤 태그인지 검사
                 deleteReply(replyId);
+            } else if(e.target.matches('#replies .updateReplyBtn')){
+                openUpdateReplyModal(replyId);
+            } else {
+                return;
             }
-        };
+        });
+
+        $replyUpdateBtn.addEventListener("click", (e) => {
+            const $modalReplyId = document.getElementById("modalReplyId"); // data inside hidden tag
+            const replyId = $modalReplyId.value;
+            updateReply(replyId);
+        })
 
     </script>
-
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 </body>
 </html>
