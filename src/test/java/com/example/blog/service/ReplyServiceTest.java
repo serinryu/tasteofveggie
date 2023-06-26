@@ -134,7 +134,7 @@ public class ReplyServiceTest {
 
     @Test
     @Transactional
-    public void updateTest(){
+    public void updateTest_FoundReply(){
         // 이 메소드 호출 시 Repository의 update 가 불러와졌는가? (verify 만 이용)
         // 테스트대상인 ReplySerive 코드 체크해보면 findByReplyId 메소드가 먼저 선행됨
         // given
@@ -149,4 +149,18 @@ public class ReplyServiceTest {
         Mockito.verify(replyRepository).update(argThat(reply -> reply.getReplyContent().equals("내용 수정함")));
 
     }
+
+    @Test
+    @Transactional
+    public void updateTest_NotFoundReply(){
+        // given
+        long replyId = 1234;
+        Reply existingReply = new Reply(replyId, 1, "writer", "content", null, null);
+        Mockito.when(replyRepository.findByReplyId(existingReply.getReplyId())).thenReturn(null);
+        // when
+        // then
+        assertThrows(NotFoundReplyByReplyIdException.class,
+                () -> replyService.update(new ReplyUpdateRequestDTO(existingReply)));
+    }
+
 }

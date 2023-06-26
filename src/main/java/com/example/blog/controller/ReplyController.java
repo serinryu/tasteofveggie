@@ -2,6 +2,7 @@ package com.example.blog.controller;
 
 import com.example.blog.dto.ReplyCreateRequestDTO;
 import com.example.blog.dto.ReplyResponseDTO;
+import com.example.blog.dto.ReplyUpdateRequestDTO;
 import com.example.blog.service.ReplyService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,4 +52,12 @@ public class ReplyController {
         replyService.deleteByReplyId(replyId);
         return ResponseEntity.ok().body("삭제 완료 되었습니다");
     }
+
+    // 5. 댓글 수정 : PATCH /reply
+    @RequestMapping(value = "", method = RequestMethod.PATCH)
+    public ResponseEntity<String> updateReply(@RequestBody @Valid ReplyUpdateRequestDTO replyUpdateRequestDTO){
+        replyService.update(replyUpdateRequestDTO);
+        return ResponseEntity.ok().body("댓글이 수정되었습니다.");
+    }
+
 }

@@ -1,6 +1,8 @@
 package com.example.blog.dto;
 
 import com.example.blog.entity.Reply;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import static java.time.LocalDateTime.now;
@@ -12,7 +14,10 @@ import static java.time.LocalDateTime.now;
 @ToString
 @NoArgsConstructor
 public class ReplyUpdateRequestDTO {
+    @NotNull
     private long replyId;
+
+    @NotEmpty
     private String replyContent;
     //private LocalDateTime updatedAt;
 

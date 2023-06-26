@@ -78,6 +78,12 @@ public class ReplyServiceImpl implements ReplyService {
     public void update(ReplyUpdateRequestDTO replyUpdateRequestDTO) {
         // DTO -> Entity
         Reply reply = replyRepository.findByReplyId(replyUpdateRequestDTO.getReplyId());
+
+        // Exception Handling
+        if (reply == null){
+            throw new NotFoundReplyByReplyIdException("Not Found Reply");
+        }
+
         reply.updateReplyContent(replyUpdateRequestDTO.getReplyContent());
         reply.updateTime(LocalDateTime.now());
         replyRepository.update(reply);

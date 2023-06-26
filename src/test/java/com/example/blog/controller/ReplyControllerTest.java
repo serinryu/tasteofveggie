@@ -2,6 +2,7 @@ package com.example.blog.controller;
 
 import com.example.blog.dto.ReplyCreateRequestDTO;
 import com.example.blog.dto.ReplyResponseDTO;
+import com.example.blog.dto.ReplyUpdateRequestDTO;
 import com.example.blog.service.ReplyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -21,9 +22,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -145,6 +144,42 @@ public class ReplyControllerTest {
         response.andExpect(status().isOk())
                         .andDo(print());
         Mockito.verify(replyService).deleteByReplyId(replyId);
+    }
+
+    @Test
+    // 5. 댓글 수정 : PATCH /reply
+    public void updateReplyTest_ValidData() throws Exception {
+        // given
+        ReplyUpdateRequestDTO replyUpdateRequestDTO = new ReplyUpdateRequestDTO(1, "updated content");
+        Mockito.doNothing().when(replyService).update(replyUpdateRequestDTO);
+
+        // when
+        ResultActions response = mockMvc.perform(patch("/reply")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(replyUpdateRequestDTO)));  // java object -> json
+
+        // then
+        response.andExpect(status().isOk())
+                .andDo(print());
+
+        Mockito.verify(replyService).update(argThat(reply -> reply.getReplyContent().equals("updated content")));
+
+    }
+
+    @Test
+    public void updateReplyTest_InvalidData() throws Exception {
+        // given
+        ReplyUpdateRequestDTO replyUpdateRequestDTO = new ReplyUpdateRequestDTO(1, null);
+
+        // when
+        ResultActions response = mockMvc.perform(patch("/reply")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(replyUpdateRequestDTO)));  // java object -> json
+
+        // then
+        response.andExpect(status().isBadRequest());
+
+        Mockito.verify(replyService, never()).update(any());
     }
 
 }
