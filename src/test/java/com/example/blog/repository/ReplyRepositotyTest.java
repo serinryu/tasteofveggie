@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class ReplyRepositotyTest {
-    @Autowired // 테스트 코드에서는 필드 주입써도 무방
+    @Autowired
     ReplyRepository replyRepository;
     @Autowired
     BlogRepository blogRepository;

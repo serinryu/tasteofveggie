@@ -52,8 +52,6 @@ public class ReplyControllerTest {
         Mockito.when(replyService.findAllByBlogId(blogId)).thenReturn(replies);
 
         // when
-        // 설정한 url로 접속 후 json 데이터 리턴받아 저장하기.
-        // ResultActions 형 자료를 사용해서 json 자료를 받아올 수 있음
         StringBuilder url = new StringBuilder();
         url.append("/reply/").append(blogId).append("/all");
         ResultActions response = mockMvc.perform(get(String.valueOf(url))
@@ -70,7 +68,6 @@ public class ReplyControllerTest {
     }
 
     @Test
-    // 2. Reply Id 로 특정 Reply 만 보기 : GET /reply/1
     public void findByReplyIdTest() throws Exception {
         // given
         long replyId = 1;
@@ -85,9 +82,9 @@ public class ReplyControllerTest {
 
         // then
         response.andExpect(status().isOk())
-                .andExpect(jsonPath("$.replyWriter").value("writer 1")) // json의 첫번째 요소의 replyWriter 검사
-                .andExpect(jsonPath("$.replyContent").value("content 1")) // json의 첫번째 요소의 replyWriter 검사
-                .andExpect(jsonPath("$.replyId").value(1)) // json의 첫번째 요소의 replyId 검사
+                .andExpect(jsonPath("$.replyWriter").value("writer 1"))
+                .andExpect(jsonPath("$.replyContent").value("content 1"))
+                .andExpect(jsonPath("$.replyId").value(1))
                 .andDo(print());
 
         Mockito.verify(replyService).findByReplyId(replyId);
@@ -95,17 +92,15 @@ public class ReplyControllerTest {
     }
 
     @Test
-    // 3. 댓글 작성 등록 : POST /reply
     public void insertReplyTest_ValidData() throws Exception {
         // given
         ReplyCreateRequestDTO replyCreateRequestDTO = new ReplyCreateRequestDTO(1, "writer 1", "content 1");
         Mockito.doNothing().when(replyService).save(replyCreateRequestDTO);
 
         // when
-        // 직렬화된 데이터를 이용해 post방식으로 url에 요청
         ResultActions response = mockMvc.perform(post("/reply")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(replyCreateRequestDTO)));  // java object -> json
+                .content(objectMapper.writeValueAsString(replyCreateRequestDTO)));  // java object -> json (serialization)
 
         // then
         response.andExpect(status().isOk())
@@ -131,7 +126,6 @@ public class ReplyControllerTest {
     }
 
     @Test
-    // 4. 댓글 삭제 : DELETE /reply/1
     public void deleteByReplyIdTest() throws Exception {
         // given
         long replyId = 2;
@@ -147,7 +141,6 @@ public class ReplyControllerTest {
     }
 
     @Test
-    // 5. 댓글 수정 : PATCH /reply
     public void updateReplyTest_ValidData() throws Exception {
         // given
         ReplyUpdateRequestDTO replyUpdateRequestDTO = new ReplyUpdateRequestDTO(1, "updated content");

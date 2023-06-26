@@ -39,12 +39,10 @@ public class ReplyServiceTest {
     @Test
     @Transactional
     public void findAllBlogIdTest(){
-        // Mock 객체를 사용해서 위 메소드 실행 시 특정 BlogId 에 맞는 Mock 객체를 다 가져오는지 테스트
-        // 응답을 제대로 받는지 테스트
         // given
         long blogId = 1;
         List<Reply> replies = new ArrayList<>();
-        replies.add(new Reply(1, 1, "a", "a apple is wow", LocalDateTime.now(), LocalDateTime.now()));
+        replies.add(new Reply(1, 1, "writer", "content", LocalDateTime.now(), LocalDateTime.now()));
         Mockito.when(replyRepository.findAllByBlogId(blogId)).thenReturn(replies);
         // when
         List<ReplyResponseDTO> result = replyService.findAllByBlogId(blogId);
@@ -58,16 +56,15 @@ public class ReplyServiceTest {
     @Transactional
     public void findByReplyIdTest_FoundReply(){
         // Mock 객체를 사용하여 findByReplyId 로 조회시 조회한 id 에 해당되는 Mock 객체를 잘 가져오는지 테스트 (assertEquals)
-        // 응답을 제대로 받는지 테스트
         // given
         long replyId = 1;
-        Reply reply = new Reply(replyId, 1, "a", "a apple is wow", LocalDateTime.now(), LocalDateTime.now());
+        Reply reply = new Reply(replyId, 1, "writer", "content", LocalDateTime.now(), LocalDateTime.now());
         Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(reply);
         // when
         ReplyResponseDTO result = replyService.findByReplyId(replyId);
         // then
-        assertEquals("a", result.getReplyWriter());
-        assertEquals("a apple is wow", result.getReplyContent());
+        assertEquals("writer", result.getReplyWriter());
+        assertEquals("content", result.getReplyContent());
         Mockito.verify(replyRepository).findByReplyId(replyId);
     }
 
@@ -87,11 +84,9 @@ public class ReplyServiceTest {
     @Transactional
     public void deleteByReplyIdTest_FoundReply(){
         // 이 메소드 호출 시 Repository의 deleteByReplyId 가 불러와지는지 테스트 (verify 만 이용)
-        // 요청을 제대로 주는지 테스트
         // given
-        // 서비스 레이어에서 데이터 넘겨주는지의 테스트이므로 DTO 만 제작
         long replyId = 2;
-        Reply reply =  new Reply(replyId, 1, "a", "a apple is wow", LocalDateTime.now(), LocalDateTime.now());
+        Reply reply =  new Reply(replyId, 1, "writer", "content", LocalDateTime.now(), LocalDateTime.now());
         Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(reply);
         // Mockito.doNothing().when(replyRepository).deleteByReplyId(replyId);
         // when
@@ -116,8 +111,7 @@ public class ReplyServiceTest {
     @Test
     @Transactional
     public void saveTest(){
-        // 이 메소드 호출 시 Repository의 save 가 불러와졌는가? (verify 만 이용)
-        // 요청을 제대로 주는지 테스트
+        // 이 메소드 호출 시 Repository의 save 가 불러와졌지 테스트 (verify 만 이용)
         // given
         // 서비스 레이어에서 데이터 넘겨주는지의 테스트이므로 DTO 만 제작
         ReplyCreateRequestDTO reply = new ReplyCreateRequestDTO(
@@ -135,8 +129,7 @@ public class ReplyServiceTest {
     @Test
     @Transactional
     public void updateTest_FoundReply(){
-        // 이 메소드 호출 시 Repository의 update 가 불러와졌는가? (verify 만 이용)
-        // 테스트대상인 ReplySerive 코드 체크해보면 findByReplyId 메소드가 먼저 선행됨
+        // 이 메소드 호출 시 Repository의 update 가 불러와졌는지 테스트 (verify 만 이용)
         // given
         Reply existingReply = new Reply(0, 1, "writer", "content", null, null);
         Mockito.when(replyRepository.findByReplyId(existingReply.getReplyId())).thenReturn(existingReply);

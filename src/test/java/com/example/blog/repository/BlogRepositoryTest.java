@@ -62,7 +62,6 @@ public class BlogRepositoryTest {
 
     @Test
     @Transactional
-    @DisplayName("4번째 행 데이터 저장 후, 행 저장여부 및 전달데이터 저장 여부 확인")
     public void saveTest(){
         // given
         String blogWriter = "4번유저";
@@ -108,6 +107,7 @@ public class BlogRepositoryTest {
 
         // when
         blogRepository.update(blog);
+
         // then
         assertEquals(3, blogRepository.findAll().size());
         assertEquals(blogTitle, blogRepository.findById(blogId).getBlogTitle());

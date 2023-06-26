@@ -87,7 +87,8 @@ public class BlogServiceTest {
     @Test
     @Transactional
     public void deleteByIdTest_FoundBlog(){
-        // deleteById 시 reply 전체 삭제 메소드와 blog삭제 메소드 모두 호출되는지만 테스트 (verify 이용)
+        // deleteById 시 reply 전체 삭제 메소드와 blog삭제 메소드 모두 호출되는지만 테스트
+        // void Method 이므로 assertEquals 불가 -> verify 이용
         // given
         long blogId = 2;
         Blog blog = new Blog(blogId, "Writer 1", "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now(), 0);
@@ -116,15 +117,11 @@ public class BlogServiceTest {
     @Test
     @Transactional
     public void saveTest(){
-        // save 시 Repository의 save 메소드가 호출되는지만 테스트 (verify 이용)
+        // save 시 Repository의 save 메소드가 호출되는지만 테스트
+        // void Method 이므로 assertEquals 불가 -> verify 이용
         // given
         // 서비스 레이어에서의 테스트이므로 DTO 만 제작
         BlogCreateRequestDTO blogCreateRequestDTO = new BlogCreateRequestDTO( "Writer 1", "Title 1", "Content 1");
-        /*
-         Blog savedBlog = new Blog(1, "Writer 1", "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now(), 0);
-         Mockito.when(blogRepository.save(Mockito.any(Blog.class))).thenReturn(savedBlog); => 만약 save 메소드가 리턴값이 있을 경우에는 이렇게 진행하는 것이 훨씬 정확.
-         그러나, 현재 save 는 void method 이므로 doNothing() 사용
-         */
         Mockito.doNothing().when(blogRepository).save(argThat(blog -> blog.getBlogTitle().equals("Title 1"))); // save(any(Blog.class))
 
         // when
@@ -137,9 +134,9 @@ public class BlogServiceTest {
     @Test
     @Transactional
     public void updateTest(){
-        // update 시 Repository의 update 가 불러와졌는지 테스트 (verify 이용)
+        // update 시 Repository의 update 가 불러와졌는지 테스트 -> verify 이용
         // given
-        // update 하기 전에 데이터가 있어야 하므로 findbyId 가 선행되어야 함. => 테스트하고 있는 타켓인 update() 함수 로직 보기
+        // 테스트하고 있는 타켓인 update() 함수 로직 보면, update 하기 전에 데이터가 있어야 하므로 findbyId 가 선행되어야 함.
         Blog existingBlog = new Blog(
                 1, "writer", "1번제목", "1번내용", LocalDateTime.now(), LocalDateTime.now(), 0
         );

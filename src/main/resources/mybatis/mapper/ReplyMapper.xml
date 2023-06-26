@@ -6,6 +6,7 @@
     <select id="findAllByBlogId" resultType="com.example.blog.entity.Reply" parameterType="long">
         SELECT
             reply_id as replyId,
+            blog_id as blogId,
             reply_writer as replyWriter,
             reply_content as replyContent,
             published_at as publishedAt,
@@ -18,6 +19,7 @@
     <select id="findByReplyId" resultType="com.example.blog.entity.Reply" parameterType="long">
         SELECT
             reply_id as replyId,
+            blog_id as blogId,
             reply_writer as replyWriter,
             reply_content as replyContent,
             published_at as publishedAt,
