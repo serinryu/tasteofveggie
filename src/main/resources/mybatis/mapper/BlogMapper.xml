@@ -49,4 +49,12 @@
         WHERE
             blog_id = #{blogId}
     </update>
+    <update id="updateBlogCount" parameterType="com.example.blog.entity.Blog">
+        UPDATE
+            blog
+        SET
+            blog_count = #{blogCount}
+        WHERE
+            blog_id = #{blogId}
+    </update>
 </mapper>

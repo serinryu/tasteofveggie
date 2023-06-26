@@ -4,17 +4,24 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter @Setter @ToString @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter @ToString
 public class Reply {
-    private long replyId;
-    private long blogId;
-    private String replyWriter;
+    private final long replyId;
+    private final long blogId;
+    private final String replyWriter;
     private String replyContent;
-    private LocalDateTime publishedAt;
+    private final LocalDateTime publishedAt;
     private LocalDateTime updatedAt;
 
+    @Builder
+    public Reply(long replyId, long blogId, String replyWriter, String replyContent, LocalDateTime publishedAt, LocalDateTime updatedAt){
+        this.replyId = replyId;
+        this.blogId = blogId;
+        this.replyWriter = replyWriter;
+        this.replyContent = replyContent;
+        this.publishedAt = publishedAt;
+        this.updatedAt = updatedAt;
+    }
     // Business Logic to change the data
     public void updateReplyContent(String replyContent){ this.replyContent = replyContent; }
     public void updateTime(LocalDateTime updatedAt){ this.updatedAt = updatedAt; }

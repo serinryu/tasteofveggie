@@ -41,12 +41,16 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public BlogResponseDTO findById(long blogId) {
-        Blog blog = blogRepository.findById(blogId); // Repository 에서 Entity 를 리턴함
 
         // Exception Handling
+        Blog blog = blogRepository.findById(blogId); // Repository 에서 Entity 를 리턴함
         if(blog == null){
             throw new NotFoundBlogIdException("Not Found blogId : " + blogId);
         }
+
+        // increament blogCount
+        blog.incrementBlogCount(); // change blogCound field in Entity
+        blogRepository.updateBlogCount(blog); // update blogCount in DB using updated Entity
 
         // Entity to DTO
         return new BlogResponseDTO(blog);
