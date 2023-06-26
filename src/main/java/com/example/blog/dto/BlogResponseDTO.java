@@ -4,20 +4,25 @@ import com.example.blog.entity.Blog;
 import lombok.*;
 
 import java.time.LocalDateTime;
-@Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter @ToString
 public class BlogResponseDTO {
-    // SELECT 요청 (FindAll, FindById) 시에 필요한 멤버변수만 가져옴 -> DB에서 데이터 가져온 후, 화면단으로 보여줄 데이터
-    private long blogId;
-    private String blogWriter;
-    private String blogTitle;
-    private String blogContent;
-    private LocalDateTime publishedAt;
-    private LocalDateTime updatedAt;
-    private long blogCount;
+    private final long blogId;
+    private final String blogWriter;
+    private final String blogTitle;
+    private final String blogContent;
+    private final LocalDateTime publishedAt;
+    private final LocalDateTime updatedAt;
+    private final long blogCount;
+
+    public BlogResponseDTO(long blogId, String blogWriter, String blogTitle, String blogContent, LocalDateTime publishedAt, LocalDateTime updatedAt, long blogCount){
+        this.blogId = blogId;
+        this.blogWriter = blogWriter;
+        this.blogTitle = blogTitle;
+        this.blogContent = blogContent;
+        this.publishedAt = publishedAt;
+        this.updatedAt = updatedAt;
+        this.blogCount = blogCount;
+    }
 
     // Entity -> DTO
     public BlogResponseDTO(Blog blog){

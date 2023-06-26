@@ -4,34 +4,27 @@ import com.example.blog.entity.Blog;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
-@Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter @ToString
 public class BlogCreateRequestDTO {
-    // Save 시에 필요한 멤버변수
-    //private long blogId;
     @NotEmpty
-    private String blogWriter;
+    private final String blogWriter;
 
     @NotEmpty
-    private String blogTitle;
+    private final String blogTitle;
 
     @NotEmpty
-    private String blogContent;
-    //private LocalDateTime publishedAt;
-    //private LocalDateTime updatedAt;
-    //private long blogCount;
+    private final String blogContent;
+
+    public BlogCreateRequestDTO(String blogWriter, String blogTitle, String blogContent) {
+        this.blogWriter = blogWriter;
+        this.blogTitle = blogTitle;
+        this.blogContent = blogContent;
+    }
 
     // Entity -> DTO
     public BlogCreateRequestDTO(Blog blog){
-        //this.blogId = blog.getBlogId();
         this.blogWriter = blog.getBlogWriter();
         this.blogTitle = blog.getBlogTitle();
         this.blogContent = blog.getBlogContent();
-        //this.publishedAt = blog.getPublishedAt();
-        //this.updatedAt = blog.getUpdatedAt();
-        //this.blogCount = blog.getBlogCount();
     }
 }
