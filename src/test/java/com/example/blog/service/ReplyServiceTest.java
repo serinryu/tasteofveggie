@@ -78,6 +78,7 @@ public class ReplyServiceTest {
         // then
         assertThrows(NotFoundReplyByReplyIdException.class,
                 () -> replyService.findByReplyId(replyId));
+        Mockito.verify(replyRepository, Mockito.times(1)).findByReplyId(replyId);
     }
 
     @Test
@@ -149,7 +150,7 @@ public class ReplyServiceTest {
         // given
         long replyId = 1234;
         Reply existingReply = new Reply(replyId, 1, "writer", "content", null, null);
-        Mockito.when(replyRepository.findByReplyId(existingReply.getReplyId())).thenReturn(null);
+        Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(null);
         // when
         // then
         assertThrows(NotFoundReplyByReplyIdException.class,

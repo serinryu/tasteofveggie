@@ -43,7 +43,7 @@ public class ReplyServiceImpl implements ReplyService {
 
     @Override
     public ReplyResponseDTO findByReplyId(long replyId) {
-        Reply reply = Optional.of(replyRepository.findByReplyId(replyId))
+        Reply reply = Optional.ofNullable(replyRepository.findByReplyId(replyId))
                 .orElseThrow(() -> new NotFoundReplyByReplyIdException("Not Found replyId : " + replyId));
         return new ReplyResponseDTO(reply);
     }
@@ -51,7 +51,7 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     public void deleteByReplyId(long replyId) {
         // Exception Handling
-        Reply reply = Optional.of(replyRepository.findByReplyId(replyId))
+        Reply reply = Optional.ofNullable(replyRepository.findByReplyId(replyId))
                 .orElseThrow(() -> new NotFoundReplyByReplyIdException("Not Found replyId : " + replyId));
         replyRepository.deleteByReplyId(replyId);
     }
@@ -70,7 +70,7 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     public void update(long replyId, ReplyUpdateRequestDTO replyUpdateRequestDTO) {
         // DTO -> Entity
-        Reply reply = Optional.of(replyRepository.findByReplyId(replyId))
+        Reply reply = Optional.ofNullable(replyRepository.findByReplyId(replyId))
                 .orElseThrow(()-> new NotFoundReplyByReplyIdException("Not Found Reply"));
         reply.update(replyUpdateRequestDTO.getReplyContent());
         replyRepository.update(reply);

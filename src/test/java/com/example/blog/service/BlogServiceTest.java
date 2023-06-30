@@ -137,15 +137,14 @@ public class BlogServiceTest {
         // update 시 Repository의 update 가 불러와졌는지 테스트 -> verify 이용
         // given
         // 테스트하고 있는 타켓인 update() 함수 로직 보면, update 하기 전에 데이터가 있어야 하므로 findbyId 가 선행되어야 함.
+        long blogId = 1;
         Blog existingBlog = new Blog(
-                1, "writer", "1번제목", "1번내용", LocalDateTime.now(), LocalDateTime.now(), 0
+                blogId, "writer", "1번제목", "1번내용", LocalDateTime.now(), LocalDateTime.now(), 0
         );
-        Mockito.when(blogRepository.findById(existingBlog.getBlogId())).thenReturn(existingBlog);
+        Mockito.when(blogRepository.findById(blogId)).thenReturn(existingBlog);
 
         // when
-        blogService.update(new BlogUpdateRequestDTO(existingBlog.getBlogId(),
-                "00번 제목",
-                "00번 내용"));
+        blogService.update(blogId, new BlogUpdateRequestDTO("00번 제목","00번 내용"));
 
         // then
         Mockito.verify(blogRepository).update(argThat(blog -> blog.getBlogTitle().equals("00번 제목")));

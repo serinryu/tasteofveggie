@@ -12,7 +12,7 @@ public interface BlogService {
     BlogResponseDTO findById(long blogId);
     void deleteById(long blogId);
     void save(BlogCreateRequestDTO blogCreateRequestDTO);
-    void update(BlogUpdateRequestDTO blogUpdateRequestDTO);
+    void update(long blogId, BlogUpdateRequestDTO blogUpdateRequestDTO);
 }
 
 

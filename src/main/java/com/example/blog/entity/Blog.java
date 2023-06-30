@@ -25,12 +25,10 @@ public class Blog {
     }
 
     // Business Logic to change the data
-    public void updateBlogTitle(String blogTitle){
+    public void update(String blogTitle, String blogContent){
         this.blogTitle = blogTitle;
-    }
-    public void updateBlogContent(String blogContent){
         this.blogContent = blogContent;
+        this.updatedAt = LocalDateTime.now();
     }
-    public void updateTime(LocalDateTime updatedAt){ this.updatedAt = updatedAt; }
     public void incrementBlogCount(){ this.blogCount++ ; }
 }

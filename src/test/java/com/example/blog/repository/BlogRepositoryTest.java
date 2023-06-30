@@ -101,9 +101,7 @@ public class BlogRepositoryTest {
         String blogContent = "0번내용";
 
         Blog blog = blogRepository.findById(blogId); // 원본 데이터를 얻어온 다음 내용 update
-        blog.updateBlogTitle(blogTitle);
-        blog.updateBlogContent(blogContent);
-        blog.updateTime(LocalDateTime.now());
+        blog.update(blogTitle, blogContent);
 
         // when
         blogRepository.update(blog);

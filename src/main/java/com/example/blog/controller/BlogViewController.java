@@ -79,16 +79,15 @@ public class BlogViewController {
         return "blog/blog-update-form"; // /WEB-INF/views/blog/blog-update-form.jsp
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public String update(@Valid BlogUpdateRequestDTO blogUpdateRequestDTO, BindingResult bindingResult){
-        long blogId = blogUpdateRequestDTO.getBlogId();
+    @RequestMapping(value = "/update/{blogId}", method = RequestMethod.POST)
+    public String update(@PathVariable long blogId, @Valid BlogUpdateRequestDTO blogUpdateRequestDTO, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             /*
             에러 메세지 추가 필요
              */
             return "redirect:/blog/detail/" + blogId;
         }
-        blogService.update(blogUpdateRequestDTO);
+        blogService.update(blogId, blogUpdateRequestDTO);
         return "redirect:/blog/detail/" + blogId;
     }
 

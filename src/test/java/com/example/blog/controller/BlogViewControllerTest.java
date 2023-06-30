@@ -54,7 +54,7 @@ public class BlogViewControllerTest {
 
         // then
         response.andExpect(status().isOk())
-                .andExpect(view().name("board/list"))
+                .andExpect(view().name("blog/list"))
                 .andExpect(model().attributeExists("blogList"))
                 .andExpect(model().attribute("blogList", any(List.class))) // 데이터도 잘 들어오는지 검사하고 싶으면 view '내부'의 데이터 검사해야함
                 .andDo(print());
@@ -142,36 +142,36 @@ public class BlogViewControllerTest {
     public void updateTest_ValidData() throws Exception {
         // given
         long blogId = 1;
-        BlogUpdateRequestDTO blogUpdateRequestDTO = new BlogUpdateRequestDTO(blogId, "title", "content");
+        BlogUpdateRequestDTO blogUpdateRequestDTO = new BlogUpdateRequestDTO("title", "content");
 
         // when
-        ResultActions response = mockMvc.perform(put("/blog/update/"+blogId)
+        ResultActions response = mockMvc.perform(post("/blog/update/"+blogId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .flashAttr("blogUpdateRequestDTO", blogUpdateRequestDTO)); // Flash attributes are temporary storage and often used for passing data between 'redirects'.
 
         // then
         response.andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/blog/detail/" + blogUpdateRequestDTO.getBlogId()))
+                .andExpect(redirectedUrl("/blog/detail/" + blogId))
                 .andDo(print());
 
-        Mockito.verify(blogService).update(blogUpdateRequestDTO);
+        Mockito.verify(blogService).update(blogId, blogUpdateRequestDTO);
     }
 
     @Test
     public void updateTest_InvalidData() throws Exception {
         // given
         long blogId = 1;
-        BlogUpdateRequestDTO blogUpdateRequestDTO = new BlogUpdateRequestDTO(blogId, null, "content");
+        BlogUpdateRequestDTO blogUpdateRequestDTO = new BlogUpdateRequestDTO(null, "content");
 
         // when
-        ResultActions response = mockMvc.perform(put("/blog/update/"+blogId)
+        ResultActions response = mockMvc.perform(post("/blog/update/"+blogId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .flashAttr("blogUpdateRequestDTO", blogUpdateRequestDTO)); // Flash attributes are temporary storage and often used for passing data between 'redirects'.
 
         // then
         response.andExpect(redirectedUrl("/blog/detail/" + blogId));
 
-        Mockito.verify(blogService, never()).update(blogUpdateRequestDTO);
+        Mockito.verify(blogService, never()).update(blogId, blogUpdateRequestDTO);
     }
 
 }

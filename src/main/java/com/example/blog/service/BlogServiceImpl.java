@@ -87,13 +87,10 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public void update(BlogUpdateRequestDTO blogUpdateRequestDTO) {
-        // DTO -> Entity : 받은 DTO 를 Entity 로 변환이 불가피하게 필요. DB 수정하는 로직이기 때문....
-        // Blog 의 일부 필드민 수정. Blog Entity에 수정 메소드 구현하여 사용
-        Blog blog = blogRepository.findById(blogUpdateRequestDTO.getBlogId());
-        blog.updateBlogTitle(blogUpdateRequestDTO.getBlogTitle());
-        blog.updateBlogContent(blogUpdateRequestDTO.getBlogContent());
-        blog.updateTime(LocalDateTime.now());
+    public void update(long blogId, BlogUpdateRequestDTO blogUpdateRequestDTO) {
+        // DTO -> Entity
+        Blog blog = blogRepository.findById(blogId);
+        blog.update(blogUpdateRequestDTO.getBlogTitle(), blogUpdateRequestDTO.getBlogContent());
 
         blogRepository.update(blog);
     }
