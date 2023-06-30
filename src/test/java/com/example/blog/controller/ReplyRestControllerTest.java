@@ -27,9 +27,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ReplyController.class)
-@DisplayName("ReplyController Test")
-public class ReplyControllerTest {
+@WebMvcTest(ReplyRestController.class)
+@DisplayName("ReplyRestController Test")
+public class ReplyRestControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -147,7 +147,7 @@ public class ReplyControllerTest {
         ReplyUpdateRequestDTO replyUpdateRequestDTO = new ReplyUpdateRequestDTO("updated content");
 
         // when
-        ResultActions response = mockMvc.perform(patch("/reply/{replyId}", replyId)
+        ResultActions response = mockMvc.perform(put("/reply/{replyId}", replyId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replyUpdateRequestDTO)));  // java object -> json
 
@@ -166,7 +166,7 @@ public class ReplyControllerTest {
         ReplyUpdateRequestDTO replyUpdateRequestDTO = new ReplyUpdateRequestDTO((String) null);
 
         // when
-        ResultActions response = mockMvc.perform(patch("/reply/{replyId}", replyId)
+        ResultActions response = mockMvc.perform(put("/reply/{replyId}", replyId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replyUpdateRequestDTO)));  // java object -> json
 

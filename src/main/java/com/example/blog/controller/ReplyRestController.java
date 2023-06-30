@@ -13,11 +13,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/reply")
-public class ReplyController {
+public class ReplyRestController {
     ReplyService replyService;
 
     @Autowired
-    public ReplyController(ReplyService replyService){
+    public ReplyRestController(ReplyService replyService){
         this.replyService = replyService;
     }
 
@@ -53,8 +53,8 @@ public class ReplyController {
         return ResponseEntity.ok().body("삭제 완료 되었습니다");
     }
 
-    // 5. 댓글 수정 : PATCH /reply/1
-    @RequestMapping(value = {"/{replyId}", "/{replyId}/"}, method = RequestMethod.PATCH)
+    // 5. 댓글 수정 : PUT /reply/1
+    @RequestMapping(value = {"/{replyId}"}, method = RequestMethod.PUT)
     public ResponseEntity<String> updateReply(@PathVariable long replyId, @RequestBody @Valid ReplyUpdateRequestDTO replyUpdateRequestDTO){
         replyService.update(replyId, replyUpdateRequestDTO);
         return ResponseEntity.ok().body("댓글이 수정되었습니다.");

@@ -73,7 +73,6 @@ public class ReplyServiceImpl implements ReplyService {
         Reply reply = Optional.of(replyRepository.findByReplyId(replyId))
                 .orElseThrow(()-> new NotFoundReplyByReplyIdException("Not Found Reply"));
         reply.update(replyUpdateRequestDTO.getReplyContent());
-        System.out.println(reply);
         replyRepository.update(reply);
     }
 }

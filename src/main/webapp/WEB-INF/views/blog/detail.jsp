@@ -126,7 +126,7 @@
                 .catch((error) => {
                     console.error('Error while deleting the reply:', error);
                 })
-        };
+        }
 
         /**
          * deleteReply()
@@ -225,15 +225,14 @@
          * updateReply()
          */
         function updateReply(replyId){
-            let url = `http://localhost:8080/reply`;
+            let url = `http://localhost:8080/reply/\${replyId}`;
             fetch(url, {
-                method: 'PATCH',
+                method: 'put',
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    replyId : replyId,
-                    replyContent : document.querySelector("#modalReplyContent").value,
+                    replyContent: document.querySelector("#modalReplyContent").value
                 }),
             }).then((res) => {
                 if(res.ok){
@@ -247,7 +246,7 @@
             }).catch((error) => {
                     console.error('Error while updating the reply:', error);
             })
-        };
+        }
 
 
         /**
@@ -264,7 +263,7 @@
             } else if(e.target.matches('#replies .updateReplyBtn')){
                 openUpdateReplyModal(replyId);
             } else {
-                return;
+
             }
         });
 

@@ -25,9 +25,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(BlogController.class)
-@DisplayName("BlogController Test")
-public class BlogControllerTest {
+@WebMvcTest(BlogViewController.class)
+@DisplayName("BlogViewController Test")
+public class BlogViewControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -141,10 +141,11 @@ public class BlogControllerTest {
     @Test
     public void updateTest_ValidData() throws Exception {
         // given
-        BlogUpdateRequestDTO blogUpdateRequestDTO = new BlogUpdateRequestDTO(1, "title", "content");
+        long blogId = 1;
+        BlogUpdateRequestDTO blogUpdateRequestDTO = new BlogUpdateRequestDTO(blogId, "title", "content");
 
         // when
-        ResultActions response = mockMvc.perform(post("/blog/update")
+        ResultActions response = mockMvc.perform(put("/blog/update/"+blogId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .flashAttr("blogUpdateRequestDTO", blogUpdateRequestDTO)); // Flash attributes are temporary storage and often used for passing data between 'redirects'.
 
@@ -159,15 +160,16 @@ public class BlogControllerTest {
     @Test
     public void updateTest_InvalidData() throws Exception {
         // given
-        BlogUpdateRequestDTO blogUpdateRequestDTO = new BlogUpdateRequestDTO(1, null, "content");
+        long blogId = 1;
+        BlogUpdateRequestDTO blogUpdateRequestDTO = new BlogUpdateRequestDTO(blogId, null, "content");
 
         // when
-        ResultActions response = mockMvc.perform(post("/blog/update")
+        ResultActions response = mockMvc.perform(put("/blog/update/"+blogId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .flashAttr("blogUpdateRequestDTO", blogUpdateRequestDTO)); // Flash attributes are temporary storage and often used for passing data between 'redirects'.
 
         // then
-        response.andExpect(redirectedUrl("/blog/detail/" + blogUpdateRequestDTO.getBlogId()));
+        response.andExpect(redirectedUrl("/blog/detail/" + blogId));
 
         Mockito.verify(blogService, never()).update(blogUpdateRequestDTO);
     }

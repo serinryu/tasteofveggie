@@ -1,4 +1,4 @@
-package com.example.blog.controller;
+package com.example.blog.exception;
 
 import com.example.blog.exception.ErrorCode;
 import com.example.blog.exception.ErrorResponse;

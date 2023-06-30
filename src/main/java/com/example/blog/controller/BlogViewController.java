@@ -19,12 +19,12 @@ import java.util.List;
 @Controller
 @RequestMapping("/blog")
 @Log4j2
-public class BlogController {
+public class BlogViewController {
     // 컨트롤러 레이어는 서비스 레이어를 직접 호출해서 사용합니다. -> 의존성 주입
     BlogService blogService;
 
     @Autowired // 생성자 주입
-    public BlogController(BlogService blogService){
+    public BlogViewController(BlogService blogService){
         this.blogService = blogService;
     }
 
@@ -33,7 +33,7 @@ public class BlogController {
     public String list(Model model){
         List<BlogResponseDTO> blogList = blogService.findAll(); // Service 객체를 이용해 게시글 전체를 얻어온다.
         model.addAttribute("blogList", blogList); // 얻어온 게시글은 .jsp 로 보낼 수 있도록 적재한다.
-        return "board/list"; // /WEB-INF/views/board/list.jsp
+        return "blog/list"; // /WEB-INF/views/board/list.jsp
     }
 
     // 2. 블로그 디테일 페이지 : GET /blog/detail/글번호
@@ -51,7 +51,7 @@ public class BlogController {
         return "redirect:/blog/list";
     }
 
-    // 4. 블로그 생성 : GET /blog/insert , POST /blog/insert
+    // 4. 블로그 생성 : GET /blog/create , POST /blog/insert
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public String insert(){
         return "blog/blog-form"; // /WEB-INF/views/blog/blog-form.jsp
@@ -70,8 +70,7 @@ public class BlogController {
         return "redirect:/blog/list";
     }
 
-    // 5. 블로그 업데이트 : POST /blog/updateform , POST /blog/update
-    // form 페이지에 자료를 채운 채 연결
+    // 5. 블로그 업데이트 : POST /blog/updateform , POST /blog/update/{blogId}
     @RequestMapping(value="/updateform", method = RequestMethod.POST)
     public String update(long blogId, Model model){
         BlogResponseDTO blog = blogService.findById(blogId);
@@ -80,7 +79,6 @@ public class BlogController {
         return "blog/blog-update-form"; // /WEB-INF/views/blog/blog-update-form.jsp
     }
 
-    // /blog/update 주소로 POST요청을 넣으면 글이 수정됨
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String update(@Valid BlogUpdateRequestDTO blogUpdateRequestDTO, BindingResult bindingResult){
         long blogId = blogUpdateRequestDTO.getBlogId();
