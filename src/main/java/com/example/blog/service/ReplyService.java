@@ -21,7 +21,7 @@ public interface ReplyService {
     void save(ReplyCreateRequestDTO replyCreateRequestDTO);
 
     // update 용도로 정의한 DTO를 넘겨서 update() 메서드 정의
-    void update(ReplyUpdateRequestDTO replyUpdateRequestDTO);
+    void update(long replyId, ReplyUpdateRequestDTO replyUpdateRequestDTO);
 
 
 }

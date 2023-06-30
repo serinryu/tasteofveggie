@@ -36,7 +36,7 @@
             </tbody>
         </table> <!-- .table table-hover-->
         <div>
-            <a href="/blog/insert" class="btn btn-primary">글쓰기</a>
+            <a href="/blog/create" class="btn btn-primary">글쓰기</a>
         </div>
     </div><!-- .container -->
 </body>

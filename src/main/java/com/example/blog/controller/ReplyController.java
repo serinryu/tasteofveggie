@@ -53,10 +53,10 @@ public class ReplyController {
         return ResponseEntity.ok().body("삭제 완료 되었습니다");
     }
 
-    // 5. 댓글 수정 : PATCH /reply
-    @RequestMapping(value = "", method = RequestMethod.PATCH)
-    public ResponseEntity<String> updateReply(@RequestBody @Valid ReplyUpdateRequestDTO replyUpdateRequestDTO){
-        replyService.update(replyUpdateRequestDTO);
+    // 5. 댓글 수정 : PATCH /reply/1
+    @RequestMapping(value = {"/{replyId}", "/{replyId}/"}, method = RequestMethod.PATCH)
+    public ResponseEntity<String> updateReply(@PathVariable long replyId, @RequestBody @Valid ReplyUpdateRequestDTO replyUpdateRequestDTO){
+        replyService.update(replyId, replyUpdateRequestDTO);
         return ResponseEntity.ok().body("댓글이 수정되었습니다.");
     }
 

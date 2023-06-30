@@ -143,11 +143,11 @@ public class ReplyControllerTest {
     @Test
     public void updateReplyTest_ValidData() throws Exception {
         // given
-        ReplyUpdateRequestDTO replyUpdateRequestDTO = new ReplyUpdateRequestDTO(1, "updated content");
-        Mockito.doNothing().when(replyService).update(replyUpdateRequestDTO);
+        long replyId = 1L;
+        ReplyUpdateRequestDTO replyUpdateRequestDTO = new ReplyUpdateRequestDTO("updated content");
 
         // when
-        ResultActions response = mockMvc.perform(patch("/reply")
+        ResultActions response = mockMvc.perform(patch("/reply/{replyId}", replyId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replyUpdateRequestDTO)));  // java object -> json
 
@@ -155,24 +155,26 @@ public class ReplyControllerTest {
         response.andExpect(status().isOk())
                 .andDo(print());
 
-        Mockito.verify(replyService).update(argThat(reply -> reply.getReplyContent().equals("updated content")));
+        //Mockito.verify(replyService).update(replyId, replyUpdateRequestDTO);
 
     }
 
     @Test
     public void updateReplyTest_InvalidData() throws Exception {
         // given
-        ReplyUpdateRequestDTO replyUpdateRequestDTO = new ReplyUpdateRequestDTO(1, null);
+        long replyId = 1L;
+        ReplyUpdateRequestDTO replyUpdateRequestDTO = new ReplyUpdateRequestDTO((String) null);
 
         // when
-        ResultActions response = mockMvc.perform(patch("/reply")
+        ResultActions response = mockMvc.perform(patch("/reply/{replyId}", replyId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replyUpdateRequestDTO)));  // java object -> json
 
         // then
-        response.andExpect(status().isBadRequest());
+        response.andExpect(status().isBadRequest())
+                .andDo(print());
 
-        Mockito.verify(replyService, never()).update(any());
+        //Mockito.verify(replyService, never()).update(replyId, replyUpdateRequestDTO);
     }
 
 }

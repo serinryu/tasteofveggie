@@ -3,7 +3,6 @@ package com.example.blog.controller;
 import com.example.blog.dto.BlogResponseDTO;
 import com.example.blog.dto.BlogCreateRequestDTO;
 import com.example.blog.dto.BlogUpdateRequestDTO;
-import com.example.blog.exception.NotFoundBlogIdException;
 import com.example.blog.service.BlogService;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
@@ -53,12 +52,12 @@ public class BlogController {
     }
 
     // 4. 블로그 생성 : GET /blog/insert , POST /blog/insert
-    @RequestMapping(value = "/insert", method = RequestMethod.GET)
+    @RequestMapping(value = "/create", method = RequestMethod.GET)
     public String insert(){
         return "blog/blog-form"; // /WEB-INF/views/blog/blog-form.jsp
     }
 
-    @RequestMapping(value = "/insert", method = RequestMethod.POST)
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
     public String insert(@Valid BlogCreateRequestDTO blogCreateRequestDTO, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             /*

@@ -104,8 +104,7 @@ public class ReplyRepositotyTest {
         String replyContent = "I changed this!";
 
         Reply reply = replyRepository.findByReplyId(replyId);
-        reply.updateReplyContent(replyContent);
-        reply.updateTime(LocalDateTime.now());
+        reply.update(replyContent);
 
         // when
         replyRepository.update(reply);

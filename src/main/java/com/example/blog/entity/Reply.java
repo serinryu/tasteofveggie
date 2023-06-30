@@ -23,6 +23,8 @@ public class Reply {
         this.updatedAt = updatedAt;
     }
     // Business Logic to change the data
-    public void updateReplyContent(String replyContent){ this.replyContent = replyContent; }
-    public void updateTime(LocalDateTime updatedAt){ this.updatedAt = updatedAt; }
+    public void update(String replyContent){
+        this.replyContent = replyContent;
+        this.updatedAt = LocalDateTime.now();
+    }
 }

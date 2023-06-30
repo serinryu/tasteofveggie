@@ -131,12 +131,12 @@ public class ReplyServiceTest {
     public void updateTest_FoundReply(){
         // 이 메소드 호출 시 Repository의 update 가 불러와졌는지 테스트 (verify 만 이용)
         // given
-        Reply existingReply = new Reply(0, 1, "writer", "content", null, null);
-        Mockito.when(replyRepository.findByReplyId(existingReply.getReplyId())).thenReturn(existingReply);
+        long replyId = 1;
+        Reply existingReply = new Reply(replyId, 1, "writer", "content", null, null);
+        Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(existingReply);
 
         // when
-        replyService.update(new ReplyUpdateRequestDTO(existingReply.getReplyId(),
-                "내용 수정함"));
+        replyService.update(replyId, new ReplyUpdateRequestDTO("내용 수정함"));
 
         // then
         Mockito.verify(replyRepository).update(argThat(reply -> reply.getReplyContent().equals("내용 수정함")));
@@ -153,7 +153,7 @@ public class ReplyServiceTest {
         // when
         // then
         assertThrows(NotFoundReplyByReplyIdException.class,
-                () -> replyService.update(new ReplyUpdateRequestDTO(existingReply)));
+                () -> replyService.update(replyId, new ReplyUpdateRequestDTO(existingReply)));
     }
 
 }

@@ -8,14 +8,15 @@ import lombok.*;
 @Getter @ToString
 public class ReplyCreateRequestDTO {
     @NotNull
-    private final long blogId;
+    private long blogId;
 
     @NotEmpty
-    private final String replyWriter;
+    private String replyWriter;
 
     @NotEmpty
-    private final String replyContent;
+    private String replyContent;
 
+    public ReplyCreateRequestDTO(){};
     public ReplyCreateRequestDTO(long blogId, String replyWriter, String replyContent){
         this.blogId = blogId;
         this.replyWriter = replyWriter;

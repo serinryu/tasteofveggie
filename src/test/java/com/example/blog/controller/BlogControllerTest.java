@@ -108,7 +108,7 @@ public class BlogControllerTest {
         BlogCreateRequestDTO blogCreateRequestDTO = new BlogCreateRequestDTO("writer", "title", "content");
 
         // when
-        ResultActions response = mockMvc.perform(post("/blog/insert")
+        ResultActions response = mockMvc.perform(post("/blog/create")
                 .contentType(MediaType.APPLICATION_JSON)
                 .flashAttr("blogCreateRequestDTO", blogCreateRequestDTO)); // Flash attributes are temporary storage and often used for passing data between 'redirects'.
 
@@ -126,7 +126,7 @@ public class BlogControllerTest {
         BlogCreateRequestDTO blogCreateRequestDTO = new BlogCreateRequestDTO("writer", null, "content");
 
         // when
-        ResultActions response = mockMvc.perform(post("/blog/insert")
+        ResultActions response = mockMvc.perform(post("/blog/create")
                 .contentType(MediaType.APPLICATION_JSON)
                 .flashAttr("blogCreateRequestDTO", blogCreateRequestDTO));
                 //.content(objectMapper.writeValueAsString(blogCreateRequestDTO))); // serializes the blogCreateRequestDTO object into JSON using the ObjectMapper. It simulates sending a JSON payload in the request body.
