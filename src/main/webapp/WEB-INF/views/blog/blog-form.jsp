@@ -9,21 +9,21 @@
 </head>
 <body>
 <div class="container">
-    <form action="" method="POST">
+    <form method="POST">
         <div class="row">
             <div class="col-3">
-                <label for="writer" class="form-label">글쓴이</label>
-                <input type="text" class="form-control" id="writer" name="blogWriter" placeholder="글쓴이를 적어주세요.">
+                <label for="blogWriter" class="form-label">글쓴이</label>
+                <input type="text" class="form-control" id="blogWriter" name="blogWriter" placeholder="글쓴이를 적어주세요.">
             </div>
             <div class="col-3">
-                <label for="title" class="form-label">제목</label>
-                <input type="text" class="form-control" id="title" name="blogTitle" placeholder="제목을 적어주세요.">
+                <label for="blogTitle" class="form-label">제목</label>
+                <input type="text" class="form-control" id="blogTitle" name="blogTitle" placeholder="제목을 적어주세요.">
             </div>
         </div>
         <div class="row">
             <div class="col-6">
-                <label for="content" class="form-label">본문</label>
-                <textarea class="form-control" id="content" name="blogContent" rows="10"></textarea>
+                <label for="blogContent" class="form-label">본문</label>
+                <textarea class="form-control" id="blogContent" name="blogContent" rows="10"></textarea>
             </div>
         </div>
         <input type="submit">

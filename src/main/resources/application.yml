@@ -10,5 +10,12 @@ spring:
     url: ${url}
     username: ${adminname}
     password: ${password}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
 mybatis:
   mapper-locations: classpath:mybatis/mapper/**/**.xml

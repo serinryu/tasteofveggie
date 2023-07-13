@@ -6,7 +6,7 @@
     <select id="findAll" resultType="com.example.blog.entity.Blog"> <!--리턴타입이 entity 등의 클래스 인 경우, 패키지명부터 적어준다 -->
         SELECT
             blog_id as blogId,
-            writer as blogWriter,
+            blog_writer as blogWriter,
             blog_title as blogTitle,
             blog_content as blogContent,
             published_at as publishedAt,
@@ -18,7 +18,7 @@
     <select id="findById" resultType="com.example.blog.entity.Blog" parameterType="long">
         SELECT
             blog_id as blogId,
-            writer as blogWriter,
+            blog_writer as blogWriter,
             blog_title as blogTitle,
             blog_content as blogContent,
             published_at as publishedAt,
@@ -35,7 +35,7 @@
     </delete>
     <insert id="save" parameterType="com.example.blog.entity.Blog"> <!-- parameter type 이 클래스이므로 자료형 지정 필요 -->
         INSERT INTO
-            blog (writer, blog_title, blog_content)
+            blog (blog_writer, blog_title, blog_content)
         VALUES
             (#{blogWriter}, #{blogTitle}, #{blogContent})
     </insert>

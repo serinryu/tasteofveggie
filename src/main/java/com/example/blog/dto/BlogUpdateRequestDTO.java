@@ -5,14 +5,14 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-@Getter @ToString
+@Getter @Setter @ToString @NoArgsConstructor
 public class BlogUpdateRequestDTO {
 
     @NotEmpty
-    private final String blogTitle;
+    private String blogTitle;
 
     @NotEmpty
-    private final String blogContent;
+    private String blogContent;
 
     public BlogUpdateRequestDTO(String blogTitle, String blogContent){
         this.blogTitle = blogTitle;

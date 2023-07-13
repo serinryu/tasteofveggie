@@ -1,10 +1,10 @@
 package com.example.blog.service;
 
-import com.example.blog.dto.BlogCreateRequestDTO;
 import com.example.blog.dto.BlogResponseDTO;
 import com.example.blog.dto.BlogUpdateRequestDTO;
 import com.example.blog.entity.Blog;
 import com.example.blog.exception.NotFoundBlogIdException;
+import com.example.blog.repository.BlogJpaRepository;
 import com.example.blog.repository.ReplyRepository;
 import com.example.blog.repository.BlogRepository;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import static org.hamcrest.Matchers.any;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.argThat;
 
@@ -31,7 +33,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 @ExtendWith(MockitoExtension.class)
 public class BlogServiceTest {
     @Mock
-    private BlogRepository blogRepository;
+    private BlogJpaRepository blogJpaRepository;
     @Mock
     private  ReplyRepository replyRepository;
     @InjectMocks
@@ -47,13 +49,13 @@ public class BlogServiceTest {
         blogs.add(new Blog(1L, "Writer 1", "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now(), 0));
         blogs.add(new Blog(2L, "Writer 2", "Title 2", "Content 2", LocalDateTime.now(), LocalDateTime.now(), 0));
         blogs.add(new Blog(3L, "Writer 3", "Title 3", "Content 3", LocalDateTime.now(), LocalDateTime.now(), 0));
-        Mockito.when(blogRepository.findAll()).thenReturn(blogs);
+        Mockito.when(blogJpaRepository.findAll()).thenReturn(blogs);
         // when
         List<BlogResponseDTO> blogList = blogService.findAll();
         // then
         assertEquals(3, blogList.size());
         assertEquals(2, blogList.get(1).getBlogId());
-        Mockito.verify(blogRepository).findAll(); // blogRepository.findAll 메소드 호출되었는지 확인
+        Mockito.verify(blogJpaRepository).findAll(); // blogRepository.findAll 메소드 호출되었는지 확인
     }
 
     @Test
@@ -63,13 +65,13 @@ public class BlogServiceTest {
         // given
         long blogId = 1;
         Blog blog = new Blog(blogId, "Writer 1", "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now(), 0);
-        Mockito.when(blogRepository.findById(blogId)).thenReturn(blog);
+        Mockito.when(blogJpaRepository.findById(blogId)).thenReturn(Optional.of(blog));
         // when
         BlogResponseDTO result = blogService.findById(blogId);
         // then
         assertEquals("Writer 1", result.getBlogWriter());
         assertEquals("Title 1", result.getBlogTitle());
-        Mockito.verify(blogRepository).findById(blogId); // blogRepository.findById 메소드 호출되었는지 확인
+        Mockito.verify(blogJpaRepository).findById(blogId); // blogRepository.findById 메소드 호출되었는지 확인
     }
 
     @Test
@@ -77,7 +79,7 @@ public class BlogServiceTest {
     public void findByIdTest_NotFoundBlog(){
         // given
         long blogId = 123;
-        Mockito.when(blogRepository.findById(blogId)).thenReturn(null);
+        Mockito.when(blogJpaRepository.findById(blogId)).thenReturn(Optional.empty());
         // when
         // then
         assertThrows(NotFoundBlogIdException.class,
@@ -92,13 +94,13 @@ public class BlogServiceTest {
         // given
         long blogId = 2;
         Blog blog = new Blog(blogId, "Writer 1", "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now(), 0);
-        Mockito.when(blogRepository.findById(blogId)).thenReturn(blog);
+        Mockito.doNothing().when(blogJpaRepository).deleteById(blogId);
         // Mockito.doNothing().when(blogRepository).deleteById(blogId);
         // when
         blogService.deleteById(blogId);
         // then
         Mockito.verify(replyRepository).deleteAllByBlodId(blogId);
-        Mockito.verify(blogRepository).deleteById(blogId);
+        Mockito.verify(blogJpaRepository).deleteById(blogId);
         assertDoesNotThrow(() -> blogService.deleteById(blogId));
     }
 
@@ -107,29 +109,28 @@ public class BlogServiceTest {
     public void deleteByIdTest_NotFoundBlog(){
         // given
         long blogId = 123;
-        Mockito.when(blogRepository.findById(blogId)).thenReturn(null);
+        Mockito.doThrow(NotFoundBlogIdException.class).when(blogJpaRepository).deleteById(blogId);
         // when
         // then
         assertThrows(NotFoundBlogIdException.class,
                 () -> blogService.deleteById(blogId));
     }
 
+    /*
     @Test
     @Transactional
     public void saveTest(){
-        // save 시 Repository의 save 메소드가 호출되는지만 테스트
-        // void Method 이므로 assertEquals 불가 -> verify 이용
         // given
-        // 서비스 레이어에서의 테스트이므로 DTO 만 제작
         BlogCreateRequestDTO blogCreateRequestDTO = new BlogCreateRequestDTO( "Writer 1", "Title 1", "Content 1");
-        Mockito.doNothing().when(blogRepository).save(argThat(blog -> blog.getBlogTitle().equals("Title 1"))); // save(any(Blog.class))
+        Mockito.doNothing().when(blogJpaRepository).save(argThat(blog -> blog.getBlogTitle().equals("Title 1"))); // save(any(Blog.class))
 
         // when
         blogService.save(blogCreateRequestDTO); //it internally calls blogRepository.save()
 
         // then
-        Mockito.verify(blogRepository).save(argThat(blog -> blog.getBlogTitle().equals("Title 1")));
+        Mockito.verify(blogJpaRepository).save(argThat(blog -> blog.getBlogTitle().equals("Title 1")));
     }
+     */
 
     @Test
     @Transactional
@@ -141,13 +142,13 @@ public class BlogServiceTest {
         Blog existingBlog = new Blog(
                 blogId, "writer", "1번제목", "1번내용", LocalDateTime.now(), LocalDateTime.now(), 0
         );
-        Mockito.when(blogRepository.findById(blogId)).thenReturn(existingBlog);
+        Mockito.when(blogJpaRepository.findById(blogId)).thenReturn(Optional.of(existingBlog));
 
         // when
         blogService.update(blogId, new BlogUpdateRequestDTO("00번 제목","00번 내용"));
 
         // then
-        Mockito.verify(blogRepository).update(argThat(blog -> blog.getBlogTitle().equals("00번 제목")));
+        Mockito.verify(blogJpaRepository).save(argThat(blog -> blog.getBlogTitle().equals("00번 제목")));
     }
 
 

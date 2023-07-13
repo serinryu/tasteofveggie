@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-@Getter @ToString
+@Getter @ToString @NoArgsConstructor
 public class ReplyCreateRequestDTO {
     @NotNull
     private long blogId;
@@ -16,7 +16,6 @@ public class ReplyCreateRequestDTO {
     @NotEmpty
     private String replyContent;
 
-    public ReplyCreateRequestDTO(){};
     public ReplyCreateRequestDTO(long blogId, String replyWriter, String replyContent){
         this.blogId = blogId;
         this.replyWriter = replyWriter;

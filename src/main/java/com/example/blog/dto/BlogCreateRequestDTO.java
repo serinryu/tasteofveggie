@@ -4,16 +4,16 @@ import com.example.blog.entity.Blog;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
-@Getter @ToString
+@Getter @Setter @ToString @NoArgsConstructor
 public class BlogCreateRequestDTO {
     @NotEmpty
-    private final String blogWriter;
+    private String blogWriter;
 
     @NotEmpty
-    private final String blogTitle;
+    private String blogTitle;
 
     @NotEmpty
-    private final String blogContent;
+    private String blogContent;
 
     public BlogCreateRequestDTO(String blogWriter, String blogTitle, String blogContent) {
         this.blogWriter = blogWriter;

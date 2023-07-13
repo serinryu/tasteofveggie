@@ -2,8 +2,8 @@
 
 # 댓글 테이블 생성 구문
 CREATE TABLE reply(
-    reply_id int primary key auto_increment,
-    blog_id int not null,
+    reply_id bigint primary key auto_increment,
+    blog_id bigint not null,
     reply_writer varchar(40) not null,
     reply_content varchar(200) not null,
     published_at datetime default now(),

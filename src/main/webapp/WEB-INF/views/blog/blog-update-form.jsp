@@ -9,11 +9,11 @@
 </head>
 <body>
 <div class="container">
-    <form action="/blog/update" method="POST">
+    <form action="/blog/update/${blog.blogId}" method="POST">
         <div class="row">
             <div class="col-3">
                 <label for="writer" class="form-label">글쓴이</label>
-                <input type="text" class="form-control" id="writer" name="writer" value="${blog.blogWriter}" placeholder="글쓴이를 적어주세요." readonly>
+                <input type="text" class="form-control" id="writer" name="blogWriter" value="${blog.blogWriter}" placeholder="글쓴이를 적어주세요." readonly>
             </div>
             <div class="col-3">
                 <label for="title" class="form-label">제목</label>
@@ -28,7 +28,7 @@
         </div>
         <div class="row">
             <div class="col-6">
-                <input type="hidden" value="${blog.blogId}" name="blogId"> <!-- blogId 전달해줘야 쿼리문에서 받아 수정 가능 -->
+                <!--<input type="hidden" value="${blog.blogId}" name="blogId">--> <!-- blogId 전달해줘야 쿼리문에서 받아 수정 가능 -->
                 <input type="submit" class="btn btn-primary" value="수정하기">
             </div>
         </div>

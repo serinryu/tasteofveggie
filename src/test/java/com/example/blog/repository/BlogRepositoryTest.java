@@ -7,14 +7,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest
 public class BlogRepositoryTest {
+    //@Autowired
+    //BlogRepository blogRepository; // field-injected DI (테스트코드니까 필드주입 OK)
+
     @Autowired
-    BlogRepository blogRepository; // field-injected DI (테스트코드니까 필드주입 OK)
+    BlogJpaRepository blogJpaRepository;
 
     @Autowired
     ReplyRepository replyRepository;
@@ -25,7 +29,7 @@ public class BlogRepositoryTest {
         // given
         int blogId = 1;
         // when
-        List<Blog> blogList = blogRepository.findAll();
+        List<Blog> blogList = blogJpaRepository.findAll();
         // then
         assertEquals(3, blogList.size());
         assertEquals(2, blogList.get(blogId).getBlogId()); // 자바 List 자료구조 상 인텍스는 0번부터이므로, blogList.get(1) 객체의 ID 번호는 2
@@ -38,7 +42,7 @@ public class BlogRepositoryTest {
         // given
         long blogId = 2;
         // when
-        Blog blog = blogRepository.findById(blogId);
+        Blog blog = blogJpaRepository.findById(blogId).get();
         // then
         assertEquals(blogId, blog.getBlogId());
         assertEquals("2번유저", blog.getBlogWriter());
@@ -53,10 +57,10 @@ public class BlogRepositoryTest {
         long blogId = 2;
         // when
         replyRepository.deleteAllByBlodId(blogId); // 블로그 삭제 이전 reply 삭제 선행되어야함 (ServiceImpl 에서 두 메소드 합쳐질 예정)
-        blogRepository.deleteById(blogId);
+        blogJpaRepository.deleteById(blogId);
         // then
-        assertEquals(2, blogRepository.findAll().size());
-        assertNull(blogRepository.findById(blogId));
+        assertEquals(2, blogJpaRepository.findAll().size());
+        assertEquals(Optional.empty(), blogJpaRepository.findById(blogId));
     }
 
 
@@ -79,12 +83,12 @@ public class BlogRepositoryTest {
                 .build();
 
         // when
-        blogRepository.save(blog);
+        blogJpaRepository.save(blog);
 
         // then
-        List<Blog> resultList = blogRepository.findAll();
+        List<Blog> resultList = blogJpaRepository.findAll();
         System.out.println(resultList);
-        Blog result = resultList.get(0);
+        Blog result = resultList.get(3);
         assertEquals(4, resultList.size());
         assertEquals(blogWriter, result.getBlogWriter());
         assertEquals(blogTitle, result.getBlogTitle());
@@ -100,16 +104,16 @@ public class BlogRepositoryTest {
         String blogTitle = "0번제목";
         String blogContent = "0번내용";
 
-        Blog blog = blogRepository.findById(blogId); // 원본 데이터를 얻어온 다음 내용 update
-        blog.update(blogTitle, blogContent);
+        Blog blog = blogJpaRepository.findById(blogId).get(); // 원본 데이터를 얻어온 다음 내용 update
+        blog.updateTitleAndContent(blogTitle, blogContent);
 
         // when
-        blogRepository.update(blog);
+        blogJpaRepository.save(blog);
 
         // then
-        assertEquals(3, blogRepository.findAll().size());
-        assertEquals(blogTitle, blogRepository.findById(blogId).getBlogTitle());
-        assertEquals(blogContent, blogRepository.findById(blogId).getBlogContent());
+        assertEquals(3, blogJpaRepository.findAll().size());
+        assertEquals(blogTitle, blogJpaRepository.findById(blogId).get().getBlogTitle());
+        assertEquals(blogContent, blogJpaRepository.findById(blogId).get().getBlogContent());
     }
 
 

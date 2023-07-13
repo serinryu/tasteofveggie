@@ -1,16 +1,28 @@
 package com.example.blog.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter @ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
 public class Reply {
-    private final long replyId;
-    private final long blogId;
-    private final String replyWriter;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long replyId;
+
+    @Column(nullable = false)
+    private long blogId;
+
+    @Column(nullable = false)
+    private String replyWriter;
+
+    @Column(nullable = false)
     private String replyContent;
-    private final LocalDateTime publishedAt;
+
+    private LocalDateTime publishedAt;
     private LocalDateTime updatedAt;
 
     @Builder
