@@ -19,8 +19,8 @@ import java.util.List;
 public class BlogServiceImpl implements BlogService {
     // 서비스 레이어는 레포지토리 레이어를 직접 호출하여 사용한다. -> 의존성 주입
     // @Autowired 를 여기에 붙여도 의존성 주입은 된다. 그러나, 필드 주입이므로 지양. 생성자 주입을 하자.
-    BlogRepository blogRepository;
-    BlogJpaRepository blogJpaRepository;
+    BlogRepository blogRepository; // MyBatis, 현재는 JPA 로 사용하고 있음.
+    BlogJpaRepository blogJpaRepository; // JPA
     ReplyRepository replyRepository; // blog 삭제 시 연결되는 reply 전부 삭제 로직 떄문에 호출 필요
 
     @Autowired // 생성자 주입

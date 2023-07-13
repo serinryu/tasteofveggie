@@ -6,6 +6,7 @@ import com.example.blog.dto.ReplyUpdateRequestDTO;
 import com.example.blog.entity.Reply;
 import com.example.blog.exception.ErrorCode;
 import com.example.blog.exception.NotFoundReplyByReplyIdException;
+import com.example.blog.repository.ReplyJpaRepository;
 import com.example.blog.repository.ReplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,16 +22,18 @@ import java.util.Optional;
 public class ReplyServiceImpl implements ReplyService {
 
     ReplyRepository replyRepository;
+    ReplyJpaRepository replyJpaRepository;
 
     @Autowired
-    public ReplyServiceImpl(ReplyRepository replyRepository){
+    public ReplyServiceImpl(ReplyRepository replyRepository, ReplyJpaRepository replyJpaRepository){
         this.replyRepository = replyRepository;
+        this.replyJpaRepository = replyJpaRepository;
     }
 
     @Override
     public List<ReplyResponseDTO> findAllByBlogId(long blogId) {
 
-        List<Reply> replyList = replyRepository.findAllByBlogId(blogId);
+        List<Reply> replyList = replyJpaRepository.findAllByBlogId(blogId);
 
         // Entity to DTO
         List<ReplyResponseDTO> replyResponseDTO = new ArrayList<>();
@@ -43,7 +46,7 @@ public class ReplyServiceImpl implements ReplyService {
 
     @Override
     public ReplyResponseDTO findByReplyId(long replyId) {
-        Reply reply = Optional.ofNullable(replyRepository.findByReplyId(replyId))
+        Reply reply = replyJpaRepository.findById(replyId)
                 .orElseThrow(() -> new NotFoundReplyByReplyIdException("Not Found replyId : " + replyId));
         return new ReplyResponseDTO(reply);
     }
@@ -51,9 +54,9 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     public void deleteByReplyId(long replyId) {
         // Exception Handling
-        Reply reply = Optional.ofNullable(replyRepository.findByReplyId(replyId))
+        Reply reply = replyJpaRepository.findById(replyId)
                 .orElseThrow(() -> new NotFoundReplyByReplyIdException("Not Found replyId : " + replyId));
-        replyRepository.deleteByReplyId(replyId);
+        replyJpaRepository.deleteById(replyId);
     }
 
     @Override
@@ -64,15 +67,15 @@ public class ReplyServiceImpl implements ReplyService {
                                 .replyWriter(replyCreateRequestDTO.getReplyWriter()) // 이후 로그인한 사람의 이름으로 수정 필요
                                         .replyContent(replyCreateRequestDTO.getReplyContent())
                                                 .build();
-        replyRepository.save(reply);
+        replyJpaRepository.save(reply);
     }
 
     @Override
     public void update(long replyId, ReplyUpdateRequestDTO replyUpdateRequestDTO) {
         // DTO -> Entity
-        Reply reply = Optional.ofNullable(replyRepository.findByReplyId(replyId))
+        Reply reply = replyJpaRepository.findById(replyId)
                 .orElseThrow(()-> new NotFoundReplyByReplyIdException("Not Found Reply"));
         reply.update(replyUpdateRequestDTO.getReplyContent());
-        replyRepository.update(reply);
+        replyJpaRepository.save(reply);
     }
 }

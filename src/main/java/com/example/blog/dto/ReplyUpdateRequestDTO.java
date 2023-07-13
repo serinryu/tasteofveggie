@@ -6,7 +6,7 @@ import lombok.*;
 
 import static java.time.LocalDateTime.now;
 
-@Getter @ToString
+@Getter @Setter @ToString
 public class ReplyUpdateRequestDTO {
 
     @NotEmpty
