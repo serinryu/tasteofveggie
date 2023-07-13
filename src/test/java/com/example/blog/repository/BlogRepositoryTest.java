@@ -21,7 +21,7 @@ public class BlogRepositoryTest {
     BlogJpaRepository blogJpaRepository;
 
     @Autowired
-    ReplyRepository replyRepository;
+    ReplyJpaRepository replyJpaRepository;
 
     @Test
     @Transactional
@@ -56,7 +56,7 @@ public class BlogRepositoryTest {
         // given
         long blogId = 2;
         // when
-        replyRepository.deleteAllByBlodId(blogId); // 블로그 삭제 이전 reply 삭제 선행되어야함 (ServiceImpl 에서 두 메소드 합쳐질 예정)
+        replyJpaRepository.deleteAllByBlogId(blogId); // 블로그 삭제 이전 reply 삭제 선행되어야함 (ServiceImpl 에서 두 메소드 합쳐질 예정)
         blogJpaRepository.deleteById(blogId);
         // then
         assertEquals(2, blogJpaRepository.findAll().size());

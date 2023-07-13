@@ -7,6 +7,7 @@ import com.example.blog.entity.Blog;
 import com.example.blog.exception.NotFoundBlogIdException;
 import com.example.blog.repository.BlogJpaRepository;
 import com.example.blog.repository.BlogRepository;
+import com.example.blog.repository.ReplyJpaRepository;
 import com.example.blog.repository.ReplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,13 +22,14 @@ public class BlogServiceImpl implements BlogService {
     // @Autowired 를 여기에 붙여도 의존성 주입은 된다. 그러나, 필드 주입이므로 지양. 생성자 주입을 하자.
     BlogRepository blogRepository; // MyBatis, 현재는 JPA 로 사용하고 있음.
     BlogJpaRepository blogJpaRepository; // JPA
-    ReplyRepository replyRepository; // blog 삭제 시 연결되는 reply 전부 삭제 로직 떄문에 호출 필요
+    //ReplyRepository replyRepository; // blog 삭제 시 연결되는 reply 전부 삭제 로직 떄문에 호출 필요
+    ReplyJpaRepository replyJpaRepository;
 
     @Autowired // 생성자 주입
-    public BlogServiceImpl(BlogRepository blogRepository, BlogJpaRepository blogJpaRepository, ReplyRepository replyRepository){ // 생성자 주입
+    public BlogServiceImpl(BlogRepository blogRepository, BlogJpaRepository blogJpaRepository, ReplyJpaRepository replyJpaRepository){ // 생성자 주입
         this.blogRepository = blogRepository;
         this.blogJpaRepository = blogJpaRepository;
-        this.replyRepository = replyRepository;
+        this.replyJpaRepository = replyJpaRepository;
     }
 
     @Override
@@ -59,7 +61,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public void deleteById(long blogId) {
         // MyBatis 에서 한 메소드당 쿼리문 1개 사용이 보편적이므로 이 두 로직을 합치는 것은 Repository 가 아니라 Service 단에서 진행했음.
-        replyRepository.deleteAllByBlodId(blogId);
+        replyJpaRepository.deleteAllByBlogId(blogId);
         blogJpaRepository.deleteById(blogId);
     }
 

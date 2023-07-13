@@ -1,12 +1,13 @@
 package com.example.blog.service;
 
+import com.example.blog.dto.BlogCreateRequestDTO;
 import com.example.blog.dto.BlogResponseDTO;
 import com.example.blog.dto.BlogUpdateRequestDTO;
 import com.example.blog.entity.Blog;
+import com.example.blog.entity.Reply;
 import com.example.blog.exception.NotFoundBlogIdException;
 import com.example.blog.repository.BlogJpaRepository;
-import com.example.blog.repository.ReplyRepository;
-import com.example.blog.repository.BlogRepository;
+import com.example.blog.repository.ReplyJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.any;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 
 /**
@@ -35,7 +36,7 @@ public class BlogServiceTest {
     @Mock
     private BlogJpaRepository blogJpaRepository;
     @Mock
-    private  ReplyRepository replyRepository;
+    private ReplyJpaRepository replyJpaRepository;
     @InjectMocks
     private BlogServiceImpl blogService;
 
@@ -99,7 +100,7 @@ public class BlogServiceTest {
         // when
         blogService.deleteById(blogId);
         // then
-        Mockito.verify(replyRepository).deleteAllByBlodId(blogId);
+        Mockito.verify(replyJpaRepository).deleteAllByBlogId(blogId);
         Mockito.verify(blogJpaRepository).deleteById(blogId);
         assertDoesNotThrow(() -> blogService.deleteById(blogId));
     }
@@ -116,13 +117,12 @@ public class BlogServiceTest {
                 () -> blogService.deleteById(blogId));
     }
 
-    /*
     @Test
     @Transactional
     public void saveTest(){
         // given
         BlogCreateRequestDTO blogCreateRequestDTO = new BlogCreateRequestDTO( "Writer 1", "Title 1", "Content 1");
-        Mockito.doNothing().when(blogJpaRepository).save(argThat(blog -> blog.getBlogTitle().equals("Title 1"))); // save(any(Blog.class))
+        Mockito.when(blogJpaRepository.save(any(Blog.class))).thenReturn(any(Blog.class));
 
         // when
         blogService.save(blogCreateRequestDTO); //it internally calls blogRepository.save()
@@ -130,7 +130,6 @@ public class BlogServiceTest {
         // then
         Mockito.verify(blogJpaRepository).save(argThat(blog -> blog.getBlogTitle().equals("Title 1")));
     }
-     */
 
     @Test
     @Transactional

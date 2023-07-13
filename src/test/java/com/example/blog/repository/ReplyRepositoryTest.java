@@ -8,15 +8,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class ReplyRepositotyTest {
+public class ReplyRepositoryTest {
     @Autowired
-    ReplyRepository replyRepository;
-    @Autowired
-    BlogRepository blogRepository;
+    ReplyJpaRepository replyJpaRepository;
 
     @Test
     @Transactional
@@ -24,7 +23,7 @@ public class ReplyRepositotyTest {
         // given
         long blogId = 1;
         // when
-        List<Reply> result = replyRepository.findAllByBlogId(blogId);
+        List<Reply> result = replyJpaRepository.findAllByBlogId(blogId);
         // then
         assertEquals(1, result.size());
         assertEquals(1, result.get(0).getReplyId());
@@ -36,7 +35,7 @@ public class ReplyRepositotyTest {
         // given
         long replyId = 3;
         // when
-        Reply result = replyRepository.findByReplyId(replyId);
+        Reply result = replyJpaRepository.findById(replyId).get();
         // then
         assertEquals("c", result.getReplyWriter());
         assertEquals(3, result.getReplyId());
@@ -48,10 +47,10 @@ public class ReplyRepositotyTest {
         // given
         long replyId = 2;
         // when
-        replyRepository.deleteByReplyId(replyId);
+        replyJpaRepository.deleteById(replyId);
         // then
-        assertEquals(0, replyRepository.findAllByBlogId(2).size());
-        assertNull(replyRepository.findByReplyId(replyId));
+        assertEquals(0, replyJpaRepository.findAllByBlogId(2).size());
+        assertEquals(Optional.empty(), replyJpaRepository.findById(replyId));
     }
 
     @Test
@@ -60,9 +59,9 @@ public class ReplyRepositotyTest {
         // given
         long blogId = 1;
         // when
-        replyRepository.deleteAllByBlodId(blogId);
+        replyJpaRepository.deleteAllByBlogId(blogId);
         // then
-        assertEquals(0, replyRepository.findAllByBlogId(blogId).size());
+        assertEquals(0, replyJpaRepository.findAllByBlogId(blogId).size());
     }
 
     @Test
@@ -84,12 +83,12 @@ public class ReplyRepositotyTest {
                 .build();
 
         // when
-        replyRepository.save(reply);
+        replyJpaRepository.save(reply);
 
         // then
-        List<Reply> resultList = replyRepository.findAllByBlogId(blogId);
+        List<Reply> resultList = replyJpaRepository.findAllByBlogId(blogId);
         Reply result = resultList.get(resultList.size() - 1); // 마지막 인텍스 요소만 가져오기
-        assertEquals(2, replyRepository.findAllByBlogId(blogId).size());
+        assertEquals(2, replyJpaRepository.findAllByBlogId(blogId).size());
         assertEquals(replyWriter, result.getReplyWriter());
         assertEquals(replyContent, result.getReplyContent());
     }
@@ -103,11 +102,11 @@ public class ReplyRepositotyTest {
         long replyId = 1;
         String replyContent = "I changed this!";
 
-        Reply reply = replyRepository.findByReplyId(replyId);
+        Reply reply = replyJpaRepository.findById(replyId).get();
         reply.update(replyContent);
 
         // when
-        replyRepository.update(reply);
+        replyJpaRepository.save(reply);
 
         // then
         assertEquals(replyId,reply.getReplyId());

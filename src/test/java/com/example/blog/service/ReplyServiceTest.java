@@ -5,6 +5,7 @@ import com.example.blog.dto.ReplyResponseDTO;
 import com.example.blog.dto.ReplyUpdateRequestDTO;
 import com.example.blog.entity.Reply;
 import com.example.blog.exception.NotFoundReplyByReplyIdException;
+import com.example.blog.repository.ReplyJpaRepository;
 import com.example.blog.repository.ReplyRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,8 +32,11 @@ import static org.mockito.ArgumentMatchers.argThat;
 
 @ExtendWith(MockitoExtension.class)
 public class ReplyServiceTest {
+    // @Mock
+    // private ReplyRepository replyRepository;
+
     @Mock
-    private ReplyRepository replyRepository;
+    private ReplyJpaRepository replyJpaRepository;
 
     @InjectMocks
     private ReplyServiceImpl replyService;
@@ -43,13 +48,13 @@ public class ReplyServiceTest {
         long blogId = 1;
         List<Reply> replies = new ArrayList<>();
         replies.add(new Reply(1, 1, "writer", "content", LocalDateTime.now(), LocalDateTime.now()));
-        Mockito.when(replyRepository.findAllByBlogId(blogId)).thenReturn(replies);
+        Mockito.when(replyJpaRepository.findAllByBlogId(blogId)).thenReturn(replies);
         // when
         List<ReplyResponseDTO> result = replyService.findAllByBlogId(blogId);
         // then
         assertEquals(1, result.size());
         assertEquals(1, result.get(0).getReplyId());
-        Mockito.verify(replyRepository).findAllByBlogId(blogId);
+        Mockito.verify(replyJpaRepository).findAllByBlogId(blogId);
     }
 
     @Test
@@ -59,13 +64,13 @@ public class ReplyServiceTest {
         // given
         long replyId = 1;
         Reply reply = new Reply(replyId, 1, "writer", "content", LocalDateTime.now(), LocalDateTime.now());
-        Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(reply);
+        Mockito.when(replyJpaRepository.findById(replyId)).thenReturn(Optional.of(reply));
         // when
         ReplyResponseDTO result = replyService.findByReplyId(replyId);
         // then
         assertEquals("writer", result.getReplyWriter());
         assertEquals("content", result.getReplyContent());
-        Mockito.verify(replyRepository).findByReplyId(replyId);
+        Mockito.verify(replyJpaRepository).findById(replyId);
     }
 
     @Test
@@ -73,12 +78,12 @@ public class ReplyServiceTest {
     public void findByReplyIdTest_NotFoundReply(){
         // given
         long replyId = 123;
-        Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(null);
+        Mockito.when(replyJpaRepository.findById(replyId)).thenReturn(Optional.empty());
         // when
         // then
         assertThrows(NotFoundReplyByReplyIdException.class,
                 () -> replyService.findByReplyId(replyId));
-        Mockito.verify(replyRepository, Mockito.times(1)).findByReplyId(replyId);
+        Mockito.verify(replyJpaRepository, Mockito.times(1)).findById(replyId);
     }
 
     @Test
@@ -88,12 +93,11 @@ public class ReplyServiceTest {
         // given
         long replyId = 2;
         Reply reply =  new Reply(replyId, 1, "writer", "content", LocalDateTime.now(), LocalDateTime.now());
-        Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(reply);
-        // Mockito.doNothing().when(replyRepository).deleteByReplyId(replyId);
+        Mockito.when(replyJpaRepository.findById(replyId)).thenReturn(Optional.of(reply));
         // when
         replyService.deleteByReplyId(replyId);
         // then
-        Mockito.verify(replyRepository).deleteByReplyId(replyId);
+        Mockito.verify(replyJpaRepository).deleteById(replyId);
         assertDoesNotThrow(() -> replyService.deleteByReplyId(replyId));
     }
 
@@ -102,7 +106,7 @@ public class ReplyServiceTest {
     public void deleteByReplyIdTest_NotFoundReply(){
         // given
         long replyId = 123;
-        Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(null);
+        Mockito.when(replyJpaRepository.findById(replyId)).thenReturn(Optional.empty());
         // when
         // then
         assertThrows(NotFoundReplyByReplyIdException.class,
@@ -118,13 +122,13 @@ public class ReplyServiceTest {
         ReplyCreateRequestDTO reply = new ReplyCreateRequestDTO(
                 0, "Writer", "Content"
         );
-        Mockito.doNothing().when(replyRepository).save(any(Reply.class));
+        Mockito.when(replyJpaRepository.save(any(Reply.class))).thenReturn(any(Reply.class));
 
         // when
         replyService.save(reply); //it internally calls replyRepository.save(),
 
         // then
-        Mockito.verify(replyRepository).save(argThat(result -> result.getReplyContent().equals("Content")));
+        Mockito.verify(replyJpaRepository).save(argThat(result -> result.getReplyContent().equals("Content")));
     }
 
     @Test
@@ -134,13 +138,13 @@ public class ReplyServiceTest {
         // given
         long replyId = 1;
         Reply existingReply = new Reply(replyId, 1, "writer", "content", null, null);
-        Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(existingReply);
+        Mockito.when(replyJpaRepository.findById(replyId)).thenReturn(Optional.of(existingReply));
 
         // when
         replyService.update(replyId, new ReplyUpdateRequestDTO("내용 수정함"));
 
         // then
-        Mockito.verify(replyRepository).update(argThat(reply -> reply.getReplyContent().equals("내용 수정함")));
+        Mockito.verify(replyJpaRepository).save(argThat(reply -> reply.getReplyContent().equals("내용 수정함")));
 
     }
 
@@ -150,7 +154,7 @@ public class ReplyServiceTest {
         // given
         long replyId = 1234;
         Reply existingReply = new Reply(replyId, 1, "writer", "content", null, null);
-        Mockito.when(replyRepository.findByReplyId(replyId)).thenReturn(null);
+        Mockito.when(replyJpaRepository.findById(replyId)).thenReturn(Optional.empty());
         // when
         // then
         assertThrows(NotFoundReplyByReplyIdException.class,
