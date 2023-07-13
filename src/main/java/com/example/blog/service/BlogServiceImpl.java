@@ -10,9 +10,9 @@ import com.example.blog.repository.BlogJpaRepository;
 import com.example.blog.repository.BlogRepository;
 import com.example.blog.repository.ReplyJpaRepository;
 import com.example.blog.repository.ReplyRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,6 +34,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BlogResponseDTO> findAll() {
         List<Blog> blogList = blogJpaRepository.findAll();
         return blogList.stream()
@@ -42,7 +43,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public BlogResponseDTO findById(long blogId) {
         Blog blog = blogJpaRepository.findById(blogId)
                 .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));

@@ -33,6 +33,7 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ReplyResponseDTO> findAllByBlogId(long blogId) {
         List<Reply> replyList = replyJpaRepository.findAllByBlogId(blogId);
         return replyList.stream()
@@ -41,6 +42,7 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ReplyResponseDTO findByReplyId(long replyId) {
         Reply reply = replyJpaRepository.findById(replyId)
                 .orElseThrow(() -> new NotFoundReplyByReplyIdException("Not Found replyId : " + replyId));
@@ -56,6 +58,7 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     @Override
+    @Transactional
     public void save(ReplyCreateRequestDTO replyCreateRequestDTO) {
         Reply reply = replyCreateRequestDTO.toEntity(); // DTO to Entity
         replyJpaRepository.save(reply);
