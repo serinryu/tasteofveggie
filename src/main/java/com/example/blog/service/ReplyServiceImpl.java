@@ -52,6 +52,7 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     @Override
+    @Transactional
     public void deleteByReplyId(long replyId) {
         // Exception Handling
         Reply reply = replyJpaRepository.findById(replyId)
@@ -71,11 +72,12 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     @Override
+    @Transactional
     public void update(long replyId, ReplyUpdateRequestDTO replyUpdateRequestDTO) {
         // DTO -> Entity
         Reply reply = replyJpaRepository.findById(replyId)
                 .orElseThrow(()-> new NotFoundReplyByReplyIdException("Not Found Reply"));
-        reply.update(replyUpdateRequestDTO.getReplyContent());
+        reply.updateContent(replyUpdateRequestDTO.getReplyContent());
         replyJpaRepository.save(reply);
     }
 }

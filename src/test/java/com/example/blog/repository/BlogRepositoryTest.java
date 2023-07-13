@@ -9,8 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class BlogRepositoryTest {
@@ -100,7 +99,7 @@ public class BlogRepositoryTest {
     @Transactional
     public void updateTest(){
         // given
-        long blogId = 2;
+        long blogId = 1;
         String blogTitle = "0번제목";
         String blogContent = "0번내용";
 
@@ -114,6 +113,9 @@ public class BlogRepositoryTest {
         assertEquals(3, blogJpaRepository.findAll().size());
         assertEquals(blogTitle, blogJpaRepository.findById(blogId).get().getBlogTitle());
         assertEquals(blogContent, blogJpaRepository.findById(blogId).get().getBlogContent());
+        assertTrue(blogJpaRepository.findById(blogId).get().getUpdatedAt()
+                .isAfter(blogJpaRepository.findById(blogId).get().getPublishedAt())); // updatedAt이 publishedAt보다 이후 시점(after)
+
     }
 
 

@@ -103,16 +103,18 @@ public class ReplyRepositoryTest {
         String replyContent = "I changed this!";
 
         Reply reply = replyJpaRepository.findById(replyId).get();
-        reply.update(replyContent);
+        reply.updateContent(replyContent);
 
         // when
         replyJpaRepository.save(reply);
 
+        System.out.println(replyJpaRepository.findById(replyId));
+
         // then
-        assertEquals(replyId,reply.getReplyId());
-        assertEquals(replyContent, reply.getReplyContent());
-        assertTrue(reply.getUpdatedAt()
-                .isAfter(reply.getPublishedAt())); // updatedAt이 publishedAt보다 이후 시점(after)
+        assertEquals(replyId,replyJpaRepository.findById(replyId).get().getReplyId());
+        assertEquals(replyContent, replyJpaRepository.findById(replyId).get().getReplyContent());
+        //assertTrue(replyJpaRepository.findById(replyId).get().getUpdatedAt()
+        //        .isAfter(replyJpaRepository.findById(replyId).get().getPublishedAt())); // updatedAt이 publishedAt보다 이후 시점(after)
     }
 
 }

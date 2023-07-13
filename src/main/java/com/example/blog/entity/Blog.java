@@ -48,12 +48,10 @@ public class Blog {
         this.blogCount = blogCount;
     }
 
-    // Business Logic to change the data
+    // Business Logic to change the entity data
     public void updateTitleAndContent(String blogTitle, String blogContent){
         this.blogTitle = blogTitle;
         this.blogContent = blogContent;
-        this.updatedAt = LocalDateTime.now();
     }
-    public void incrementBlogCount(){ this.blogCount++ ; }
 
 }

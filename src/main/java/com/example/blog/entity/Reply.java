@@ -25,6 +25,17 @@ public class Reply {
     private LocalDateTime publishedAt;
     private LocalDateTime updatedAt;
 
+    @PrePersist // 비영속(new/transient) 상태에서 영속(managed) 상태가 되는 시점 이전에 실행, 즉 save 이전에 실행
+    public void setDefaultValue(){
+        this.publishedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate // 영속 상태의 엔티티를 이용하여 데이터 업데이트를 수행하기 이전에 실행, 즉, 두번째 save 시 실행
+    public void setUpdateValue(){
+        this.updatedAt = LocalDateTime.now();
+    }
+
     @Builder
     public Reply(long replyId, long blogId, String replyWriter, String replyContent, LocalDateTime publishedAt, LocalDateTime updatedAt){
         this.replyId = replyId;
@@ -34,9 +45,9 @@ public class Reply {
         this.publishedAt = publishedAt;
         this.updatedAt = updatedAt;
     }
+
     // Business Logic to change the data
-    public void update(String replyContent){
+    public void updateContent(String replyContent){
         this.replyContent = replyContent;
-        this.updatedAt = LocalDateTime.now();
     }
 }
