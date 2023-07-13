@@ -9,6 +9,7 @@ import com.example.blog.repository.BlogJpaRepository;
 import com.example.blog.repository.BlogRepository;
 import com.example.blog.repository.ReplyJpaRepository;
 import com.example.blog.repository.ReplyRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,20 +46,21 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    @Transactional
     public BlogResponseDTO findById(long blogId) {
 
         // Exception Handling
         Blog blog = blogJpaRepository.findById(blogId).orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
 
-        // increament blogCount
-        blog.incrementBlogCount(); // change blogCound field in Entity
-        //blogJpaRepository.updateBlogCount(blog); // update blogCount in DB using updated Entity
+        System.out.println(blog);
+        blogJpaRepository.updateBlogCount(blogId);
 
         // Entity to DTO
         return new BlogResponseDTO(blog);
     }
 
     @Override
+    @Transactional
     public void deleteById(long blogId) {
         // MyBatis 에서 한 메소드당 쿼리문 1개 사용이 보편적이므로 이 두 로직을 합치는 것은 Repository 가 아니라 Service 단에서 진행했음.
         replyJpaRepository.deleteAllByBlogId(blogId);
@@ -81,6 +83,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    @Transactional
     public void update(long blogId, BlogUpdateRequestDTO blogUpdateRequestDTO) {
         // DTO -> Entity
         Blog blog = blogJpaRepository.findById(blogId).get();
