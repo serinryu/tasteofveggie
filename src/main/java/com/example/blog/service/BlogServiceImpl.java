@@ -46,8 +46,8 @@ public class BlogServiceImpl implements BlogService {
     public BlogResponseDTO findById(long blogId) {
         Blog blog = blogJpaRepository.findById(blogId)
                 .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
-        blogJpaRepository.updateBlogCount(blogId);
-
+        blog.updateBlogCount();
+        // blogJpaRepository.updateBlogCount(blogId); // Dirty-Checking
         return new BlogResponseDTO(blog); // Entity to DTO
     }
 
@@ -60,6 +60,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    @Transactional
     public void save(BlogCreateRequestDTO blogCreateRequestDTO) {
         Blog blog = blogCreateRequestDTO.toEntity(); // DTO to Entity
         blogJpaRepository.save(blog);
@@ -71,7 +72,7 @@ public class BlogServiceImpl implements BlogService {
         Blog blog = blogJpaRepository.findById(blogId)
                 .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
         blog.updateTitleAndContent(blogUpdateRequestDTO.getBlogTitle(), blogUpdateRequestDTO.getBlogContent());
-        blogJpaRepository.save(blog);
+        // blogJpaRepository.save(blog); // Dirty-Checking
     }
 
 }

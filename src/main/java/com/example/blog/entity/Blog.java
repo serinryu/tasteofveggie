@@ -55,4 +55,8 @@ public class Blog {
         this.blogContent = blogContent;
     }
 
+    public void updateBlogCount(){
+        this.blogCount++;
+    }
+
 }

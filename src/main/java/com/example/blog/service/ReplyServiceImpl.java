@@ -67,6 +67,6 @@ public class ReplyServiceImpl implements ReplyService {
         Reply reply = replyJpaRepository.findById(replyId)
                 .orElseThrow(()-> new NotFoundReplyByReplyIdException("Not Found Reply"));
         reply.updateContent(replyUpdateRequestDTO.getReplyContent());
-        replyJpaRepository.save(reply);
+        // replyJpaRepository.save(reply); // Dirty-Checking
     }
 }

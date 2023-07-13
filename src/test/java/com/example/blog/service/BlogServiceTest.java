@@ -145,9 +145,12 @@ public class BlogServiceTest {
 
         // when
         blogService.update(blogId, new BlogUpdateRequestDTO("00번 제목","00번 내용"));
+        BlogResponseDTO blogResponseDTO = blogService.findById(blogId);
 
         // then
-        Mockito.verify(blogJpaRepository).save(argThat(blog -> blog.getBlogTitle().equals("00번 제목")));
+        assertEquals("00번 제목", blogResponseDTO.getBlogTitle());
+        assertEquals("00번 내용", blogResponseDTO.getBlogContent());
+        // Mockito.verify(blogJpaRepository).save(argThat(blog -> blog.getBlogTitle().equals("00번 제목")));
     }
 
 

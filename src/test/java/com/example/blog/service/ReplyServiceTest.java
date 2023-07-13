@@ -142,9 +142,11 @@ public class ReplyServiceTest {
 
         // when
         replyService.update(replyId, new ReplyUpdateRequestDTO("내용 수정함"));
+        ReplyResponseDTO replyResponseDTO = replyService.findByReplyId(replyId);
 
         // then
-        Mockito.verify(replyJpaRepository).save(argThat(reply -> reply.getReplyContent().equals("내용 수정함")));
+        assertEquals("내용 수정함", replyResponseDTO.getReplyContent());
+        // Mockito.verify(replyJpaRepository).save(argThat(reply -> reply.getReplyContent().equals("내용 수정함")));
 
     }
 
