@@ -14,14 +14,10 @@ public class BlogUpdateRequestDTO {
     @NotEmpty
     private String blogContent;
 
+    // constructor
     public BlogUpdateRequestDTO(String blogTitle, String blogContent){
         this.blogTitle = blogTitle;
         this.blogContent = blogContent;
     }
 
-    // Entity to DTO
-    public BlogUpdateRequestDTO(Blog blog){
-        this.blogTitle = blog.getBlogTitle();
-        this.blogContent = blog.getBlogContent();
-    }
 }

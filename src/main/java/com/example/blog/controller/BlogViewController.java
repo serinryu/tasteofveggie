@@ -86,8 +86,6 @@ public class BlogViewController {
              */
             return "redirect:/blog/detail/" + blogId;
         }
-        System.out.println("*****");
-        System.out.println(blogUpdateRequestDTO);
         blogService.update(blogId, blogUpdateRequestDTO);
         return "redirect:/blog/detail/" + blogId;
     }

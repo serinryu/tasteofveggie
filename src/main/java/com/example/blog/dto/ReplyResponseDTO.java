@@ -13,6 +13,7 @@ public class ReplyResponseDTO {
     private final LocalDateTime publishedAt;
     private final LocalDateTime updatedAt;
 
+    // constructor
     public ReplyResponseDTO(long replyId, String replyWriter, String replyContent, LocalDateTime publishedAt, LocalDateTime updatedAt){
         this.replyId = replyId;
         this.replyWriter = replyWriter;
@@ -21,7 +22,7 @@ public class ReplyResponseDTO {
         this.updatedAt = updatedAt;
     }
 
-    // Entity to DTO
+    // Entity to DTO (constructor)
     public ReplyResponseDTO(Reply reply) {
         this.replyId = reply.getReplyId();
         this.replyWriter = reply.getReplyWriter();

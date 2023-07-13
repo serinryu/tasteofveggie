@@ -14,6 +14,7 @@ public class BlogResponseDTO {
     private final LocalDateTime updatedAt;
     private final long blogCount;
 
+    // constructor
     public BlogResponseDTO(long blogId, String blogWriter, String blogTitle, String blogContent, LocalDateTime publishedAt, LocalDateTime updatedAt, long blogCount){
         this.blogId = blogId;
         this.blogWriter = blogWriter;
@@ -24,7 +25,7 @@ public class BlogResponseDTO {
         this.blogCount = blogCount;
     }
 
-    // Entity -> DTO
+    // Entity to DTO (constructor)
     public BlogResponseDTO(Blog blog){
         this.blogId = blog.getBlogId();
         this.blogWriter = blog.getBlogWriter();

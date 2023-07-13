@@ -5,6 +5,7 @@ import com.example.blog.dto.BlogResponseDTO;
 import com.example.blog.dto.BlogUpdateRequestDTO;
 import com.example.blog.entity.Blog;
 import com.example.blog.exception.NotFoundBlogIdException;
+import com.example.blog.exception.NotFoundReplyByReplyIdException;
 import com.example.blog.repository.BlogJpaRepository;
 import com.example.blog.repository.BlogRepository;
 import com.example.blog.repository.ReplyJpaRepository;
@@ -16,15 +17,14 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BlogServiceImpl implements BlogService {
     // 서비스 레이어는 레포지토리 레이어를 직접 호출하여 사용한다. -> 의존성 주입
-    // @Autowired 를 여기에 붙여도 의존성 주입은 된다. 그러나, 필드 주입이므로 지양. 생성자 주입을 하자.
     BlogRepository blogRepository; // MyBatis, 현재는 JPA 로 사용하고 있음.
     BlogJpaRepository blogJpaRepository; // JPA
-    //ReplyRepository replyRepository; // blog 삭제 시 연결되는 reply 전부 삭제 로직 떄문에 호출 필요
-    ReplyJpaRepository replyJpaRepository;
+    ReplyJpaRepository replyJpaRepository; // blog 삭제 시 연결되는 reply 전부 삭제 로직 떄문에 호출 필요
 
     @Autowired // 생성자 주입
     public BlogServiceImpl(BlogRepository blogRepository, BlogJpaRepository blogJpaRepository, ReplyJpaRepository replyJpaRepository){ // 생성자 주입
@@ -35,28 +35,20 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public List<BlogResponseDTO> findAll() {
-        //List<Blog> blogList = blogRepository.findAll(); // Repository 에는 Entity 를 보내줌
         List<Blog> blogList = blogJpaRepository.findAll();
-        // Entity to DTO
-        List<BlogResponseDTO> blogResponseDTOList = new ArrayList<>();
-        for(Blog blog : blogList){
-            blogResponseDTOList.add(new BlogResponseDTO(blog)); // Entity 를 DTO 로 변경한 후 add
-        }
-        return blogResponseDTOList;
+        return blogList.stream()
+                .map(BlogResponseDTO::new)
+                .collect(Collectors.toList()); // Entity to DTO
     }
 
     @Override
     @Transactional
     public BlogResponseDTO findById(long blogId) {
-
-        // Exception Handling
-        Blog blog = blogJpaRepository.findById(blogId).orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
-
-        System.out.println(blog);
+        Blog blog = blogJpaRepository.findById(blogId)
+                .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
         blogJpaRepository.updateBlogCount(blogId);
 
-        // Entity to DTO
-        return new BlogResponseDTO(blog);
+        return new BlogResponseDTO(blog); // Entity to DTO
     }
 
     @Override
@@ -69,26 +61,16 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public void save(BlogCreateRequestDTO blogCreateRequestDTO) {
-        // DTO to Entity : 받은 DTO 를 Entity 로 변환이 불가피하게 필요. DB 수정하는 로직이기 때문...
-        // DTO에서 받은 값을 사용하여 Blog의 빌더 패턴을 사용해 구현
-        Blog blog = Blog.builder()
-                .blogWriter(blogCreateRequestDTO.getBlogWriter())
-                .blogTitle(blogCreateRequestDTO.getBlogTitle())
-                .blogContent(blogCreateRequestDTO.getBlogContent())
-                .publishedAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-
+        Blog blog = blogCreateRequestDTO.toEntity(); // DTO to Entity
         blogJpaRepository.save(blog);
     }
 
     @Override
     @Transactional
     public void update(long blogId, BlogUpdateRequestDTO blogUpdateRequestDTO) {
-        // DTO -> Entity
-        Blog blog = blogJpaRepository.findById(blogId).get();
+        Blog blog = blogJpaRepository.findById(blogId)
+                .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
         blog.updateTitleAndContent(blogUpdateRequestDTO.getBlogTitle(), blogUpdateRequestDTO.getBlogContent());
-
         blogJpaRepository.save(blog);
     }
 

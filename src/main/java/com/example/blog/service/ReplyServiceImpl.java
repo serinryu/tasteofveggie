@@ -1,5 +1,6 @@
 package com.example.blog.service;
 
+import com.example.blog.dto.BlogResponseDTO;
 import com.example.blog.dto.ReplyCreateRequestDTO;
 import com.example.blog.dto.ReplyResponseDTO;
 import com.example.blog.dto.ReplyUpdateRequestDTO;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ReplyServiceImpl implements ReplyService {
@@ -32,29 +34,22 @@ public class ReplyServiceImpl implements ReplyService {
 
     @Override
     public List<ReplyResponseDTO> findAllByBlogId(long blogId) {
-
         List<Reply> replyList = replyJpaRepository.findAllByBlogId(blogId);
-
-        // Entity to DTO
-        List<ReplyResponseDTO> replyResponseDTO = new ArrayList<>();
-        for(Reply reply : replyList){
-            replyResponseDTO.add(new ReplyResponseDTO(reply)); // Entity 를 DTO 로 변경한 후 add
-        }
-        return replyResponseDTO;
-
+        return replyList.stream()
+                .map(ReplyResponseDTO::new)
+                .collect(Collectors.toList()); // Entity to DTO
     }
 
     @Override
     public ReplyResponseDTO findByReplyId(long replyId) {
         Reply reply = replyJpaRepository.findById(replyId)
                 .orElseThrow(() -> new NotFoundReplyByReplyIdException("Not Found replyId : " + replyId));
-        return new ReplyResponseDTO(reply);
+        return new ReplyResponseDTO(reply); // Entity to DTO
     }
 
     @Override
     @Transactional
     public void deleteByReplyId(long replyId) {
-        // Exception Handling
         Reply reply = replyJpaRepository.findById(replyId)
                 .orElseThrow(() -> new NotFoundReplyByReplyIdException("Not Found replyId : " + replyId));
         replyJpaRepository.deleteById(replyId);
@@ -62,19 +57,13 @@ public class ReplyServiceImpl implements ReplyService {
 
     @Override
     public void save(ReplyCreateRequestDTO replyCreateRequestDTO) {
-        // DTO -> Entity
-        Reply reply = Reply.builder()
-                        .blogId(replyCreateRequestDTO.getBlogId())
-                                .replyWriter(replyCreateRequestDTO.getReplyWriter()) // 이후 로그인한 사람의 이름으로 수정 필요
-                                        .replyContent(replyCreateRequestDTO.getReplyContent())
-                                                .build();
+        Reply reply = replyCreateRequestDTO.toEntity(); // DTO to Entity
         replyJpaRepository.save(reply);
     }
 
     @Override
     @Transactional
     public void update(long replyId, ReplyUpdateRequestDTO replyUpdateRequestDTO) {
-        // DTO -> Entity
         Reply reply = replyJpaRepository.findById(replyId)
                 .orElseThrow(()-> new NotFoundReplyByReplyIdException("Not Found Reply"));
         reply.updateContent(replyUpdateRequestDTO.getReplyContent());

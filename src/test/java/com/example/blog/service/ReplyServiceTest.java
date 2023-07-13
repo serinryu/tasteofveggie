@@ -153,12 +153,11 @@ public class ReplyServiceTest {
     public void updateTest_NotFoundReply(){
         // given
         long replyId = 1234;
-        Reply existingReply = new Reply(replyId, 1, "writer", "content", null, null);
         Mockito.when(replyJpaRepository.findById(replyId)).thenReturn(Optional.empty());
         // when
         // then
         assertThrows(NotFoundReplyByReplyIdException.class,
-                () -> replyService.update(replyId, new ReplyUpdateRequestDTO(existingReply)));
+                () -> replyService.update(replyId, new ReplyUpdateRequestDTO("content")));
     }
 
 }

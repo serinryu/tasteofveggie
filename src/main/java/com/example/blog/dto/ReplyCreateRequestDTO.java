@@ -16,16 +16,19 @@ public class ReplyCreateRequestDTO {
     @NotEmpty
     private String replyContent;
 
+    // constructor
     public ReplyCreateRequestDTO(long blogId, String replyWriter, String replyContent){
         this.blogId = blogId;
         this.replyWriter = replyWriter;
         this.replyContent = replyContent;
     }
 
-    // Entity to DTO
-    public ReplyCreateRequestDTO(Reply reply) {
-        this.blogId = reply.getBlogId();
-        this.replyWriter = reply.getReplyWriter();
-        this.replyContent = reply.getReplyContent();
+    // DTO to Entity
+    public Reply toEntity(){
+        return Reply.builder()
+                .blogId(this.blogId)
+                .replyWriter(this.replyWriter)
+                .replyContent(this.replyContent)
+                .build();
     }
 }

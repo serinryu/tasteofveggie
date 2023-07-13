@@ -36,6 +36,7 @@ public class Reply {
         this.updatedAt = LocalDateTime.now();
     }
 
+    // constructor
     @Builder
     public Reply(long replyId, long blogId, String replyWriter, String replyContent, LocalDateTime publishedAt, LocalDateTime updatedAt){
         this.replyId = replyId;

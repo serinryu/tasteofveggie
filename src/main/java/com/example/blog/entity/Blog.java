@@ -37,6 +37,7 @@ public class Blog {
         this.updatedAt = LocalDateTime.now();
     }
 
+    // constructor
     @Builder
     public Blog(long blogId, String blogWriter, String blogTitle, String blogContent, LocalDateTime publishedAt, LocalDateTime updatedAt, long blogCount){
         this.blogId = blogId;

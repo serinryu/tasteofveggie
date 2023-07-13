@@ -6,19 +6,15 @@ import lombok.*;
 
 import static java.time.LocalDateTime.now;
 
-@Getter @Setter @ToString
+@Getter @Setter @ToString @NoArgsConstructor
 public class ReplyUpdateRequestDTO {
 
     @NotEmpty
     private String replyContent;
 
-    public ReplyUpdateRequestDTO(){};
+    // constructor
     public ReplyUpdateRequestDTO(String replyContent){
         this.replyContent = replyContent;
     }
 
-    // Entity to DTO
-    public ReplyUpdateRequestDTO(Reply reply) {
-        this.replyContent = reply.getReplyContent();
-    }
 }
