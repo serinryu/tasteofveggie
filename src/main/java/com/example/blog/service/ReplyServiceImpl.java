@@ -37,8 +37,8 @@ public class ReplyServiceImpl implements ReplyService {
     public List<ReplyResponseDTO> findAllByBlogId(long blogId) {
         List<Reply> replyList = replyJpaRepository.findAllByBlogId(blogId);
         return replyList.stream()
-                .map(ReplyResponseDTO::new)
-                .collect(Collectors.toList()); // Entity to DTO
+                .map(ReplyResponseDTO::fromEntity)// Entity to DTO
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -46,7 +46,7 @@ public class ReplyServiceImpl implements ReplyService {
     public ReplyResponseDTO findByReplyId(long replyId) {
         Reply reply = replyJpaRepository.findById(replyId)
                 .orElseThrow(() -> new NotFoundReplyByReplyIdException("Not Found replyId : " + replyId));
-        return new ReplyResponseDTO(reply); // Entity to DTO
+        return ReplyResponseDTO.fromEntity(reply); // Entity to DTO
     }
 
     @Override

@@ -38,8 +38,8 @@ public class BlogServiceImpl implements BlogService {
     public List<BlogResponseDTO> findAll() {
         List<Blog> blogList = blogJpaRepository.findAll();
         return blogList.stream()
-                .map(BlogResponseDTO::new)
-                .collect(Collectors.toList()); // Entity to DTO
+                .map(BlogResponseDTO::fromEntity) // Entity to DTO
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -49,7 +49,7 @@ public class BlogServiceImpl implements BlogService {
                 .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
         blog.updateBlogCount();
         // blogJpaRepository.updateBlogCount(blogId); // Dirty-Checking
-        return new BlogResponseDTO(blog); // Entity to DTO
+        return BlogResponseDTO.fromEntity(blog);
     }
 
     @Override

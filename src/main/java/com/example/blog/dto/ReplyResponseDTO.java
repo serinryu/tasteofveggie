@@ -22,13 +22,16 @@ public class ReplyResponseDTO {
         this.updatedAt = updatedAt;
     }
 
-    // Entity to DTO (constructor)
-    public ReplyResponseDTO(Reply reply) {
-        this.replyId = reply.getReplyId();
-        this.replyWriter = reply.getReplyWriter();
-        this.replyContent = reply.getReplyContent();
-        this.publishedAt = reply.getPublishedAt();
-        this.updatedAt = reply.getUpdatedAt();
+    // Entity to DTO
+    // By making the toDto method static, you can call it directly without having to create an instance of the class where it's defined.
+    public static ReplyResponseDTO fromEntity(Reply reply) {
+        return new ReplyResponseDTO(
+                reply.getReplyId(),
+                reply.getReplyWriter(),
+                reply.getReplyContent(),
+                reply.getPublishedAt(),
+                reply.getUpdatedAt()
+        );
     }
 }
 

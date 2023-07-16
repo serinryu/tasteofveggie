@@ -4,7 +4,6 @@ import com.example.blog.dto.BlogCreateRequestDTO;
 import com.example.blog.dto.BlogResponseDTO;
 import com.example.blog.dto.BlogUpdateRequestDTO;
 import com.example.blog.entity.Blog;
-import com.example.blog.entity.Reply;
 import com.example.blog.exception.NotFoundBlogIdException;
 import com.example.blog.repository.BlogJpaRepository;
 import com.example.blog.repository.ReplyJpaRepository;
