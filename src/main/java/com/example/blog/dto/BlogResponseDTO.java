@@ -26,7 +26,8 @@ public class BlogResponseDTO {
     }
 
     // constructor
-    public BlogResponseDTO(Blog blog){
+    // 생성자의 접근 제한자를 private 으로 설정하여 객체 생성을 정적 팩토리 메서드로만 가능하게 제한함.
+    private BlogResponseDTO(Blog blog){
         this.blogId = blog.getBlogId();
         this.blogWriter = blog.getBlogWriter();
         this.blogTitle = blog.getBlogTitle();
