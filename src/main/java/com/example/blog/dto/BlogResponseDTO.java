@@ -25,18 +25,21 @@ public class BlogResponseDTO {
         this.blogCount = blogCount;
     }
 
+    // constructor
+    public BlogResponseDTO(Blog blog){
+        this.blogId = blog.getBlogId();
+        this.blogWriter = blog.getBlogWriter();
+        this.blogTitle = blog.getBlogTitle();
+        this.blogContent = blog.getBlogContent();
+        this.publishedAt = blog.getPublishedAt();
+        this.updatedAt = blog.getUpdatedAt();
+        this.blogCount = blog.getBlogCount();
+    }
+
     // Entity to DTO
-    // By making the toDto method static, you can call it directly without having to create an instance of the class where it's defined.
+    // Static Method Factory
     public static BlogResponseDTO fromEntity(Blog blog) {
-        return new BlogResponseDTO(
-                blog.getBlogId(),
-                blog.getBlogWriter(),
-                blog.getBlogTitle(),
-                blog.getBlogContent(),
-                blog.getPublishedAt(),
-                blog.getUpdatedAt(),
-                blog.getBlogCount()
-        );
+        return new BlogResponseDTO(blog);
     }
 
 }
