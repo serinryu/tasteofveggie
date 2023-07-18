@@ -33,15 +33,25 @@ public class BlogServiceImpl implements BlogService {
     @Transactional(readOnly = true)
     public Page<BlogResponseDTO> findAll(Long pageNum){
         final int pageSize = 10;
-        int totalPagesCount = (int) Math.ceil(blogJpaRepository.count() / (double) pageSize);
 
-        // 사용자가 0이나 음수를 넣을 경우, 1로 리턴
-        pageNum = (pageNum == null || pageNum <= 0L) ? 1L : pageNum;
-        // 사용자가 totalPageCount 보다 큰 값을 넣을 경우, totalPageCount 값으로 리턴
+        /*
+        // 사용자가 totalPageCount 보다 큰 값을 넣을 경우, totalPageCount 값으로 조회하는 로직 (실제적으로 리다이렉션 X)
+        int totalPagesCount = (int) Math.ceil(blogJpaRepository.count() / (double) pageSize);
         pageNum = Math.min(pageNum, totalPagesCount);
+         */
+
+        pageNum = (pageNum <= 0L) ? 1L : pageNum; // 사용자가 0이나 음수를 넣을 경우, 1로 리턴
 
         Pageable pageable = PageRequest.of(pageNum.intValue() - 1, pageSize);
         Page<Blog> blogPage = blogJpaRepository.findAll(pageable); // JpaRepository 에서 Page<Blog> findAll(Pageable pageable) 자동생성
+
+        System.out.println(pageNum);
+        System.out.println(blogPage.getTotalElements() / (double) pageSize);
+
+        if(pageNum > Math.ceil(blogPage.getTotalElements() / (double) pageSize)){
+            throw new RuntimeException("Not Found Page Number");
+            // 이후 프론트에서 redirection 처리
+        }
 
         return blogPage.map(BlogResponseDTO::fromEntity);
     };

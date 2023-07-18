@@ -27,7 +27,7 @@ public class BlogViewController {
 
     // 1. 블로그 목록 조회 : GET /blog/list
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public String list(Model model, @RequestParam(required = false, defaultValue = "0", value = "page") Long pageNum){
+    public String list(Model model, @RequestParam(required = false, defaultValue = "1", value = "page") Long pageNum){
         Page<BlogResponseDTO> pageInfo = blogService.findAll(pageNum);
 
         final int PAGE_BTN_NUM = 10; // 한 페이지에 보여야 하는 페이징 버튼 그룹의 개수
