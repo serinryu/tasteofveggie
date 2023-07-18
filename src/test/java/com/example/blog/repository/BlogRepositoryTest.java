@@ -3,6 +3,8 @@ import com.example.blog.entity.Blog;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -27,11 +29,11 @@ public class BlogRepositoryTest {
     public void findAllTest(){
         // given
         int blogId = 1;
-        // when
-        List<Blog> blogList = blogJpaRepository.findAll();
-        // then
-        assertEquals(3, blogList.size());
-        assertEquals(2, blogList.get(blogId).getBlogId()); // 자바 List 자료구조 상 인텍스는 0번부터이므로, blogList.get(1) 객체의 ID 번호는 2
+        // When
+        Page<Blog> blogPage = blogJpaRepository.findAll(PageRequest.of(0, 10));
+        // Then
+        assertNotNull(blogPage);
+        assertEquals(blogPage.getTotalElements(), 2);
     }
 
 

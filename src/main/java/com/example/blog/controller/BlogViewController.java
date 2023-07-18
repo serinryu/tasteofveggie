@@ -7,13 +7,11 @@ import com.example.blog.service.BlogService;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/blog")
@@ -28,10 +26,22 @@ public class BlogViewController {
     }
 
     // 1. 블로그 목록 조회 : GET /blog/list
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public String list(Model model){
-        List<BlogResponseDTO> blogList = blogService.findAll(); // Service 객체를 이용해 게시글 전체를 얻어온다.
-        model.addAttribute("blogList", blogList); // 얻어온 게시글은 .jsp 로 보낼 수 있도록 적재한다.
+    @RequestMapping(value = "/list/{pageNum}", method = RequestMethod.GET)
+    public String list(Model model, @PathVariable(required = false) Long pageNum){
+        Page<BlogResponseDTO> pageInfo = blogService.findAll(pageNum);
+
+        final int PAGE_BTN_NUM = 10; // 한 페이지에 보여야 하는 페이징 버튼 그룹의 개수
+        int currentPageNum = pageInfo.getNumber() + 1; // 현재 조회중인 페이지(0부터 셈). 강조 스타일 위해 필요
+        int endPageNum = (int)Math.ceil(currentPageNum / (double)PAGE_BTN_NUM) * PAGE_BTN_NUM;  // 현재 조회중인 페이지 그룹의 끝번호
+        int startPageNum = endPageNum - PAGE_BTN_NUM + 1; // 현재 조회중인 페이지 그룹의 시작번호
+
+        // 마지막 그룹 번호 보정
+        endPageNum = endPageNum > pageInfo.getTotalPages() ? pageInfo.getTotalPages() : endPageNum;
+
+        model.addAttribute("currentPageNum", currentPageNum);
+        model.addAttribute("endPageNum", endPageNum);
+        model.addAttribute("startPageNum", startPageNum);
+        model.addAttribute("pageInfo", pageInfo);
         return "blog/list"; // /WEB-INF/views/board/list.jsp
     }
 

@@ -5,19 +5,15 @@ import com.example.blog.dto.BlogResponseDTO;
 import com.example.blog.dto.BlogUpdateRequestDTO;
 import com.example.blog.entity.Blog;
 import com.example.blog.exception.NotFoundBlogIdException;
-import com.example.blog.exception.NotFoundReplyByReplyIdException;
 import com.example.blog.repository.BlogJpaRepository;
 import com.example.blog.repository.BlogRepository;
 import com.example.blog.repository.ReplyJpaRepository;
-import com.example.blog.repository.ReplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class BlogServiceImpl implements BlogService {
@@ -35,12 +31,11 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BlogResponseDTO> findAll() {
-        List<Blog> blogList = blogJpaRepository.findAll();
-        return blogList.stream()
-                .map(BlogResponseDTO::fromEntity) // Entity to DTO
-                .collect(Collectors.toList());
-    }
+    public Page<BlogResponseDTO> findAll(Long pageNum){
+        Pageable pageable = PageRequest.of(pageNum.intValue()-1, 10);
+        return blogJpaRepository.findAll(pageable)
+                .map(BlogResponseDTO::fromEntity);
+    };
 
     @Override
     @Transactional(readOnly = true)
