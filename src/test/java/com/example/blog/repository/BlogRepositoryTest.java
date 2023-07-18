@@ -2,9 +2,11 @@ package com.example.blog.repository;
 import com.example.blog.entity.Blog;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -28,12 +30,10 @@ public class BlogRepositoryTest {
     @Transactional
     public void findAllTest(){
         // given
-        int blogId = 1;
-        // When
         Page<Blog> blogPage = blogJpaRepository.findAll(PageRequest.of(0, 10));
         // Then
         assertNotNull(blogPage);
-        assertEquals(blogPage.getTotalElements(), 2);
+        assertEquals(blogPage.getTotalElements(), 3);
     }
 
 

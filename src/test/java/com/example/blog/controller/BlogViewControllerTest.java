@@ -11,6 +11,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -45,22 +47,21 @@ public class BlogViewControllerTest {
         // given
         List<BlogResponseDTO> blogs = new ArrayList<>();
         blogs.add(new BlogResponseDTO(1L, "writer 1", "title 1", "content 1", LocalDateTime.now(), LocalDateTime.now(), 0));
-        Mockito.when(blogService.findAll()).thenReturn(blogs);
 
-        // when
-        // JSON 데이터를 던지는 REST 가 아니라 view(ModelAndView) 를 던져주는 MVC 패턴
-        ResultActions response = mockMvc.perform(get("/blog/list")
-                        .contentType(MediaType.APPLICATION_JSON));
+        Long pageNum = 1L;
+        Page<BlogResponseDTO> blogPage = new PageImpl<>(blogs);
 
-        // then
-        response.andExpect(status().isOk())
+        Mockito.when(blogService.findAll(pageNum)).thenReturn(blogPage);
+
+        // When
+        mockMvc.perform(get("/blog/list/{pageNum}", pageNum))
+                // Then
+                .andExpect(status().isOk())
                 .andExpect(view().name("blog/list"))
-                .andExpect(model().attributeExists("blogList"))
-                .andExpect(model().attribute("blogList", any(List.class))) // 데이터도 잘 들어오는지 검사하고 싶으면 view '내부'의 데이터 검사해야함
-                .andDo(print());
+                .andExpect(model().attributeExists("currentPageNum", "endPageNum", "startPageNum", "pageInfo"))
+                .andExpect(model().attribute("pageInfo", blogPage));
 
-        Mockito.verify(blogService).findAll();
-
+        Mockito.verify(blogService, Mockito.times(1)).findAll(pageNum);
     }
 
     @Test

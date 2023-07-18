@@ -13,6 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -49,13 +53,20 @@ public class BlogServiceTest {
         blogs.add(new Blog(1L, "Writer 1", "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now(), 0));
         blogs.add(new Blog(2L, "Writer 2", "Title 2", "Content 2", LocalDateTime.now(), LocalDateTime.now(), 0));
         blogs.add(new Blog(3L, "Writer 3", "Title 3", "Content 3", LocalDateTime.now(), LocalDateTime.now(), 0));
-        Mockito.when(blogJpaRepository.findAll()).thenReturn(blogs);
+
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Blog> blogPage = new PageImpl<>(blogs, pageable, blogs.size());
+
+        Mockito.when(blogJpaRepository.findAll(pageable)).thenReturn(blogPage);
+
         // when
-        List<BlogResponseDTO> blogList = blogService.findAll();
+        Page<BlogResponseDTO> result = blogService.findAll(1L);
+
         // then
-        assertEquals(3, blogList.size());
-        assertEquals(2, blogList.get(1).getBlogId());
-        Mockito.verify(blogJpaRepository).findAll(); // blogRepository.findAll 메소드 호출되었는지 확인
+        assertNotNull(result);
+        assertEquals(blogs.size(), result.getTotalElements());
+
+        Mockito.verify(blogJpaRepository).findAll(pageable); // blogRepository.findAll 메소드 호출되었는지 확인
     }
 
     @Test

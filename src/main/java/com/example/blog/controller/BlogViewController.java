@@ -36,7 +36,7 @@ public class BlogViewController {
         int startPageNum = endPageNum - PAGE_BTN_NUM + 1; // 현재 조회중인 페이지 그룹의 시작번호
 
         // 마지막 그룹 번호 보정
-        endPageNum = endPageNum > pageInfo.getTotalPages() ? pageInfo.getTotalPages() : endPageNum;
+        endPageNum = Math.min(endPageNum, pageInfo.getTotalPages());
 
         model.addAttribute("currentPageNum", currentPageNum);
         model.addAttribute("endPageNum", endPageNum);
