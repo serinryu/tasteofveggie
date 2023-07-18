@@ -32,9 +32,18 @@ public class BlogServiceImpl implements BlogService {
     @Override
     @Transactional(readOnly = true)
     public Page<BlogResponseDTO> findAll(Long pageNum){
-        Pageable pageable = PageRequest.of(pageNum.intValue()-1, 10);
-        return blogJpaRepository.findAll(pageable)
-                .map(BlogResponseDTO::fromEntity);
+        final int pageSize = 10;
+        int totalPagesCount = (int) Math.ceil(blogJpaRepository.count() / (double) pageSize);
+
+        // 사용자가 0이나 음수를 넣을 경우, 1로 리턴
+        pageNum = (pageNum == null || pageNum <= 0L) ? 1L : pageNum;
+        // 사용자가 totalPageCount 보다 큰 값을 넣을 경우, totalPageCount 값으로 리턴
+        pageNum = Math.min(pageNum, totalPagesCount);
+
+        Pageable pageable = PageRequest.of(pageNum.intValue() - 1, pageSize);
+        Page<Blog> blogPage = blogJpaRepository.findAll(pageable); // JpaRepository 에서 Page<Blog> findAll(Pageable pageable) 자동생성
+
+        return blogPage.map(BlogResponseDTO::fromEntity);
     };
 
     @Override

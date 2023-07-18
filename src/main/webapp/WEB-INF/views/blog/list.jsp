@@ -44,7 +44,7 @@
                 <!-- c:if 태그는 test 프로퍼티에 참,거짓을 판단할 수 있는 식을 넣어주면 참인경우만 해당 요소를 표시합니다. -->
                 <c:if test="${startPageNum != 1}">
                     <li class="page-item">
-                        <a class="page-link" href="/blog/list/${startPageNum - 1}">이전으로</a>
+                        <a class="page-link" href="/blog/list?page=${startPageNum - 1}">이전으로</a>
                     </li>
                 </c:if>
 
@@ -54,7 +54,7 @@
                            end="${ endPageNum }"
                            var="btnNum">
                     <li class="page-item ${ currentPageNum == btnNum ? 'active' : '' }">
-                        <a class="page-link" href="/blog/list/${btnNum}">${btnNum}</a>
+                        <a class="page-link" href="/blog/list?page=${btnNum}">${btnNum}</a>
                     </li>
                 </c:forEach>
 
@@ -62,7 +62,7 @@
                 <!-- 다음 페이지는, 현재 endPageNum이 전체적으로 봐도 마지만 번호인 경우에 보여주지 않으면 됩니다.-->
                 <c:if test="${endPageNum != pageInfo.getTotalPages()}">
                     <li class="page-item">
-                        <a class="page-link" href="/blog/list/${endPageNum + 1}">다음으로</a>
+                        <a class="page-link" href="/blog/list?page=${endPageNum + 1}">다음으로</a>
                     </li>
                 </c:if>
 

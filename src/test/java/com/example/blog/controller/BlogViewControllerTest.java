@@ -54,7 +54,7 @@ public class BlogViewControllerTest {
         Mockito.when(blogService.findAll(pageNum)).thenReturn(blogPage);
 
         // When
-        mockMvc.perform(get("/blog/list/{pageNum}", pageNum))
+        mockMvc.perform(get("/blog/list?page={pageNum}", pageNum))
                 // Then
                 .andExpect(status().isOk())
                 .andExpect(view().name("blog/list"))
