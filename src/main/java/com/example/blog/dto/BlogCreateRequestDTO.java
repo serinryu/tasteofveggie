@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter @Setter @ToString @NoArgsConstructor
 public class BlogCreateRequestDTO {
-    @NotEmpty
+
     private String blogWriter;
 
     @NotEmpty

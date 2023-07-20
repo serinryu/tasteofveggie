@@ -4,11 +4,12 @@ import com.example.blog.dto.BlogResponseDTO;
 import com.example.blog.dto.BlogCreateRequestDTO;
 import com.example.blog.dto.BlogUpdateRequestDTO;
 import com.example.blog.service.BlogService;
-import com.example.blog.service.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -69,13 +70,19 @@ public class BlogViewController {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public String insert(@Valid BlogCreateRequestDTO blogCreateRequestDTO, BindingResult bindingResult){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetails userDetails = (UserDetails) principal;
+        String username = userDetails.getUsername(); // email
+        blogCreateRequestDTO.setBlogWriter(username);
+
         if(bindingResult.hasErrors()){
             /*
             에러 메세지 추가 필요m
              */
             System.out.println(bindingResult.getAllErrors());
-            return "blog/blog-form";
+            return "redirect:/blog/list";
         }
+
         blogService.save(blogCreateRequestDTO);
         return "redirect:/blog/list";
     }

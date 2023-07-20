@@ -11,10 +11,8 @@
 <div class="container">
     <form method="POST">
         <div class="row">
-            <div class="col-3">
-                <label for="blogWriter" class="form-label">글쓴이</label>
-                <input type="text" class="form-control" id="blogWriter" name="blogWriter" placeholder="글쓴이를 적어주세요.">
-            </div>
+            <%-- 백단에서 보내주도록 함--%>
+            <%--  <input type="hidden" name="blogWriter" value="${pageContext.request.remoteUser}">--%>
             <div class="col-3">
                 <label for="blogTitle" class="form-label">제목</label>
                 <input type="text" class="form-control" id="blogTitle" name="blogTitle" placeholder="제목을 적어주세요.">

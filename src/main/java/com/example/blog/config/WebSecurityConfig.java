@@ -19,7 +19,7 @@ public class WebSecurityConfig {
 
     private final UserDetailService userService;
 
-    // 스프링 시큐리티 기능 비활성화 (모든 곳에 인증, 인가 서비스를 적용할 필요 없음)
+    // 스프링 시큐리티 기능 비활성화 (모든 곳에 인증, 인가 서비스를 적용할 필요 없음. static 디렉토리의 파일들은 항상 인증 무시)
     @Bean
     public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
@@ -51,7 +51,8 @@ public class WebSecurityConfig {
                 .logoutSuccessUrl("/login")
                 .invalidateHttpSession(true)
             )
-            .csrf(AbstractHttpConfigurer::disable);
+            .csrf(csrf -> csrf
+                .disable());
         return http.build();
     }
 
