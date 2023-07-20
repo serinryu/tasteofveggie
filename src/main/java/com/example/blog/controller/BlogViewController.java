@@ -4,6 +4,7 @@ import com.example.blog.dto.BlogResponseDTO;
 import com.example.blog.dto.BlogCreateRequestDTO;
 import com.example.blog.dto.BlogUpdateRequestDTO;
 import com.example.blog.service.BlogService;
+import com.example.blog.service.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;

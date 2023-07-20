@@ -10,6 +10,8 @@
 </head>
 <body>
     <div class="container">
+        <div> Hello, ${pageContext.request.remoteUser} </div>
+        <button type="button" class="btn btn-secondary" onclick="location.href='/logout'">로그아웃</button>
         <h1 class="text-center"> Blog List </h1>
         <table class="table table-striped table-hover">
             <thead>
