@@ -60,7 +60,7 @@ public class BlogViewControllerTest {
         mockMvc.perform(get("/blog/list?page={pageNum}", pageNum))
                 // Then
                 .andExpect(status().isOk())
-                .andExpect(view().name("blog/list"))
+                .andExpect(view().name("blog/blogList"))
                 .andExpect(model().attributeExists("currentPageNum", "endPageNum", "startPageNum", "pageInfo"))
                 .andExpect(model().attribute("pageInfo", blogPage));
 
@@ -83,7 +83,7 @@ public class BlogViewControllerTest {
 
         // then
         response.andExpect(status().isOk())
-                .andExpect(view().name("blog/detail"))
+                .andExpect(view().name("blog/blogDetail"))
                 .andExpect(model().attributeExists("blog"))
                 .andExpect(model().attribute("blog", any(BlogResponseDTO.class)))
                 .andDo(print());

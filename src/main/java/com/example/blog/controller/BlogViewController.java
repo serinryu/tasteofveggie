@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/blog")
 @Log4j2
 public class BlogViewController {
-    // 컨트롤러 레이어는 서비스 레이어를 직접 호출해서 사용합니다. -> 의존성 주입
     BlogService blogService;
 
     @Autowired // 생성자 주입
@@ -27,7 +26,7 @@ public class BlogViewController {
         this.blogService = blogService;
     }
 
-    // 1. 블로그 목록 조회 : GET /blog/list
+    // 블로그 목록 조회
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String list(Model model, @RequestParam(required = false, defaultValue = "1", value = "page") Long pageNum){
         Page<BlogResponseDTO> pageInfo = blogService.findAll(pageNum);
@@ -44,66 +43,65 @@ public class BlogViewController {
         model.addAttribute("endPageNum", endPageNum);
         model.addAttribute("startPageNum", startPageNum);
         model.addAttribute("pageInfo", pageInfo);
-        return "blog/list"; // /WEB-INF/views/board/list.jsp
+        return "blog/blogList"; // /WEB-INF/views/board/blogList.jsp
     }
 
-    // 2. 블로그 디테일 페이지 : GET /blog/detail/글번호
+    // 블로그 디테일 페이지
     @RequestMapping(value = "/detail/{blogId}", method = RequestMethod.GET)
     public String detail(@PathVariable long blogId, Model model){
         BlogResponseDTO blogFindByIdDTO = blogService.findById(blogId);
         model.addAttribute("blog", blogFindByIdDTO); // 데이터 전달하여 뷰에 뿌려주기
-        return "blog/detail"; // /WEB-INF/views/blog/detail.jsp
+        return "blog/blogDetail"; // /WEB-INF/views/blog/blogDetail.jsp
     }
 
-    // 3. 블로그 삭제 : POST /blog/delete/{blogId}
+    // 블로그 생성 맟 수정 폼
+    @RequestMapping(value="/new", method = RequestMethod.GET)
+    public String updateForm(@RequestParam(required = false, value = "id") Long blogId, Model model) {
+        if (blogId == null) {
+            model.addAttribute("blog", null);
+        } else {
+            BlogResponseDTO blog = blogService.findById(blogId);
+            model.addAttribute("blog", blog);
+        }
+        return "blog/newBlog"; // /WEB-INF/views/blog/newBlog.jsp
+    }
+
+
+    // 블로그 삭제 : POST /blog/delete/{blogId}
     @RequestMapping(value = "/delete/{blogId}", method = RequestMethod.POST)
     public String delete(@PathVariable long blogId){
         blogService.deleteById(blogId);
-        return "redirect:/blog/list";
+        return "blog/list";
     }
 
-    // 4. 블로그 생성 : GET /blog/create , POST /blog/insert
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
-    public String insert(){
-        return "blog/blog-form"; // /WEB-INF/views/blog/blog-form.jsp
-    }
+    // 블로그 생성 : POST /blog/create
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public String insert(@Valid BlogCreateRequestDTO blogCreateRequestDTO, BindingResult bindingResult){
+    public String insert(@Valid @RequestBody BlogCreateRequestDTO blogCreateRequestDTO, BindingResult bindingResult){
+
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserDetails userDetails = (UserDetails) principal;
         String username = userDetails.getUsername(); // email
         blogCreateRequestDTO.setBlogWriter(username);
 
         if(bindingResult.hasErrors()){
-            /*
-            에러 메세지 추가 필요m
-             */
             System.out.println(bindingResult.getAllErrors());
-            return "redirect:/blog/list";
+            return "blog/list";
         }
 
         blogService.save(blogCreateRequestDTO);
         return "redirect:/blog/list";
     }
 
-    // 5. 블로그 업데이트 : POST /blog/updateform , POST /blog/update/{blogId}
-    @RequestMapping(value="/updateform", method = RequestMethod.POST)
-    public String update(long blogId, Model model){
-        BlogResponseDTO blog = blogService.findById(blogId);
-        // .jsp로 보내기 위해 적재합니다.
-        model.addAttribute("blog", blog);
-        return "blog/blog-update-form"; // /WEB-INF/views/blog/blog-update-form.jsp
-    }
+    // 블로그 수정
 
     @RequestMapping(value = "/update/{blogId}", method = RequestMethod.POST)
-    public String update(@PathVariable long blogId, @Valid BlogUpdateRequestDTO blogUpdateRequestDTO, BindingResult bindingResult){
+    public String update(@PathVariable long blogId, @Valid @RequestBody BlogUpdateRequestDTO blogUpdateRequestDTO, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
-            /*
-            에러 메세지 추가 필요
-             */
+            System.out.println(bindingResult.getAllErrors());
             return "redirect:/blog/detail/" + blogId;
         }
+
         blogService.update(blogId, blogUpdateRequestDTO);
         return "redirect:/blog/detail/" + blogId;
     }

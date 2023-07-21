@@ -3,41 +3,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- CSS only -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <meta charset="UTF-8">
-    <title>Insert title here</title>
+    <title>Detail</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center"> ${blog.blogTitle} </h1>
-        <div class="row first-row">
-            <div class = "col-1">
-                ${blog.blogId}
-            </div>
-            <div class = "col-1">
-                ${blog.blogWriter}
-            </div>
-            <div class = "col-2">
-                ${blog.blogCount}
-            </div>
-            <div class = "col-8">
-                ${blog.blogContent}
+    <div class="p-5 mb-5 text-center</> bg-light">
+        <h1 class="mb-3">My Blog</h1>
+        <h4 class="mb-3">블로그에 오신 것을 환영합니다.</h4>
+    </div>
+
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-8">
+                <article>
+                    <input type="hidden" id="blog-id" value="${blog.blogId}" />
+                    <header class="mb-4">
+                        <h1 class="fw-bolder mb-1">${blog.blogTitle}</h1>
+<%--                        <div class="text-muted fst-italic mb-2">Posted on ${blog.createdAt}</div>--%>
+                        <div class="text-muted fst-italic mb-2"> View : ${blog.blogCount} </div>
+                    </header>
+                    <section class="mb-5">
+                        <p class="fs-5 mb-4">${blog.blogContent}</p>
+                    </section>
+                    <button type="button" id="modify-btn"
+                            onclick="location.href='${pageContext.request.contextPath}/blog/new?id=${blog.blogId}'"
+                            class="btn btn-primary btn-sm">수정</button>
+                    <button type="button" id="delete-btn" class="btn btn-secondary btn-sm">삭제</button>
+
+<%--                    <form action="/blog/updateform" method="POST">--%>
+<%--                        <input type="hidden" name="blogId" value="${blog.blogId}">--%>
+<%--                        <input type="submit" value="수정하기" class="btn btn-info">--%>
+<%--                    </form>--%>
+<%--                    <form action="/blog/delete/${blog.blogId}" method="POST">--%>
+<%--                        <input type="hidden" name="blogId"> <!--value="${blog.blogId}"-->--%>
+<%--                        <input type="submit" value="삭제하기" class="btn btn-warning">--%>
+<%--                    </form>--%>
+
+
+                </article>
             </div>
         </div>
+    </div>
 
-    <div class="col-1">
-        <form action="/blog/delete/${blog.blogId}" method="POST">
-            <input type="hidden" name="blogId"> <!--value="${blog.blogId}"-->
-            <input type="submit" value="삭제하기" class="btn btn-warning">
-        </form>
-    </div>
-    <div class="col-1">
-        <form action="/blog/updateform" method="POST">
-            <input type="hidden" name="blogId" value="${blog.blogId}">
-            <input type="submit" value="수정하기" class="btn btn-info">
-        </form>
-    </div>
 
     <!--comment-->
     <div class="row">
@@ -82,6 +91,7 @@
     </div>
 
     </div><!-- .container -->
+
     <script>
         let blogId = "${blog.blogId}"; // 글 번호를 자바스크립트 변수에 저장
         let $replies = document.getElementById("replies"); // 변수명 앞에 $ 를 하는 이유는 태그에 걸린 변수라는 의미를 담기 위함일 뿐
@@ -275,5 +285,6 @@
 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script src="/js/blog.js"></script>
 </body>
 </html>
