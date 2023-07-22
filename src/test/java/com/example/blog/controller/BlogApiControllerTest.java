@@ -1,7 +1,6 @@
 package com.example.blog.controller;
 
 import com.example.blog.dto.BlogCreateRequestDTO;
-import com.example.blog.dto.BlogResponseDTO;
 import com.example.blog.dto.BlogUpdateRequestDTO;
 import com.example.blog.service.BlogService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,18 +10,11 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -34,6 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class BlogApiControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockBean
     private BlogService blogService;
@@ -79,7 +74,7 @@ public class BlogApiControllerTest {
                 post("/api/blogs")
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(asJsonString(blogCreateRequestDTO)));
+                    .content(objectMapper.writeValueAsString((blogCreateRequestDTO))));
                     //.flashAttr("blogCreateRequestDTO", blogCreateRequestDTO)); // Flash attributes are temporary storage and often used for passing data between 'redirects'.
 
         // then
@@ -87,16 +82,6 @@ public class BlogApiControllerTest {
                 .andDo(print());
 
         //Mockito.verify(blogService).save(new BlogCreateRequestDTO("testuser@example", "Test Blog", "This is a test blog content."));
-    }
-
-    // Helper method to convert an object to JSON string
-    private static String asJsonString(Object obj) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Test
@@ -111,7 +96,7 @@ public class BlogApiControllerTest {
                 put("/api/blogs/"+blogId)
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(asJsonString(blogUpdateRequestDTO)));
+                    .content(objectMapper.writeValueAsString((blogUpdateRequestDTO))));
                     //.flashAttr("blogUpdateRequestDTO", blogUpdateRequestDTO)); // Flash attributes are temporary storage and often used for passing data between 'redirects'.
 
         // then
@@ -133,7 +118,7 @@ public class BlogApiControllerTest {
                 put("/api/blogs/"+blogId)
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(asJsonString(blogUpdateRequestDTO)));
+                    .content(objectMapper.writeValueAsString((blogUpdateRequestDTO))));
                     //.flashAttr("blogUpdateRequestDTO", blogUpdateRequestDTO)); // Flash attributes are temporary storage and often used for passing data between 'redirects'.
 
         // then

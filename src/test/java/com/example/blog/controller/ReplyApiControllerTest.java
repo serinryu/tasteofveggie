@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -22,19 +23,20 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ReplyRestController.class)
-@DisplayName("ReplyRestController Test")
-public class ReplyRestControllerTest {
+@WebMvcTest(ReplyApiController.class)
+@DisplayName("ReplyApiController Test")
+public class ReplyApiControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper; // 데이터 직렬화에 사용하는 객체
+    private ObjectMapper objectMapper;
 
     @MockBean
     private ReplyService replyService;
@@ -43,8 +45,8 @@ public class ReplyRestControllerTest {
     // 컨트롤러는 서버에 url만 입력하면 동작하므로 컨트롤러를 따로 생성하지는 않는 것임.
 
     @Test
-    // 1. 댓글 모두 보기 : GET /reply/2/all
-    public void findAllRepliesTest() throws Exception { // mockMvc의 예외를 던져줄 Exception 을 핸들링해야함 (perform 메소드 시 필요)
+    @WithMockUser
+    public void findAllRepliesTest() throws Exception {
         // given
         long blogId = 1;
         List<ReplyResponseDTO> replies = new ArrayList<>();
@@ -68,7 +70,8 @@ public class ReplyRestControllerTest {
     }
 
     @Test
-    public void findByReplyIdTest() throws Exception {
+    @WithMockUser
+    public void findByReplyIdTest_Success() throws Exception {
         // given
         long replyId = 1;
         ReplyResponseDTO replyResponseDTO = new ReplyResponseDTO(1, "writer 1", "content 1", LocalDateTime.now(), LocalDateTime.now());
@@ -92,13 +95,15 @@ public class ReplyRestControllerTest {
     }
 
     @Test
-    public void insertReplyTest_ValidData() throws Exception {
+    @WithMockUser
+    public void addReplyTest_ValidData() throws Exception {
         // given
         ReplyCreateRequestDTO replyCreateRequestDTO = new ReplyCreateRequestDTO(1, "writer 1", "content 1");
         Mockito.doNothing().when(replyService).save(replyCreateRequestDTO);
 
         // when
         ResultActions response = mockMvc.perform(post("/reply")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replyCreateRequestDTO)));  // java object -> json (serialization)
 
@@ -110,12 +115,14 @@ public class ReplyRestControllerTest {
     }
 
     @Test
-    public void insertReplyTest_InvalidData() throws Exception {
+    @WithMockUser
+    public void addReplyTest_InvalidData() throws Exception {
         // given
         ReplyCreateRequestDTO replyCreateRequestDTO = new ReplyCreateRequestDTO(1, null, "content 1");
 
         // when
         ResultActions response = mockMvc.perform(post("/reply")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replyCreateRequestDTO)));  // java object -> json
 
@@ -126,21 +133,24 @@ public class ReplyRestControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void deleteByReplyIdTest() throws Exception {
         // given
         long replyId = 2;
         Mockito.doNothing().when(replyService).deleteByReplyId(replyId);
 
         // when
-        ResultActions response = mockMvc.perform(delete("/reply/{replyId}", replyId));
+        ResultActions response = mockMvc.perform(delete("/reply/{replyId}", replyId)
+                .with(csrf()));
 
         // then
         response.andExpect(status().isOk())
-                        .andDo(print());
+                .andDo(print());
         Mockito.verify(replyService).deleteByReplyId(replyId);
     }
 
     @Test
+    @WithMockUser
     public void updateReplyTest_ValidData() throws Exception {
         // given
         long replyId = 1L;
@@ -148,6 +158,7 @@ public class ReplyRestControllerTest {
 
         // when
         ResultActions response = mockMvc.perform(put("/reply/{replyId}", replyId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replyUpdateRequestDTO)));  // java object -> json
 
@@ -160,6 +171,7 @@ public class ReplyRestControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void updateReplyTest_InvalidData() throws Exception {
         // given
         long replyId = 1L;
@@ -167,6 +179,7 @@ public class ReplyRestControllerTest {
 
         // when
         ResultActions response = mockMvc.perform(put("/reply/{replyId}", replyId)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replyUpdateRequestDTO)));  // java object -> json
 
