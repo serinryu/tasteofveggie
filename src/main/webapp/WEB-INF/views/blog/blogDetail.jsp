@@ -28,7 +28,7 @@
                         <p class="fs-5 mb-4">${blog.blogContent}</p>
                     </section>
                     <button type="button" id="modify-btn"
-                            onclick="location.href='${pageContext.request.contextPath}/blog/new?id=${blog.blogId}'"
+                            onclick="location.href='${pageContext.request.contextPath}/blogs/new?id=${blog.blogId}'"
                             class="btn btn-primary btn-sm">수정</button>
                     <button type="button" id="delete-btn" class="btn btn-secondary btn-sm">삭제</button>
 
@@ -40,7 +40,6 @@
 <%--                        <input type="hidden" name="blogId"> <!--value="${blog.blogId}"-->--%>
 <%--                        <input type="submit" value="삭제하기" class="btn btn-warning">--%>
 <%--                    </form>--%>
-
 
                 </article>
             </div>

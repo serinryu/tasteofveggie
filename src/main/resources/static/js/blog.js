@@ -5,13 +5,12 @@ const deleteButton = document.getElementById('delete-btn');
 if (deleteButton) {
     deleteButton.addEventListener('click', event => {
         let id = document.getElementById('blog-id').value;
-        fetch(`/blog/delete/${id}`, {
-            //method: 'DELETE'
-            method: 'POST'
+        fetch(`/api/blogs/${id}`, {
+            method: 'DELETE'
         })
             .then(() => {
-                alert('삭제가 완료되었습니다.');
-                location.replace('/blog/list');
+                alert('Successfully deleted!');
+                location.replace('/blogs');
             });
     });
 }
@@ -24,8 +23,8 @@ if (modifyButton) {
         let params = new URLSearchParams(location.search);
         let id = params.get('id');
 
-        fetch(`/blog/update/${id}`, {
-            method: 'POST',
+        fetch(`/api/blogs/${id}`, {
+            method: 'PUT',
             headers: {
                 "Content-Type": "application/json",
             },
@@ -35,8 +34,8 @@ if (modifyButton) {
             })
         })
         .then(() => {
-            alert('수정이 완료되었습니다.');
-            location.replace(`/blog/detail/${id}`);
+            alert('Successfully updated!');
+            location.replace(`/blogs/${id}`);
         });
     });
 }
@@ -46,7 +45,7 @@ const createButton = document.getElementById('create-btn');
 
 if (createButton) {
     createButton.addEventListener('click', event => {
-        fetch('/blog/create', {
+        fetch('/api/blogs', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -57,8 +56,8 @@ if (createButton) {
             })
         })
         .then(() => {
-            alert('등록 완료되었습니다.');
-            location.replace('/blog/list');
+            alert('Successfully uploaded!');
+            location.replace('/blogs');
         });
     });
 }

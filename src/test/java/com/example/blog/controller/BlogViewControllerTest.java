@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
@@ -35,9 +36,6 @@ public class BlogViewControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @MockBean
     private BlogService blogService;
 
@@ -57,7 +55,7 @@ public class BlogViewControllerTest {
         Mockito.when(blogService.findAll(pageNum)).thenReturn(blogPage);
 
         // When
-        mockMvc.perform(get("/blog/list?page={pageNum}", pageNum))
+        mockMvc.perform(get("/blogs?page={pageNum}", pageNum))
                 // Then
                 .andExpect(status().isOk())
                 .andExpect(view().name("blog/blogList"))
@@ -77,7 +75,7 @@ public class BlogViewControllerTest {
 
         // when
         StringBuilder url = new StringBuilder();
-        url.append("/blog/").append("detail/").append(blogId);
+        url.append("/blogs/").append(blogId);
         ResultActions response = mockMvc.perform(get(String.valueOf(url))
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -89,109 +87,6 @@ public class BlogViewControllerTest {
                 .andDo(print());
 
         Mockito.verify(blogService).findById(blogId);
-    }
-
-    @Test
-    @WithMockUser
-    public void deleteByIdTest() throws Exception {
-        // given
-        long blogId = 1;
-        Mockito.doNothing().when(blogService).deleteById(blogId);
-
-        // when
-        ResultActions response = mockMvc.perform(
-                post("/blog/delete/"+blogId)
-                    .with(csrf()));
-
-        // then
-        response.andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/blog/list"))
-                .andDo(print());
-        Mockito.verify(blogService).deleteById(blogId);
-    }
-
-    @Test
-    @WithMockUser
-    public void insertTest_ValidData() throws Exception {
-        // given
-        BlogCreateRequestDTO blogCreateRequestDTO = new BlogCreateRequestDTO("writer", "title", "content");
-
-        // when
-        ResultActions response = mockMvc.perform(
-                post("/blog/create")
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .flashAttr("blogCreateRequestDTO", blogCreateRequestDTO)); // Flash attributes are temporary storage and often used for passing data between 'redirects'.
-
-        // then
-        response.andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/blog/list"))
-                .andDo(print());
-
-        Mockito.verify(blogService).save(blogCreateRequestDTO);
-    }
-
-    @Test
-    @WithMockUser
-    public void insertTest_InvalidData() throws Exception {
-        // given
-        BlogCreateRequestDTO blogCreateRequestDTO = new BlogCreateRequestDTO(null, null, "content");
-
-        // when
-        ResultActions response = mockMvc.perform(
-                post("/blog/create")
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .flashAttr("blogCreateRequestDTO", blogCreateRequestDTO));
-                //.content(objectMapper.writeValueAsString(blogCreateRequestDTO))); // serializes the blogCreateRequestDTO object into JSON using the ObjectMapper. It simulates sending a JSON payload in the request body.
-
-        // then
-        response.andExpect(view().name("redirect:/blog/list"));
-
-        Mockito.verify(blogService, never()).save(blogCreateRequestDTO);
-    }
-
-
-    @Test
-    @WithMockUser
-    public void updateTest_ValidData() throws Exception {
-        // given
-        long blogId = 1;
-        BlogUpdateRequestDTO blogUpdateRequestDTO = new BlogUpdateRequestDTO("title", "content");
-
-        // when
-        ResultActions response = mockMvc.perform(
-                post("/blog/update/"+blogId)
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .flashAttr("blogUpdateRequestDTO", blogUpdateRequestDTO)); // Flash attributes are temporary storage and often used for passing data between 'redirects'.
-
-        // then
-        response.andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/blog/detail/" + blogId))
-                .andDo(print());
-
-        Mockito.verify(blogService).update(blogId, blogUpdateRequestDTO);
-    }
-
-    @Test
-    @WithMockUser
-    public void updateTest_InvalidData() throws Exception {
-        // given
-        long blogId = 1;
-        BlogUpdateRequestDTO blogUpdateRequestDTO = new BlogUpdateRequestDTO(null, "content");
-
-        // when
-        ResultActions response = mockMvc.perform(
-                post("/blog/update/"+blogId)
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .flashAttr("blogUpdateRequestDTO", blogUpdateRequestDTO)); // Flash attributes are temporary storage and often used for passing data between 'redirects'.
-
-        // then
-        response.andExpect(redirectedUrl("/blog/detail/" + blogId));
-
-        Mockito.verify(blogService, never()).update(blogId, blogUpdateRequestDTO);
     }
 
 }

@@ -1,22 +1,15 @@
 package com.example.blog.controller;
 
 import com.example.blog.dto.BlogResponseDTO;
-import com.example.blog.dto.BlogCreateRequestDTO;
-import com.example.blog.dto.BlogUpdateRequestDTO;
 import com.example.blog.service.BlogService;
-import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/blog")
 @Log4j2
 public class BlogViewController {
     BlogService blogService;
@@ -26,9 +19,8 @@ public class BlogViewController {
         this.blogService = blogService;
     }
 
-    // 블로그 목록 조회
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public String list(Model model, @RequestParam(required = false, defaultValue = "1", value = "page") Long pageNum){
+    @GetMapping("/blogs")
+    public String getBlogs(Model model, @RequestParam(required = false, defaultValue = "1", value = "page") Long pageNum){
         Page<BlogResponseDTO> pageInfo = blogService.findAll(pageNum);
 
         final int PAGE_BTN_NUM = 10; // 한 페이지에 보여야 하는 페이징 버튼 그룹의 개수
@@ -46,17 +38,16 @@ public class BlogViewController {
         return "blog/blogList"; // /WEB-INF/views/board/blogList.jsp
     }
 
-    // 블로그 디테일 페이지
-    @RequestMapping(value = "/detail/{blogId}", method = RequestMethod.GET)
-    public String detail(@PathVariable long blogId, Model model){
+    @GetMapping("/blogs/{blogId}")
+    public String getBlog(@PathVariable long blogId, Model model){
         BlogResponseDTO blogFindByIdDTO = blogService.findById(blogId);
         model.addAttribute("blog", blogFindByIdDTO); // 데이터 전달하여 뷰에 뿌려주기
         return "blog/blogDetail"; // /WEB-INF/views/blog/blogDetail.jsp
     }
 
-    // 블로그 생성 맟 수정 폼
-    @RequestMapping(value="/new", method = RequestMethod.GET)
-    public String updateForm(@RequestParam(required = false, value = "id") Long blogId, Model model) {
+    @GetMapping("/blogs/new")
+    public String newBlogForm(@RequestParam(required = false, value = "id") Long blogId, Model model) {
+
         if (blogId == null) {
             model.addAttribute("blog", null);
         } else {
@@ -64,46 +55,6 @@ public class BlogViewController {
             model.addAttribute("blog", blog);
         }
         return "blog/newBlog"; // /WEB-INF/views/blog/newBlog.jsp
-    }
-
-
-    // 블로그 삭제 : POST /blog/delete/{blogId}
-    @RequestMapping(value = "/delete/{blogId}", method = RequestMethod.POST)
-    public String delete(@PathVariable long blogId){
-        blogService.deleteById(blogId);
-        return "blog/list";
-    }
-
-    // 블로그 생성 : POST /blog/create
-
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public String insert(@Valid @RequestBody BlogCreateRequestDTO blogCreateRequestDTO, BindingResult bindingResult){
-
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserDetails userDetails = (UserDetails) principal;
-        String username = userDetails.getUsername(); // email
-        blogCreateRequestDTO.setBlogWriter(username);
-
-        if(bindingResult.hasErrors()){
-            System.out.println(bindingResult.getAllErrors());
-            return "blog/list";
-        }
-
-        blogService.save(blogCreateRequestDTO);
-        return "redirect:/blog/list";
-    }
-
-    // 블로그 수정
-
-    @RequestMapping(value = "/update/{blogId}", method = RequestMethod.POST)
-    public String update(@PathVariable long blogId, @Valid @RequestBody BlogUpdateRequestDTO blogUpdateRequestDTO, BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
-            System.out.println(bindingResult.getAllErrors());
-            return "redirect:/blog/detail/" + blogId;
-        }
-
-        blogService.update(blogId, blogUpdateRequestDTO);
-        return "redirect:/blog/detail/" + blogId;
     }
 
 }

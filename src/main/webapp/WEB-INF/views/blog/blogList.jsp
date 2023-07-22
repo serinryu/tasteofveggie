@@ -31,7 +31,7 @@
             <tr>
                 <td>${blog.blogId}</td>
                 <td>${blog.blogWriter}</td>
-                <td><a href="/blog/detail/${blog.blogId}">${blog.blogTitle}</a></td>
+                <td><a href="/blogs/${blog.blogId}">${blog.blogTitle}</a></td>
                 <td>${blog.blogContent}</td>
                 <td>${blog.publishedAt}</td>
                 <td>${blog.updatedAt}</td>
@@ -41,14 +41,13 @@
         </tbody>
     </table> <!-- .table table-hover-->
 
-    <div class="col-10">
-        <!--페이징 처리 버튼 자리-->
+    <div class="col-10"> <!-- pagination -->
         <ul class="pagination justify-content-center">
 
             <!-- 이전페이지 버튼 -->
             <c:if test="${startPageNum != 1}">
                 <li class="page-item">
-                    <a class="page-link" href="/blog/list?page=${startPageNum - 1}">이전으로</a>
+                    <a class="page-link" href="/blogs?page=${startPageNum - 1}">이전으로</a>
                 </li>
             </c:if>
 
@@ -57,14 +56,14 @@
                        end="${ endPageNum }"
                        var="btnNum">
                 <li class="page-item ${ currentPageNum == btnNum ? 'active' : '' }">
-                    <a class="page-link" href="/blog/list?page=${btnNum}">${btnNum}</a>
+                    <a class="page-link" href="/blogs?page=${btnNum}">${btnNum}</a>
                 </li>
             </c:forEach>
 
             <!-- 다음페이지 버튼 -->
             <c:if test="${endPageNum != pageInfo.getTotalPages()}">
                 <li class="page-item">
-                    <a class="page-link" href="/blog/list?page=${endPageNum + 1}">다음으로</a>
+                    <a class="page-link" href="/blogs?page=${endPageNum + 1}">다음으로</a>
                 </li>
             </c:if>
 
@@ -72,13 +71,9 @@
     </div>
 
     <button type="button" id="create-btn"
-            onclick="location.href='${pageContext.request.contextPath}/blog/new'"
+            onclick="location.href='${pageContext.request.contextPath}/blogs/new'"
             class="btn btn-secondary btn-sm mb-3"> 글쓰기 </button>
-<%--    <div>--%>
-<%--        <a href="/blog/create" class="btn btn-primary">글쓰기</a>--%>
-<%--    </div>--%>
 
 </div> <!-- .container -->
-
 </body>
 </html>
