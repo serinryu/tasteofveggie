@@ -10,7 +10,6 @@ public class ReplyCreateRequestDTO {
     @NotNull
     private long blogId;
 
-    @NotEmpty
     private String replyWriter;
 
     @NotEmpty

@@ -5,8 +5,13 @@ import com.example.blog.dto.ReplyResponseDTO;
 import com.example.blog.dto.ReplyUpdateRequestDTO;
 import com.example.blog.service.ReplyService;
 import jakarta.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +20,8 @@ import java.util.List;
 @RequestMapping("/reply")
 public class ReplyApiController {
     ReplyService replyService;
+
+    private static final Logger logger = LogManager.getLogger(ReplyApiController.class);
 
     @Autowired
     public ReplyApiController(ReplyService replyService){
@@ -33,9 +40,20 @@ public class ReplyApiController {
         return ResponseEntity.ok().body(replyFindByIdDTO);
     }
 
-    @PostMapping("")
-    public ResponseEntity<String> addReply(@RequestBody @Valid ReplyCreateRequestDTO replyInsertDTO) {
-        replyService.save(replyInsertDTO);
+    @PostMapping
+    public ResponseEntity<String> addReply(@RequestBody @Valid ReplyCreateRequestDTO replyCreateRequestDTO, BindingResult bindingResult) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName(); // Get the username from the authentication object
+        replyCreateRequestDTO.setReplyWriter(username);
+
+        if (bindingResult.hasErrors()) {
+            logger.error("Validation errors: {}", bindingResult.getAllErrors());
+            return ResponseEntity.badRequest().build();
+        }
+
+        replyService.save(replyCreateRequestDTO);
+        logger.info("Reply updated successfully.");
         return ResponseEntity.ok().body("Reply added successfully.");
     }
 
