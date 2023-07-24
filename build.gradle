@@ -27,7 +27,6 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation 'mysql:mysql-connector-java:8.0.28'
     // jsp + jstl
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
@@ -35,6 +34,9 @@ dependencies {
     // security
     implementation 'org.springframework.boot:spring-boot-starter-security:3.1.0'
     testImplementation 'org.springframework.security:spring-security-test:6.1.0'
+    // jwt
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
 }
 
 tasks.named('test') {
