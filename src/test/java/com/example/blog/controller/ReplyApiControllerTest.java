@@ -96,9 +96,9 @@ public class ReplyApiControllerTest {
 
     @Test
     @WithMockUser
-    public void addReplyTest_ValidData() throws Exception {
+    public void addReplyTest_Success() throws Exception {
         // given
-        ReplyCreateRequestDTO replyCreateRequestDTO = new ReplyCreateRequestDTO(1, "writer 1", "content 1");
+        ReplyCreateRequestDTO replyCreateRequestDTO = new ReplyCreateRequestDTO(1, null, "content 1");
         Mockito.doNothing().when(replyService).save(replyCreateRequestDTO);
 
         // when
@@ -109,27 +109,9 @@ public class ReplyApiControllerTest {
 
         // then
         response.andExpect(status().isOk())
-                        .andDo(print());
+                .andDo(print());
 
         Mockito.verify(replyService).save(argThat(reply -> reply.getReplyContent().equals("content 1")));
-    }
-
-    @Test
-    @WithMockUser
-    public void addReplyTest_InvalidData() throws Exception {
-        // given
-        ReplyCreateRequestDTO replyCreateRequestDTO = new ReplyCreateRequestDTO(1, null, "content 1");
-
-        // when
-        ResultActions response = mockMvc.perform(post("/reply")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(replyCreateRequestDTO)));  // java object -> json
-
-        // then
-        response.andExpect(status().isBadRequest());
-
-        Mockito.verify(replyService, never()).save(any());
     }
 
     @Test

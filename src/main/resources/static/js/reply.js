@@ -61,6 +61,7 @@ function deleteReply(replyId) {
                         replyElement.remove();
                     }
                     alert("Reply deleted successfully.");
+                    getAllReplies(blogId); // UI update
                 } else {
                     console.error("Failed to delete the reply:", res.status);
                 }
@@ -106,7 +107,7 @@ function addReply() {
 
 function openUpdateReplyModal(replyId) {
     // Get the existing reply content
-    const existingReplyContent = document.getElementById(`replyContent${replyId}`).innerText;
+    const existingReplyContent = document.querySelector(`.card-text`).textContent;
 
     // Populate the reply content inside the modal input field
     const $modalReplyContent = document.getElementById("modalReplyContent");
@@ -132,7 +133,7 @@ function updateReply(replyId) {
         .then((res) => {
             if (res.ok) {
                 $modalReplyContent.value = "";
-                getAllReplies("${blog.blogId}");
+                getAllReplies(blogId);
             } else {
                 console.error("Failed to update the reply:", res.status);
             }
