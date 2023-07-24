@@ -2,8 +2,8 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.blog.repository.ReplyRepository">
-    <select id="findAllByBlogId" resultType="com.example.blog.entity.Reply" parameterType="long">
+<mapper namespace="com.serinryu.springproject.repository.ReplyRepository">
+    <select id="findAllByBlogId" resultType="com.serinryu.springproject.entity.Reply" parameterType="long">
         SELECT
             reply_id as replyId,
             blog_id as blogId,
@@ -16,7 +16,7 @@
         WHERE
             blog_id = #{blogId}
     </select>
-    <select id="findByReplyId" resultType="com.example.blog.entity.Reply" parameterType="long">
+    <select id="findByReplyId" resultType="com.serinryu.springproject.entity.Reply" parameterType="long">
         SELECT
             reply_id as replyId,
             blog_id as blogId,
@@ -41,13 +41,13 @@
         WHERE
             blog_id = #{blogId}
     </delete>
-    <insert id="save" parameterType="com.example.blog.entity.Reply">
+    <insert id="save" parameterType="com.serinryu.springproject.entity.Reply">
         INSERT INTO
             REPLY (blog_id, reply_writer, reply_content)
         VALUES
             (#{blogId}, #{replyWriter}, #{replyContent})
     </insert>
-    <update id="update" parameterType="com.example.blog.entity.Reply">
+    <update id="update" parameterType="com.serinryu.springproject.entity.Reply">
         UPDATE
             REPLY
         SET
