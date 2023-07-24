@@ -57,7 +57,7 @@ public class BlogServiceImpl implements BlogService {
     };
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional // updateBlogCount() 를 Dirty-Checking 으로 수행하므로 (readOnly=true) 걸어놓으면 안됨
     public BlogResponseDTO findById(long blogId) {
         Blog blog = blogJpaRepository.findById(blogId)
                 .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));

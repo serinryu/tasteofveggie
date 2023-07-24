@@ -98,7 +98,6 @@ public class BlogApiController {
             return ResponseEntity.badRequest().build();
         }
         blogService.update(blogId, blogUpdateRequestDTO);
-        logger.info("Blog updated successfully.");
         return ResponseEntity.ok()
                 .build();
     }
