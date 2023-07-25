@@ -1,15 +1,13 @@
 package com.serinryu.springproject.config.jwt;
 
-import com.serinryu.springproject.entity.User;
+import com.serinryu.springproject.entity.UserPrinciple;
+import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Duration;
@@ -17,18 +15,22 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 
+/*
+JWT 토큰을 생성, 검증, 추출 등의 동작을 하는 클래스
+ */
+@Slf4j
 @RequiredArgsConstructor
 @Service
-public class TokenProvider {
+public class JwtProvider {
 
     private final JwtProperties jwtProperties;
 
-    public String generateToken(User user, Duration expiredAt) {
+    public String generateToken(UserPrinciple userPrinciple, Duration expiredAt) {
         Date now = new Date();
-        return makeToken(new Date(now.getTime() + expiredAt.toMillis()), user);
+        return makeToken(new Date(now.getTime() + expiredAt.toMillis()), userPrinciple);
     }
 
-    private String makeToken(Date expiry, User user) {
+    private String makeToken(Date expiry, UserPrinciple userPrinciple) {
         Date now = new Date();
 
         return Jwts.builder()
@@ -36,24 +38,27 @@ public class TokenProvider {
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .setSubject(user.getEmail())
-                .claim("id", user.getId())
+                .setSubject(userPrinciple.getEmail())
+                .claim("id", userPrinciple.getId())
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
                 .compact();
     }
 
     public boolean validToken(String token) {
         try {
-            Jwts.parser()
-                    .setSigningKey(jwtProperties.getSecretKey())
-                    .parseClaimsJws(token);
-
+            Jwts.parser().setSigningKey(jwtProperties.getSecretKey()).parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
-            return false;
+        }catch (MalformedJwtException e) {
+            log.info("Invalid JWT Token", e);
+        } catch (ExpiredJwtException e) {
+            log.info("Expired JWT Token", e);
+        } catch (UnsupportedJwtException e) {
+            log.info("Unsupported JWT Token", e);
+        } catch (IllegalArgumentException e) {
+            log.info("JWT claims string is empty.", e);
         }
+        return false;
     }
-
 
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);

@@ -22,7 +22,7 @@
                 <p class="text-white-50 mt-2 mb-5">서비스 사용을 위한 회원 가입</p>
 
                 <div class = "mb-2">
-                    <form action="${pageContext.request.contextPath}/user" method="POST">
+                    <form action="/signup" method="POST">
                         <!-- 토큰을 추가하여 CSRF 공격 방지 -->
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                         <div class="mb-3">

@@ -15,7 +15,7 @@ Spring Security 프레임워크를 통해 생성된 필터 체인이 정상적�
  */
 @SpringBootTest
 @AutoConfigureMockMvc
-class UserApiControllerTest {
+class UserPrincipleApiControllerTest {
 
     @Autowired
     MockMvc mockMvc;
