@@ -1,6 +1,8 @@
 package com.serinryu.springproject.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serinryu.springproject.config.jwt.JwtProvider;
+import com.serinryu.springproject.dto.ApiResponse;
 import com.serinryu.springproject.entity.UserPrinciple;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,6 +37,10 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
         // 3. response
         response.addHeader("Authorization", "Bearer " + token);
-        response.getWriter().write("Successfully Logged in. Token is issued.");
+
+        ApiResponse apiResponse = new ApiResponse(true, "Successfully Logged in. Token is issued");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(apiResponse);
+        response.getWriter().write(jsonResponse);
     }
 }

@@ -1,4 +1,4 @@
-package com.serinryu.springproject.service;
+package com.serinryu.springproject.security;
 
 import com.serinryu.springproject.entity.RefreshToken;
 import com.serinryu.springproject.repository.RefreshTokenRepository;
@@ -14,6 +14,10 @@ public class RefreshTokenService {
     public RefreshToken findByRefreshToken(String refreshToken) {
         return refreshTokenRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new IllegalArgumentException("Unexpected token"));
+    }
+
+    public RefreshToken save(RefreshToken refreshToken) {
+        return refreshTokenRepository.save(refreshToken);
     }
 }
 

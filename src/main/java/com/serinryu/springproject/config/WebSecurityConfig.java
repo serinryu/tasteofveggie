@@ -3,8 +3,6 @@ package com.serinryu.springproject.config;
 import com.serinryu.springproject.config.jwt.JwtProvider;
 import com.serinryu.springproject.service.UserDetailService;
 import jakarta.servlet.DispatcherType;
-import jakarta.servlet.Filter;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,9 +55,7 @@ public class WebSecurityConfig {
 
             // Set permissions on endpoints
             .authorizeHttpRequests(authorize -> authorize
-                // Our public endpoints
                 .requestMatchers("/login", "/signup", "/blogs").permitAll() // 위 3개의 페이지는 별도 인증 없이 접근 가능
-                // Our private endpoints
                 .anyRequest().authenticated()
             )
 
@@ -67,20 +63,14 @@ public class WebSecurityConfig {
                     UsernamePasswordAuthenticationFilter.class)
 
             /*
-            시큐리티가 제공해주는 폼 로그인 UI 사용 -> POST /login 해서 로직 작성할 필요 없음
+            시큐리티가 제공해주는 login form 사용 (Form based Auth)  -> POST /login 해서 로직 작성할 필요 없음
 
             디폴트시 /login 경로로 로그인 요청이 전달되고
             폼 데이터의 username, password 는
             Authentication 객체의 principle, credential 로 매핑된다.
-
-             만약 .formLogin().disable()로 설정하게 되면 시큐리티가 제공해주는 login 폼을 사용하지 않기 때문에
-             UsernamePasswordAuthenticationFilter 필터도 동작하지 않게 되므로 커스텀하여 직접 등록해야 한다.
-             우선, 시큐리티가 제공하는 폼 로그인 UI 를 사용하겠음.
-
              */
             .formLogin(form -> form
                 .loginPage("/login") // HTML Form 을 통해 POST /login
-                .failureUrl("/login?error=true")
                 .successHandler(jwtAuthenticationSuccessHandler)
                 .failureHandler(jwtAuthenticationFailureHandler)
             )
