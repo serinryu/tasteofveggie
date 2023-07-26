@@ -3,6 +3,7 @@ package com.serinryu.springproject.security;
 import com.serinryu.springproject.config.jwt.JwtProvider;
 import com.serinryu.springproject.entity.RefreshToken;
 import com.serinryu.springproject.entity.UserPrinciple;
+import com.serinryu.springproject.exception.InvalidTokenException;
 import com.serinryu.springproject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class TokenService {
     public String createNewAccessToken(String refreshToken) {
         // 토큰 유효성 검사에 실패하면 예외 발생
         if(!jwtProvider.validToken(refreshToken)) {
-            throw new IllegalArgumentException("Unexpected token");
+            throw new InvalidTokenException("Unexpected token");
         }
 
         Long userId = refreshTokenService.findByRefreshToken(refreshToken).getUserId();

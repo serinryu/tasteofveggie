@@ -4,6 +4,7 @@ import com.serinryu.springproject.dto.SignUpRequestDTO;
 import com.serinryu.springproject.entity.UserPrinciple;
 import com.serinryu.springproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +16,12 @@ public class UserService {
 
     public UserPrinciple findById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Unexpected user"));
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected user"));
     }
 
     public UserPrinciple findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Unexpected user"));
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected user"));
     }
 
     public Long save(SignUpRequestDTO signUpRequestDTO) {

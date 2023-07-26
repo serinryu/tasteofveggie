@@ -24,4 +24,10 @@ public class GlobalExceptionHandler {
         log.error("NotFoundBlogIdException", e);
         return "error/NotFoundBlogIdExceptionResultPage";
     }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidTokenException(InvalidTokenException ex) {
+        ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }
