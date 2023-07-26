@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-public class User implements UserDetails { // UserDetails 를 상속받아 인증 객체로 사용
+public class UserPrinciple implements UserDetails { // UserDetails 를 상속받아 인증 객체로 사용
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
@@ -29,7 +29,7 @@ public class User implements UserDetails { // UserDetails 를 상속받아 인�
     private String password;
 
     @Builder
-    public User(String email, String password, String auth){
+    public UserPrinciple(String email, String password, String auth){
         this.email = email;
         this.password = password;
     }

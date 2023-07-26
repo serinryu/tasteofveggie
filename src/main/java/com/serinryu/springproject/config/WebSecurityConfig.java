@@ -1,5 +1,6 @@
 package com.serinryu.springproject.config;
 
+import com.serinryu.springproject.config.jwt.JwtProvider;
 import com.serinryu.springproject.service.UserDetailService;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
@@ -8,15 +9,22 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @RequiredArgsConstructor
 @Configuration
+@EnableWebSecurity
 public class WebSecurityConfig {
 
     private final UserDetailService userService;
+    private final JwtProvider jwtProvider;
+    private final JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
+    private final JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler;
 
     // 스프링 시큐리티 기능 비활성화 (모든 곳에 인증, 인가 서비스를 적용할 필요 없음. static 디렉토리의 파일들은 항상 인증 무시)
     @Bean
@@ -32,28 +40,48 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // 인증, 인가 설정
+            /*
+            폼 로그인 방식 + JWT 인증
+             */
+
+            // 헤더에 토큰으로 "basic "으로 된 토큰을 사용하는 경우 -> httpBasic() / 사용하지 않으면 "BasicAu~"가 작동안하는데 우리는 JWT 토큰을 사용하니 커스텀해서 등록해주기
+            .httpBasic(httpBasic -> httpBasic.disable())
+
+            // disable CSRF (JWT 를 사용하므로 disable)
+            .csrf(csrf -> csrf.disable())
+
+            // 시큐리티는 기본적으로 세션을 사용. 여기서는 세션을 사용하지 않기 때문에 세션 설정을 Stateless 로 설정
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+            // Set permissions on endpoints
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/login", "/signup", "/user")
-                .permitAll() // 위 3개의 페이지는 별도 인증 없이 접근 가능
-                .anyRequest()
-                .authenticated()
+                .requestMatchers("/login", "/signup", "/blogs").permitAll() // 위 3개의 페이지는 별도 인증 없이 접근 가능
+                .anyRequest().authenticated()
             )
-            // 폼 기반 로그인 설정
+
+            .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
+                    UsernamePasswordAuthenticationFilter.class)
+
+            /*
+            시큐리티가 제공해주는 login form 사용 (Form based Auth)  -> POST /login 해서 로직 작성할 필요 없음
+
+            디폴트시 /login 경로로 로그인 요청이 전달되고
+            폼 데이터의 username, password 는
+            Authentication 객체의 principle, credential 로 매핑된다.
+             */
             .formLogin(form -> form
-                .loginPage("/login") // POST /login
-                .defaultSuccessUrl("/blog/list")
-                // .failureUrl("/login?error=true")
+                .loginPage("/login") // HTML Form 을 통해 POST /login
+                .successHandler(jwtAuthenticationSuccessHandler)
+                .failureHandler(jwtAuthenticationFailureHandler)
             )
-            // 로그아웃 설정
             .logout(logout -> logout
                 .logoutSuccessUrl("/login")
                 .invalidateHttpSession(true)
-            )
-            .csrf(csrf -> csrf
-                .disable());
+            );
+
         return http.build();
     }
+
 
     // 인증 관리자 관련 설정
     @Bean
@@ -71,3 +99,4 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
+

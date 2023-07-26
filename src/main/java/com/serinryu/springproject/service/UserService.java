@@ -1,9 +1,10 @@
 package com.serinryu.springproject.service;
 
-import com.serinryu.springproject.dto.UserCreateRequestDTO;
-import com.serinryu.springproject.entity.User;
+import com.serinryu.springproject.dto.SignUpRequestDTO;
+import com.serinryu.springproject.entity.UserPrinciple;
 import com.serinryu.springproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,10 +14,20 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public Long save(UserCreateRequestDTO userCreateRequestDTO) {
-        return userRepository.save(User.builder()
-                .email(userCreateRequestDTO.getEmail())
-                .password(bCryptPasswordEncoder.encode(userCreateRequestDTO.getPassword()))
+    public UserPrinciple findById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected user"));
+    }
+
+    public UserPrinciple findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected user"));
+    }
+
+    public Long save(SignUpRequestDTO signUpRequestDTO) {
+        return userRepository.save(UserPrinciple.builder()
+                .email(signUpRequestDTO.getEmail())
+                .password(bCryptPasswordEncoder.encode(signUpRequestDTO.getPassword()))
                 .build()).getId();
     }
 }
