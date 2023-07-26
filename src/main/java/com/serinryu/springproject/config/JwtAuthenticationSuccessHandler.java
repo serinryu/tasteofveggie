@@ -35,6 +35,6 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
         // 3. response
         response.addHeader("Authorization", "Bearer " + token);
-        response.getWriter().write("로그인 완료되었습니다. 토큰 발급이 되었습니다.");
+        response.getWriter().write("Successfully Logged in. Token is issued.");
     }
 }

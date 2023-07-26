@@ -1,6 +1,6 @@
 package com.serinryu.springproject.service;
 
-import com.serinryu.springproject.dto.UserCreateRequestDTO;
+import com.serinryu.springproject.dto.SignUpRequestDTO;
 import com.serinryu.springproject.entity.UserPrinciple;
 import com.serinryu.springproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +23,10 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("Unexpected user"));
     }
 
-    public Long save(UserCreateRequestDTO userCreateRequestDTO) {
+    public Long save(SignUpRequestDTO signUpRequestDTO) {
         return userRepository.save(UserPrinciple.builder()
-                .email(userCreateRequestDTO.getEmail())
-                .password(bCryptPasswordEncoder.encode(userCreateRequestDTO.getPassword()))
+                .email(signUpRequestDTO.getEmail())
+                .password(bCryptPasswordEncoder.encode(signUpRequestDTO.getPassword()))
                 .build()).getId();
     }
 }

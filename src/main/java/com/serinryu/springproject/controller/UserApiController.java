@@ -1,6 +1,6 @@
 package com.serinryu.springproject.controller;
 
-import com.serinryu.springproject.dto.UserCreateRequestDTO;
+import com.serinryu.springproject.dto.SignUpRequestDTO;
 import com.serinryu.springproject.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,9 +20,9 @@ public class UserApiController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public String signup(UserCreateRequestDTO userCreateRequestDTO){
-        userService.save(userCreateRequestDTO);
-        return userCreateRequestDTO.toString();
+    public String signup(SignUpRequestDTO signUpRequestDTO){
+        userService.save(signUpRequestDTO);
+        return signUpRequestDTO.toString();
     }
 
     @GetMapping("/logout")

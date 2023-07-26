@@ -52,14 +52,13 @@ public class WebSecurityConfig {
             // disable CSRF (JWT 를 사용하므로 disable)
             .csrf(csrf -> csrf.disable())
 
-            // 시큐리티는 기본적으로 세션을 사용
-            // 여기서는 세션을 사용하지 않기 때문에 세션 설정을 Stateless 로 설정
+            // 시큐리티는 기본적으로 세션을 사용. 여기서는 세션을 사용하지 않기 때문에 세션 설정을 Stateless 로 설정
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
             // Set permissions on endpoints
             .authorizeHttpRequests(authorize -> authorize
                 // Our public endpoints
-                .requestMatchers("/login", "/signup").permitAll() // 위 3개의 페이지는 별도 인증 없이 접근 가능
+                .requestMatchers("/login", "/signup", "/blogs").permitAll() // 위 3개의 페이지는 별도 인증 없이 접근 가능
                 // Our private endpoints
                 .anyRequest().authenticated()
             )
