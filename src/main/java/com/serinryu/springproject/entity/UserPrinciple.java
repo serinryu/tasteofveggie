@@ -28,10 +28,20 @@ public class UserPrinciple implements UserDetails { // UserDetails 를 상속받
     @Column(name = "password")
     private String password;
 
+    // OAuth2
+    @Column(name = "nickname", unique = true)
+    private String nickname;
+
     @Builder
-    public UserPrinciple(String email, String password, String auth){
+    public UserPrinciple(String email, String password, String nickname){
         this.email = email;
         this.password = password;
+        this.nickname = nickname;
+    }
+
+    public UserPrinciple update(String nickname){
+        this.nickname = nickname;
+        return this;
     }
 
     @Override

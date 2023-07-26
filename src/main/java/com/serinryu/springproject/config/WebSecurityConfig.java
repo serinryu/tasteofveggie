@@ -1,5 +1,7 @@
 package com.serinryu.springproject.config;
 
+import com.serinryu.springproject.config.jwt.JwtAuthenticationFailureHandler;
+import com.serinryu.springproject.config.jwt.JwtAuthenticationSuccessHandler;
 import com.serinryu.springproject.config.jwt.JwtProvider;
 import com.serinryu.springproject.service.UserDetailService;
 import jakarta.servlet.DispatcherType;
