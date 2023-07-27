@@ -75,5 +75,9 @@
             class="btn btn-secondary btn-sm mb-3"> 글쓰기 </button>
 
 </div> <!-- .container -->
+
+<script src="/js/token.js"></script>
+<script src="/js/article.js"></script>
+
 </body>
 </html>
