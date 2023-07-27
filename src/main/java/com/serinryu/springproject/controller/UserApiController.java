@@ -32,7 +32,7 @@ public class UserApiController {
     /* 현재는 스프링 시큐리티에서 제공하는 .formlogin() 을 사용하고 있음
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequestDTO loginRequestDTO) {
-        UserPrinciple userPrinciple = userService.findByEmail(loginRequestDTO.getEmail());
+        UserPrincipal userPrinciple = userService.findByEmail(loginRequestDTO.getEmail());
 
         String accessToken = tokenService.generateAccessToken(userPrinciple);
         String refreshToken = tokenService.generateAndSaveRefreshToken(userPrinciple); // Implement this method to generate a new refresh token.

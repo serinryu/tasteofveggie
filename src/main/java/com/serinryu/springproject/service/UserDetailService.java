@@ -1,6 +1,6 @@
 package com.serinryu.springproject.service;
 
-import com.serinryu.springproject.entity.UserPrinciple;
+import com.serinryu.springproject.entity.UserPrincipal;
 import com.serinryu.springproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,7 +14,7 @@ public class UserDetailService implements UserDetailsService { // 실제 DB 로�
 
     // This method is used by Spring Security
     @Override
-    public UserPrinciple loadUserByUsername(String email){
+    public UserPrincipal loadUserByUsername(String email){
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException((email)));
     }

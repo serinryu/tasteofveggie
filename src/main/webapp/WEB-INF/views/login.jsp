@@ -37,6 +37,13 @@
 
                     <button type="button" class="btn btn-secondary mt-3" onclick="location.href='/signup'">회원가입</button>
                 </div>
+
+                <div class = "mb-2">
+                    <a href="/oauth2/authorization/google">
+                        <img src="/img/google.png">
+                    </a>
+                </div>
+
             </div>
         </div>
     </div>

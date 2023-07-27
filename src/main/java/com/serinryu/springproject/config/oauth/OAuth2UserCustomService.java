@@ -1,6 +1,6 @@
 package com.serinryu.springproject.config.oauth;
 
-import com.serinryu.springproject.entity.UserPrinciple;
+import com.serinryu.springproject.entity.UserPrincipal;
 import com.serinryu.springproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -26,15 +26,15 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
     }
 
     // 유저가 있으면 업데이트, 없으면 유저 생성
-    private UserPrinciple saveOrUpdate(OAuth2User oAuth2User) {
+    private UserPrincipal saveOrUpdate(OAuth2User oAuth2User) {
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
         String email = (String) attributes.get("email");
         String name = (String) attributes.get("name");
 
-        UserPrinciple user = userRepository.findByEmail(email)
+        UserPrincipal user = userRepository.findByEmail(email)
                 .map(entity -> entity.update(name))
-                .orElse(UserPrinciple.builder()
+                .orElse(UserPrincipal.builder()
                         .email(email)
                         .nickname(name)
                         .build());
