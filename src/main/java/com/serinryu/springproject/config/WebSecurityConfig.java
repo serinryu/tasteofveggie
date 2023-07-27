@@ -11,6 +11,7 @@ import com.serinryu.springproject.service.UserDetailService;
 import com.serinryu.springproject.service.UserService;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,8 @@ public class WebSecurityConfig {
     private final JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
     private final JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler;
     private final OAuth2UserCustomService oAuth2UserCustomService;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final UserDetailService userDetailService;
 
     // 스프링 시큐리티 기능 비활성화 (모든 곳에 인증, 인가 서비스를 적용할 필요 없음. static 디렉토리의 파일들은 항상 인증 무시)
     @Bean
@@ -60,13 +63,14 @@ public class WebSecurityConfig {
 
             // Set permissions on endpoints
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/token", "/blogs").permitAll() // 토큰 재발급 URL 은 인증 없이 접근 가능
-                .requestMatchers("/api/**", "/blogs/**").authenticated()
+                .requestMatchers("/api/token").permitAll() // Allow public access to the token endpoint
+                .requestMatchers("/blogs", "/login", "logout").permitAll() // Allow public access to the /blogs endpoint
+                .requestMatchers("/api/**", "/blogs/**").authenticated() // Secure all other API endpoints
                 .anyRequest().permitAll()
             )
 
             // 커스텀 필터 추가
-            .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
+            .addFilterBefore(jwtAuthenticationFilter(),
                     UsernamePasswordAuthenticationFilter.class)
 
             // Form based Auth  -> Spring Security 제공. POST /login 해서 로직 작성할 필요 없음
@@ -85,12 +89,15 @@ public class WebSecurityConfig {
                 .userInfoEndpoint(userInfo -> userInfo
                         .userService(oAuth2UserCustomService)
                 )
-                //.successHandler(oAuth2SuccessHandler())
+                .successHandler(oAuth2SuccessHandler())
+                .failureUrl("/login")
             )
 
             .logout(logout -> logout
                 .logoutSuccessUrl("/login")
                 .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies()
             )
 
             // /api/** 로 들어오는 url 일 경우 401 상태 코드 반환하도록
@@ -114,20 +121,24 @@ public class WebSecurityConfig {
     }
 
 
-//    @Bean
-//    public OAuth2SuccessHandler oAuth2SuccessHandler() {
-//        return new OAuth2SuccessHandler(jwtProvider,
-//                refreshTokenRepository,
-//                oAuth2AuthorizationRequestBasedOnCookieRepository(),
-//                userService
-//        );
-//    }
+    @Bean
+    public OAuth2SuccessHandler oAuth2SuccessHandler() {
+        return new OAuth2SuccessHandler(jwtProvider,
+                refreshTokenRepository,
+                oAuth2AuthorizationRequestBasedOnCookieRepository(),
+                userDetailService
+        );
+    }
 
     @Bean
     public OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository() {
         return new OAuth2AuthorizationRequestBasedOnCookieRepository();
     }
 
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(){
+        return new JwtAuthenticationFilter(jwtProvider);
+    }
 
     // 패스워드 인코더로 사용할 빈 등록
     @Bean

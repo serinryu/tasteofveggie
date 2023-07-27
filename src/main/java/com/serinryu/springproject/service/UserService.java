@@ -14,16 +14,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserPrincipal findById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("Unexpected user"));
-    }
-
-    public UserPrincipal findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Unexpected user"));
-    }
-
     public Long save(SignUpRequestDTO signUpRequestDTO) {
         return userRepository.save(UserPrincipal.builder()
                 .email(signUpRequestDTO.getEmail())

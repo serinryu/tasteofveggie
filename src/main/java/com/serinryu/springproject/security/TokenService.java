@@ -4,6 +4,7 @@ import com.serinryu.springproject.config.jwt.JwtProvider;
 import com.serinryu.springproject.entity.RefreshToken;
 import com.serinryu.springproject.entity.UserPrincipal;
 import com.serinryu.springproject.exception.InvalidTokenException;
+import com.serinryu.springproject.service.UserDetailService;
 import com.serinryu.springproject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class TokenService {
 
     private final JwtProvider jwtProvider;
     private final RefreshTokenService refreshTokenService;
-    private final UserService userService;
+    private final UserDetailService userService;
 
     // Create a new access token based on the provided UserPrincipal and set its expiration time.
     public String generateAccessToken(UserPrincipal userPrincipal) {

@@ -18,4 +18,15 @@ public class UserDetailService implements UserDetailsService { // 실제 DB 로�
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException((email)));
     }
+
+    public UserPrincipal findById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected user"));
+    }
+
+    public UserPrincipal findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected user"));
+    }
+
 }
