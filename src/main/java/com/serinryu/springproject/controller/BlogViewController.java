@@ -5,6 +5,8 @@ import com.serinryu.springproject.service.BlogService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,9 @@ public class BlogViewController {
     public String getBlogs(Model model, @RequestParam(required = false, defaultValue = "1", value = "page") Long pageNum){
         Page<BlogResponseDTO> pageInfo = blogService.findAll(pageNum);
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName(); // Get the username from the authentication object
+
         final int PAGE_BTN_NUM = 10; // 한 페이지에 보여야 하는 페이징 버튼 그룹의 개수
         int currentPageNum = pageInfo.getNumber() + 1; // 현재 조회중인 페이지(0부터 셈). 강조 스타일 위해 필요
         int endPageNum = (int)Math.ceil(currentPageNum / (double)PAGE_BTN_NUM) * PAGE_BTN_NUM;  // 현재 조회중인 페이지 그룹의 끝번호
@@ -30,6 +35,8 @@ public class BlogViewController {
 
         // 마지막 그룹 번호 보정
         endPageNum = Math.min(endPageNum, pageInfo.getTotalPages());
+
+        model.addAttribute("username", username);
 
         model.addAttribute("currentPageNum", currentPageNum);
         model.addAttribute("endPageNum", endPageNum);

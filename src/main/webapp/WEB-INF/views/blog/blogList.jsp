@@ -11,7 +11,7 @@
 
 <div class="p-5 bg-light">
     <h1 class="mb-3">My Blog</h1>
-    <h4 class="mb-3 text-right">Hello, ${pageContext.request.remoteUser} </h4>
+    <h4 class="mb-3 text-right">Hello, ${username} </h4>
     <button type="button" class="btn btn-secondary btn-sm mb-3 text-right" onclick="location.href='/logout'">로그아웃</button>
 </div>
 
@@ -77,7 +77,7 @@
 </div> <!-- .container -->
 
 <script src="/js/token.js"></script>
-<script src="/js/article.js"></script>
+<script src="/js/blog.js"></script>
 
 </body>
 </html>

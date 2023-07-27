@@ -20,6 +20,7 @@ public enum ErrorCode {
     // 서버로 요청한 리소스가 존재하지 않음
     NOT_FOUND(404, "COMMON-ERR-404", "PAGE NOT FOUND"),
     BAD_REQUEST(400, "BAD-REQUEST-400", "BAD REQUEST"),
+    UNAUTHORIZED(401, "UNAUTHORIZED-401", "UNAUTHORIZED"),
     ;
 
 

@@ -31,9 +31,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    private final UserDetailService userDetailService;
     private final JwtProvider jwtProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
     private final JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler;
     private final OAuth2UserCustomService oAuth2UserCustomService;
@@ -62,8 +60,8 @@ public class WebSecurityConfig {
 
             // Set permissions on endpoints
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/token").permitAll() // 토큰 재발급 URL 은 인증 없이 접근 가능
-                .requestMatchers("/api/**").authenticated()
+                .requestMatchers("/api/token", "/blogs").permitAll() // 토큰 재발급 URL 은 인증 없이 접근 가능
+                .requestMatchers("/api/**", "/blogs/**").authenticated()
                 .anyRequest().permitAll()
             )
 
