@@ -1,11 +1,9 @@
-package com.serinryu.springproject.security;
+package com.serinryu.springproject.config.jwt;
 
-import com.serinryu.springproject.config.jwt.JwtProvider;
+import com.serinryu.springproject.config.PrincipalDetails;
 import com.serinryu.springproject.entity.RefreshToken;
-import com.serinryu.springproject.entity.UserPrincipal;
 import com.serinryu.springproject.exception.InvalidTokenException;
 import com.serinryu.springproject.service.UserDetailService;
-import com.serinryu.springproject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,15 +18,15 @@ public class TokenService {
     private final RefreshTokenService refreshTokenService;
     private final UserDetailService userService;
 
-    // Create a new access token based on the provided UserPrincipal and set its expiration time.
-    public String generateAccessToken(UserPrincipal userPrincipal) {
-        return jwtProvider.generateToken(userPrincipal, Duration.ofHours(2));
+    // Create a new access token based on the provided PrincipalDetails and set its expiration time.
+    public String generateAccessToken(PrincipalDetails principalDetails) {
+        return jwtProvider.generateToken(principalDetails, Duration.ofHours(2));
     }
 
     // Generate a new refresh token for the given user and save it in the database.
-    public String generateAndSaveRefreshToken(UserPrincipal userPrincipal) {
+    public String generateAndSaveRefreshToken(PrincipalDetails principalDetails) {
         String refreshToken = generateRefreshToken(); // Call the method to generate a new refresh token.
-        RefreshToken newRefreshToken = new RefreshToken(userPrincipal.getId(), refreshToken);
+        RefreshToken newRefreshToken = new RefreshToken(principalDetails.getId(), refreshToken);
         refreshTokenService.save(newRefreshToken); // Save the new refresh token in the database.
         return refreshToken;
     }
@@ -48,8 +46,8 @@ public class TokenService {
         }
 
         Long userId = refreshTokenService.findByRefreshToken(refreshToken).getUserId();
-        UserPrincipal userPrincipal = userService.findById(userId);
+        PrincipalDetails principalDetails = userService.findById(userId);
 
-        return jwtProvider.generateToken(userPrincipal, Duration.ofHours(2));
+        return jwtProvider.generateToken(principalDetails, Duration.ofHours(2));
     }
 }

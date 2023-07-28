@@ -1,10 +1,9 @@
 package com.serinryu.springproject.config.oauth;
 
 import com.serinryu.springproject.config.jwt.JwtProvider;
-import com.serinryu.springproject.entity.UserPrincipal;
+import com.serinryu.springproject.config.PrincipalDetails;
 import com.serinryu.springproject.repository.RefreshTokenRepository;
 import com.serinryu.springproject.service.UserDetailService;
-import com.serinryu.springproject.service.UserService;
 import com.serinryu.springproject.entity.RefreshToken;
 import com.serinryu.springproject.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,7 +41,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         logger.info("🌈 구글 인증 시 이메일 추출 :" + email);
 
-        UserPrincipal user = userDetailService.findByEmail(email);
+        PrincipalDetails user = userDetailService.findByEmail(email);
 
         // 1. refreshToken 생성 -> 저장 -> 쿠키에 저장
         String refreshToken = jwtProvider.generateToken(user, REFRESH_TOKEN_DURATION);
@@ -55,7 +54,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String targetUrl = getTargetUrl(accessToken);
         logger.info("🌈 accessToken :" + accessToken);
 
-        // 3. 인증 관련 설정값, 쿠키 제거
+        if (response.isCommitted()) {
+            logger.debug("response has already been committed. unable to redirect to " + targetUrl);
+            return;
+        }
+
+        // 3. 인증 관련 설정값, 쿠키 제거 (세션에 저장된 객체를 다 사용한 뒤에는 지워줘서 메모리 누수 방지)
         clearAuthenticationAttributes(request, response);
 
         // 4. 리다이렉트

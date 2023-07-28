@@ -1,4 +1,4 @@
-package com.serinryu.springproject.security;
+package com.serinryu.springproject.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

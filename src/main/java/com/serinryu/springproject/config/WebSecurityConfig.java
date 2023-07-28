@@ -5,13 +5,11 @@ import com.serinryu.springproject.config.jwt.JwtAuthenticationSuccessHandler;
 import com.serinryu.springproject.config.jwt.JwtProvider;
 import com.serinryu.springproject.config.oauth.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.serinryu.springproject.config.oauth.OAuth2SuccessHandler;
-import com.serinryu.springproject.config.oauth.OAuth2UserCustomService;
+import com.serinryu.springproject.config.oauth.OAuth2UserService;
 import com.serinryu.springproject.repository.RefreshTokenRepository;
 import com.serinryu.springproject.service.UserDetailService;
-import com.serinryu.springproject.service.UserService;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -33,11 +31,13 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class WebSecurityConfig {
 
     private final JwtProvider jwtProvider;
-    private final JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
-    private final JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler;
-    private final OAuth2UserCustomService oAuth2UserCustomService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserDetailService userDetailService;
+
+    private final JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
+    private final JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler;
+
+    private final OAuth2UserService oAuth2UserService;
 
     // 스프링 시큐리티 기능 비활성화 (모든 곳에 인증, 인가 서비스를 적용할 필요 없음. static 디렉토리의 파일들은 항상 인증 무시)
     @Bean
@@ -64,7 +64,7 @@ public class WebSecurityConfig {
             // Set permissions on endpoints
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/token").permitAll() // Allow public access to the token endpoint
-                .requestMatchers("/blogs", "/login", "logout").permitAll() // Allow public access to the /blogs endpoint
+                .requestMatchers("/login", "logout").permitAll() // Allow public access to the /blogs endpoint
                 .requestMatchers("/api/**", "/blogs/**").authenticated() // Secure all other API endpoints
                 .anyRequest().permitAll()
             )
@@ -87,10 +87,9 @@ public class WebSecurityConfig {
                         .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository())
                 )
                 .userInfoEndpoint(userInfo -> userInfo
-                        .userService(oAuth2UserCustomService)
+                        .userService(oAuth2UserService) // 구글 로그인이 완료된(구글회원) 뒤의 후처리가 필요함
                 )
                 .successHandler(oAuth2SuccessHandler())
-                .failureUrl("/login")
             )
 
             .logout(logout -> logout
@@ -99,7 +98,7 @@ public class WebSecurityConfig {
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
                 .deleteCookies("JSESSIONID", "refresh_token")
-                // Note that the actual removal of the access_token from the client-side local storage is typically done on the client-side using JavaScript.
+                // access_token 토큰의 경우 localStorage 에 저장되어 있으므로 클라이언트 측에서 JavaScript로 삭제해야함. (
             )
 
             // /api/** 로 들어오는 url 일 경우 401 상태 코드 반환하도록

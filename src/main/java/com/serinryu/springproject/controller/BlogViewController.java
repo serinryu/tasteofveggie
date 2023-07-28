@@ -1,5 +1,6 @@
 package com.serinryu.springproject.controller;
 
+import com.serinryu.springproject.config.PrincipalDetails;
 import com.serinryu.springproject.dto.BlogResponseDTO;
 import com.serinryu.springproject.repository.UserRepository;
 import com.serinryu.springproject.service.BlogService;
@@ -8,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -26,33 +28,36 @@ public class BlogViewController {
     }
 
     @GetMapping("/blogs")
-    public String getBlogs(Model model, @RequestParam(required = false, defaultValue = "1", value = "page") Long pageNum){
+    public String getBlogs(Model model,
+                           Authentication authentication,
+                           @AuthenticationPrincipal PrincipalDetails principalDetails, //세션 정보 받아오기 (DI 의존성 주입)
+                           @RequestParam(required = false, defaultValue = "1", value = "page") Long pageNum){
+
         Page<BlogResponseDTO> pageInfo = blogService.findAll(pageNum);
 
-        /*
-        수정 필요
-         */
-
-        /*
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info(principalDetails.getUsername());
 
         if (authentication != null && authentication.isAuthenticated()) {
-            Object principal = authentication.getPrincipal();
+            PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+
+            log.info(authentication);
+            log.info(principal);
+            log.info(principal instanceof OAuth2User);
+
+            /*
             if (principal instanceof OAuth2User) {
                 OAuth2User oAuth2User = (OAuth2User) principal;
                 String email = (String) oAuth2User.getAttributes().get("email");
-                log.info("🌈You are logged in as: " + email);
+                log.info("🌈You are logged in as ... OAuth2 : " + email);
                 model.addAttribute("username", email);
             } else {
                 //User user = UserService.findByUserName(authentication.getName());
-                log.info("🌈You are logged in as: " + authentication.getName());
+                log.info("🌈You are logged in as: " + principal.getName());
                 model.addAttribute("username", authentication.getName());
             }
+
+             */
         }
-
-         */
-
-        model.addAttribute("username", "hihi");
 
         final int PAGE_BTN_NUM = 10; // 한 페이지에 보여야 하는 페이징 버튼 그룹의 개수
         int currentPageNum = pageInfo.getNumber() + 1; // 현재 조회중인 페이지(0부터 셈). 강조 스타일 위해 필요

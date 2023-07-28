@@ -1,6 +1,6 @@
 package com.serinryu.springproject.config.jwt;
 
-import com.serinryu.springproject.entity.UserPrincipal;
+import com.serinryu.springproject.config.PrincipalDetails;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,12 +25,12 @@ public class JwtProvider {
 
     private final JwtProperties jwtProperties;
 
-    public String generateToken(UserPrincipal userPrincipal, Duration expiredAt) {
+    public String generateToken(PrincipalDetails principalDetails, Duration expiredAt) {
         Date now = new Date();
-        return makeToken(new Date(now.getTime() + expiredAt.toMillis()), userPrincipal);
+        return makeToken(new Date(now.getTime() + expiredAt.toMillis()), principalDetails);
     }
 
-    private String makeToken(Date expiry, UserPrincipal userPrincipal) {
+    private String makeToken(Date expiry, PrincipalDetails principalDetails) {
         Date now = new Date();
 
         return Jwts.builder()
@@ -38,8 +38,8 @@ public class JwtProvider {
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .setSubject(userPrincipal.getEmail())
-                .claim("id", userPrincipal.getId())
+                .setSubject(principalDetails.getEmail())
+                .claim("id", principalDetails.getId())
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
                 .compact();
     }
