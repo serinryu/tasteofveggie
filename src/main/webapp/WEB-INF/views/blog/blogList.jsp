@@ -77,7 +77,7 @@
 </div> <!-- .container -->
 
 <script src="/js/token.js"></script>
-<script src="/js/blog.js"></script>
+<script src="/js/bloglist.js"></script>
 
 </body>
 </html>

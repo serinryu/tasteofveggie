@@ -30,13 +30,11 @@ public class BlogViewController {
     @GetMapping("/blogs")
     public String getBlogs(Model model,
                            Authentication authentication,
-                           @AuthenticationPrincipal PrincipalDetails principalDetails, //세션 정보 받아오기 (DI 의존성 주입)
                            @RequestParam(required = false, defaultValue = "1", value = "page") Long pageNum){
 
         Page<BlogResponseDTO> pageInfo = blogService.findAll(pageNum);
 
-        log.info(principalDetails.getUsername());
-
+        /*
         if (authentication != null && authentication.isAuthenticated()) {
             PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
 
@@ -44,7 +42,7 @@ public class BlogViewController {
             log.info(principal);
             log.info(principal instanceof OAuth2User);
 
-            /*
+
             if (principal instanceof OAuth2User) {
                 OAuth2User oAuth2User = (OAuth2User) principal;
                 String email = (String) oAuth2User.getAttributes().get("email");
@@ -55,9 +53,9 @@ public class BlogViewController {
                 log.info("🌈You are logged in as: " + principal.getName());
                 model.addAttribute("username", authentication.getName());
             }
-
-             */
         }
+        */
+
 
         final int PAGE_BTN_NUM = 10; // 한 페이지에 보여야 하는 페이징 버튼 그룹의 개수
         int currentPageNum = pageInfo.getNumber() + 1; // 현재 조회중인 페이지(0부터 셈). 강조 스타일 위해 필요

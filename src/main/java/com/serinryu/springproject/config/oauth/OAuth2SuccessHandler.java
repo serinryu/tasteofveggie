@@ -64,6 +64,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // 4. 리다이렉트
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        log.info(targetUrl);
     }
 
     // 생성된 refreshToken 을 전달받아 DB에 저장

@@ -3,6 +3,8 @@
 
 const token = searchParam('token')
 
+console.log(token)
+
 if (token) {
     localStorage.setItem("access_token", token)
 }
