@@ -1,12 +1,15 @@
 package com.serinryu.springproject.controller;
 
 import com.serinryu.springproject.dto.BlogResponseDTO;
+import com.serinryu.springproject.repository.UserRepository;
 import com.serinryu.springproject.service.BlogService;
+import com.serinryu.springproject.service.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,15 +29,30 @@ public class BlogViewController {
     public String getBlogs(Model model, @RequestParam(required = false, defaultValue = "1", value = "page") Long pageNum){
         Page<BlogResponseDTO> pageInfo = blogService.findAll(pageNum);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName(); // Get the username from the authentication object
-        log.info("You are logged in as :" + authentication);
+        /*
+        수정 필요
+         */
 
-        if (authentication.getPrincipal() instanceof OAuth2User) {
-            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-            String email = (String) oAuth2User.getAttributes().get("email");
-            log.info("🌈 구글 인증 시 이메일 추출 :" + email);
+        /*
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof OAuth2User) {
+                OAuth2User oAuth2User = (OAuth2User) principal;
+                String email = (String) oAuth2User.getAttributes().get("email");
+                log.info("🌈You are logged in as: " + email);
+                model.addAttribute("username", email);
+            } else {
+                //User user = UserService.findByUserName(authentication.getName());
+                log.info("🌈You are logged in as: " + authentication.getName());
+                model.addAttribute("username", authentication.getName());
+            }
         }
+
+         */
+
+        model.addAttribute("username", "hihi");
 
         final int PAGE_BTN_NUM = 10; // 한 페이지에 보여야 하는 페이징 버튼 그룹의 개수
         int currentPageNum = pageInfo.getNumber() + 1; // 현재 조회중인 페이지(0부터 셈). 강조 스타일 위해 필요
@@ -44,7 +62,7 @@ public class BlogViewController {
         // 마지막 그룹 번호 보정
         endPageNum = Math.min(endPageNum, pageInfo.getTotalPages());
 
-        model.addAttribute("username", username);
+        //model.addAttribute("username", username);
 
         model.addAttribute("currentPageNum", currentPageNum);
         model.addAttribute("endPageNum", endPageNum);

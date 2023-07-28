@@ -69,7 +69,7 @@ public class WebSecurityConfig {
                 .anyRequest().permitAll()
             )
 
-            // 커스텀 필터 추가
+            // 커스텀 필터 추가 -> jwtAuthenticationFilter will be executed before the UsernamePasswordAuthenticationFilter
             .addFilterBefore(jwtAuthenticationFilter(),
                     UsernamePasswordAuthenticationFilter.class)
 
@@ -94,10 +94,12 @@ public class WebSecurityConfig {
             )
 
             .logout(logout -> logout
+                .logoutUrl("/logout")
                 .logoutSuccessUrl("/login")
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
-                .deleteCookies()
+                .deleteCookies("JSESSIONID", "refresh_token")
+                // Note that the actual removal of the access_token from the client-side local storage is typically done on the client-side using JavaScript.
             )
 
             // /api/** 로 들어오는 url 일 경우 401 상태 코드 반환하도록
