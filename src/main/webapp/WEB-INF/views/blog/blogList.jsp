@@ -11,7 +11,7 @@
 
 <div class="p-5 bg-light">
     <h1 class="mb-3">My Blog</h1>
-    <h4 class="mb-3 text-right">Hello, ${username} </h4>
+    <h4 class="mb-3 text-right">Hello, ${username == null ? "익명" : username} </h4>
     <button type="button" class="btn btn-secondary btn-sm mb-3 text-right" onclick="performLogout()">로그아웃</button>
 </div>
 

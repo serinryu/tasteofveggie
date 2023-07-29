@@ -1,18 +1,12 @@
 package com.serinryu.springproject.controller;
 
-import com.serinryu.springproject.config.PrincipalDetails;
 import com.serinryu.springproject.dto.BlogResponseDTO;
-import com.serinryu.springproject.repository.UserRepository;
 import com.serinryu.springproject.service.BlogService;
-import com.serinryu.springproject.service.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -34,28 +28,12 @@ public class BlogViewController {
 
         Page<BlogResponseDTO> pageInfo = blogService.findAll(pageNum);
 
-        /*
         if (authentication != null && authentication.isAuthenticated()) {
-            PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-
-            log.info(authentication);
-            log.info(principal);
-            log.info(principal instanceof OAuth2User);
-
-
-            if (principal instanceof OAuth2User) {
-                OAuth2User oAuth2User = (OAuth2User) principal;
-                String email = (String) oAuth2User.getAttributes().get("email");
-                log.info("🌈You are logged in as ... OAuth2 : " + email);
-                model.addAttribute("username", email);
-            } else {
-                //User user = UserService.findByUserName(authentication.getName());
-                log.info("🌈You are logged in as: " + principal.getName());
-                model.addAttribute("username", authentication.getName());
-            }
+            User user = (User) authentication.getPrincipal();
+            log.info("🌈You are logged in as ... : " + user.getUsername());
+            String username = user.getUsername();
+            model.addAttribute("username", username);
         }
-        */
-
 
         final int PAGE_BTN_NUM = 10; // 한 페이지에 보여야 하는 페이징 버튼 그룹의 개수
         int currentPageNum = pageInfo.getNumber() + 1; // 현재 조회중인 페이지(0부터 셈). 강조 스타일 위해 필요
@@ -64,8 +42,6 @@ public class BlogViewController {
 
         // 마지막 그룹 번호 보정
         endPageNum = Math.min(endPageNum, pageInfo.getTotalPages());
-
-        //model.addAttribute("username", username);
 
         model.addAttribute("currentPageNum", currentPageNum);
         model.addAttribute("endPageNum", endPageNum);
