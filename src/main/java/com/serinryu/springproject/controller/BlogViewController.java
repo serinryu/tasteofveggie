@@ -29,14 +29,7 @@ public class BlogViewController {
     }
 
     @GetMapping("/blogs/new")
-    public String newBlogForm(@RequestParam(required = false, value = "id") Long blogId, Model model) {
-
-        if (blogId == null) {
-            model.addAttribute("blog", null);
-        } else {
-            BlogResponseDTO blog = blogService.findById(blogId);
-            model.addAttribute("blog", blog);
-        }
+    public String newBlogForm() {
         return "blog/newBlog"; // /WEB-INF/views/blog/newBlog.jsp
     }
 

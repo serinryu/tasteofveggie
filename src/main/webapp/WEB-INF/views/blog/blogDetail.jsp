@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,7 +13,6 @@
         <h1 class="mb-3">My Blog</h1>
         <h4 class="mb-3">블로그에 오신 것을 환영합니다.</h4>
     </div>
-
 
     <div class="container mt-5">
         <div id="blogContent" class="row">
@@ -80,6 +80,7 @@
     <script src="/js/reply.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     <script src="/js/blogdetail.js"></script>
+
 
 </body>
 </html>

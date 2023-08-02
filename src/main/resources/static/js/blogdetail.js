@@ -80,12 +80,12 @@ if (deleteButton) {
     deleteButton.addEventListener('click', event => {
         let id = document.getElementById('blog-id').value;
         function success() {
-            alert('삭제가 완료되었습니다.');
+            console.log('삭제가 완료되었습니다.');
             location.replace('/blogs');
         }
 
         function fail() {
-            alert('삭제 실패했습니다.');
+            console.log('삭제 실패했습니다.');
             location.replace('/blogs');
         }
 
@@ -105,7 +105,7 @@ if(modifyBtn) {
         const blogContent = blogContentElem.textContent;
 
         // Create a URL with query parameters to pass existing data to the new modify page
-        const modifyUrl = `/blogs/new?id=${blogId}&title=${encodeURIComponent(blogTitle)}&content=${encodeURIComponent(blogContent)}`;
+        const modifyUrl = `/blogs/new?id=${blogId}`;
         window.location.href = modifyUrl;
     });
 }

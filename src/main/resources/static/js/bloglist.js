@@ -33,6 +33,7 @@ function httpRequest(method, url, body, success, fail) {
         if (response.status === 200 || response.status === 201) {
             return response.json(); // Parse the response body as JSON and return it as a Promise
         }
+
         const refreshToken = getCookie('refresh_token');
 
         if (response.status === 401 && refreshToken) {

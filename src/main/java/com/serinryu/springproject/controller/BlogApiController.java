@@ -65,12 +65,21 @@ public class BlogApiController {
         return ResponseEntity.ok(response);
     }
 
-
     @GetMapping("/api/blogs/{blogId}")
     public ResponseEntity<BlogResponseDTO> findBlog(@PathVariable long blogId) {
         BlogResponseDTO blogFindByIdDTO = blogService.findById(blogId);
         return ResponseEntity.ok()
                 .body(blogFindByIdDTO);
+    }
+
+    @GetMapping("/api/blogs/new")
+    public ResponseEntity<BlogResponseDTO> getNewBlogForm(@RequestParam(required = false, value = "id") Long blogId) {
+        if (blogId == null) {
+            return ResponseEntity.ok().body(null);
+        } else {
+            BlogResponseDTO blog = blogService.findById(blogId);
+            return ResponseEntity.ok().body(blog);
+        }
     }
 
     @DeleteMapping("/api/blogs/{blogId}")
