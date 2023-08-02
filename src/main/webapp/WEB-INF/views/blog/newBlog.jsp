@@ -39,6 +39,6 @@
     </div>
 </div>
 
-<script src="/js/blog.js"></script>
+<script src="/js/newblog.js"></script>
 </body>
 </html>
