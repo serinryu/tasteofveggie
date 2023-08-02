@@ -15,8 +15,6 @@
     <button type="button" class="btn btn-secondary btn-sm mb-3 text-right" onclick="performLogout()">로그아웃</button>
 </div>
 
-<div id="insert-blog" class="1"> blogs page 1 </div>
-
 <div class="container">
     <table class="table table-striped table-hover">
         <thead>
