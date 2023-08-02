@@ -22,6 +22,7 @@
                     <header class="mb-4">
                         <h1 class="fw-bolder mb-1">${blog.blogTitle}</h1>
 <%--                        <div class="text-muted fst-italic mb-2">Posted on ${blog.createdAt}</div>--%>
+                        <div class="text-muted fst-italic mb-2"> By : ${blog.blogWriter} </div>
                         <div class="text-muted fst-italic mb-2"> View : ${blog.blogCount} </div>
                     </header>
                     <section class="mb-5">

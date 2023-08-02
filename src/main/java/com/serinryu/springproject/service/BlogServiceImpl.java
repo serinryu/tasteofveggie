@@ -4,6 +4,7 @@ import com.serinryu.springproject.dto.BlogCreateRequestDTO;
 import com.serinryu.springproject.dto.BlogResponseDTO;
 import com.serinryu.springproject.dto.BlogUpdateRequestDTO;
 import com.serinryu.springproject.entity.Blog;
+import com.serinryu.springproject.exception.UnauthorizedException;
 import com.serinryu.springproject.exception.NotFoundBlogIdException;
 import com.serinryu.springproject.repository.BlogJpaRepository;
 import com.serinryu.springproject.repository.BlogRepository;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,14 +70,6 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     @Transactional
-    public void deleteById(long blogId) {
-        // MyBatis 에서 한 메소드당 쿼리문 1개 사용이 보편적이므로 이 두 로직을 합치는 것은 Repository 가 아니라 Service 단에서 진행했음.
-        replyJpaRepository.deleteAllByBlogId(blogId);
-        blogJpaRepository.deleteById(blogId);
-    }
-
-    @Override
-    @Transactional
     public void save(BlogCreateRequestDTO blogCreateRequestDTO) {
         Blog blog = blogCreateRequestDTO.toEntity(); // DTO to Entity
         blogJpaRepository.save(blog);
@@ -83,11 +77,37 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     @Transactional
+    public void deleteById(long blogId) {
+        Blog blog = blogJpaRepository.findById(blogId)
+                .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
+
+        // 게시글을 작성한 유저인지 확인
+        authorizeBlogWriter(blog);
+
+        // MyBatis 에서 한 메소드당 쿼리문 1개 사용이 보편적이므로 이 두 로직을 합치는 것은 Repository 가 아니라 Service 단에서 진행했음.
+        replyJpaRepository.deleteAllByBlogId(blogId);
+        blogJpaRepository.deleteById(blogId);
+    }
+
+    @Override
+    @Transactional
     public void update(long blogId, BlogUpdateRequestDTO blogUpdateRequestDTO) {
         Blog blog = blogJpaRepository.findById(blogId)
                 .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
+
+        // 게시글을 작성한 유저인지 확인
+        authorizeBlogWriter(blog);
+
         blog.updateTitleAndContent(blogUpdateRequestDTO.getBlogTitle(), blogUpdateRequestDTO.getBlogContent());
         // blogJpaRepository.save(blog); // Dirty-Checking
+    }
+
+    // 게시글을 작성한 유저인지 확인
+    private static void authorizeBlogWriter(Blog blog) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!blog.getBlogWriter().equals(userName)) {
+            throw new UnauthorizedException("not authorized");
+        }
     }
 
 }

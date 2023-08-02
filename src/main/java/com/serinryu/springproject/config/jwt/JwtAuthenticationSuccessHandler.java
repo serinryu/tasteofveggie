@@ -1,9 +1,8 @@
-package com.serinryu.springproject.config;
+package com.serinryu.springproject.config.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.serinryu.springproject.config.jwt.JwtProvider;
 import com.serinryu.springproject.dto.ApiResponse;
-import com.serinryu.springproject.entity.UserPrinciple;
+import com.serinryu.springproject.config.PrincipalDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,10 +29,10 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
         log.info("로그인 성공");
 
         // 1. 로그인 인증을 마친 사용자 가져오기
-        UserPrinciple userPrincipleDetails = (UserPrinciple) authentication.getPrincipal();
+        PrincipalDetails principalDetailsDetails = (PrincipalDetails) authentication.getPrincipal();
 
         // 2. 토큰 생성
-        String token = jwtProvider.generateToken(userPrincipleDetails, Duration.ofDays(1));
+        String token = jwtProvider.generateToken(principalDetailsDetails, Duration.ofDays(1));
 
         // 3. response
         response.addHeader("Authorization", "Bearer " + token);

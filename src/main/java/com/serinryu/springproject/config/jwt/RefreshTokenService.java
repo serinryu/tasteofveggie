@@ -1,4 +1,4 @@
-package com.serinryu.springproject.security;
+package com.serinryu.springproject.config.jwt;
 
 import com.serinryu.springproject.entity.RefreshToken;
 import com.serinryu.springproject.repository.RefreshTokenRepository;

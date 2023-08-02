@@ -5,6 +5,8 @@ import com.serinryu.springproject.service.BlogService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +22,18 @@ public class BlogViewController {
     }
 
     @GetMapping("/blogs")
-    public String getBlogs(Model model, @RequestParam(required = false, defaultValue = "1", value = "page") Long pageNum){
+    public String getBlogs(Model model,
+                           Authentication authentication,
+                           @RequestParam(required = false, defaultValue = "1", value = "page") Long pageNum){
+
         Page<BlogResponseDTO> pageInfo = blogService.findAll(pageNum);
+
+        String username = "Anonymous";
+        if (authentication != null && authentication.isAuthenticated()) {
+            User user = (User) authentication.getPrincipal();
+            log.info("🌈You are logged in as ... : " + user.getUsername());
+            username = user.getUsername();
+        }
 
         final int PAGE_BTN_NUM = 10; // 한 페이지에 보여야 하는 페이징 버튼 그룹의 개수
         int currentPageNum = pageInfo.getNumber() + 1; // 현재 조회중인 페이지(0부터 셈). 강조 스타일 위해 필요
@@ -35,6 +47,8 @@ public class BlogViewController {
         model.addAttribute("endPageNum", endPageNum);
         model.addAttribute("startPageNum", startPageNum);
         model.addAttribute("pageInfo", pageInfo);
+        model.addAttribute("username", username);
+
         return "blog/blogList"; // /WEB-INF/views/board/blogList.jsp
     }
 

@@ -1,6 +1,7 @@
 package com.serinryu.springproject.config.jwt;
 
-import com.serinryu.springproject.entity.UserPrinciple;
+import com.serinryu.springproject.config.PrincipalDetails;
+import com.serinryu.springproject.entity.User;
 import com.serinryu.springproject.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.DisplayName;
@@ -34,14 +35,17 @@ class JwtProviderTest {
     @Transactional
     void generateToken() {
         // given
-        UserPrinciple testUserPrinciple = userRepository.save(
-                UserPrinciple.builder()
-                .email("user1@gmail.com") // Use a Different Email for Testing
+        User user = userRepository.save(
+                User.builder()
+                .email("user1@gmail.com")
                 .password("test")
-                .build());
+                .build()
+        );
+
+        PrincipalDetails testPrincipalDetails = new PrincipalDetails(user);
 
         // when
-        String token = jwtProvider.generateToken(testUserPrinciple, Duration.ofDays(14));
+        String token = jwtProvider.generateToken(testPrincipalDetails, Duration.ofDays(14));
 
         // then
         Long userId = Jwts.parser()
@@ -50,7 +54,7 @@ class JwtProviderTest {
                 .getBody()
                 .get("id", Long.class);
 
-        assertThat(userId).isEqualTo(testUserPrinciple.getId());
+        assertThat(userId).isEqualTo(testPrincipalDetails.getId());
     }
 
     @DisplayName("validToken(): 만료된 토큰인 경우에 유효성 검증에 실패한다.")
