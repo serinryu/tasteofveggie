@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class BlogViewControllerTest {
     // 컨트롤러는 서버에 url만 입력하면 동작하므로 컨트롤러를 따로 생성하지는 않는 것임.
 
     @Test
-    @WithMockUser // Add this annotation to simulate an authenticated user -> @WithMockUser(value = "john.doe", roles = "ROLE_USER")
+    @WithMockUser(username = "testuser", password = "password", roles = "USER")
     public void findAllTest() throws Exception {
         // given
         List<BlogResponseDTO> blogs = new ArrayList<>();
@@ -51,10 +52,11 @@ public class BlogViewControllerTest {
         // When
         mockMvc.perform(get("/blogs?page={pageNum}", pageNum))
                 // Then
-                .andExpect(status().isOk())
-                .andExpect(view().name("blog/blogList"))
-                .andExpect(model().attributeExists("currentPageNum", "endPageNum", "startPageNum", "pageInfo"))
-                .andExpect(model().attribute("pageInfo", blogPage));
+            .andExpect(status().isOk())
+            .andExpect(view().name("blog/blogList"))
+            .andExpect(model().attributeExists("currentPageNum", "endPageNum", "startPageNum", "pageInfo"))
+            .andExpect(model().attribute("pageInfo", blogPage))
+            .andExpect(model().attribute("username", "testuser"));
 
         Mockito.verify(blogService, Mockito.times(1)).findAll(pageNum);
     }

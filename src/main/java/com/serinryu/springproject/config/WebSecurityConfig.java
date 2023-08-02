@@ -44,8 +44,8 @@ public class WebSecurityConfig {
     public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
                 //Spring Security 의존성을 추가하면, 스프링 부트는 그 스프링 시큐리티 자동설정을 적용해줘서, 모든 요청에 대해서 인증을 필요로 하게 되므로, 직접 설정
-                .requestMatchers("/static/**") // src/main/java/resources/static/ 으로, 추후 설정할 정적자원 저장 경로에 보안을 풀었음.
-                .dispatcherTypeMatchers(DispatcherType.FORWARD); // MVC방식에서 뷰단 파일을 로딩하는것을 보안범위에서 해제.
+                .requestMatchers("/static/**"); // src/main/java/resources/static/ 으로, 추후 설정할 정적자원 저장 경로에 보안을 풀었음.
+                //.dispatcherTypeMatchers(DispatcherType.FORWARD); // MVC방식에서 뷰단 파일을 로딩하는것을 보안범위에서 해제.
     }
 
     // 특정 HTTP 요청에 대한 웹 기반 보안 구성
@@ -63,9 +63,9 @@ public class WebSecurityConfig {
 
             // Set permissions on endpoints
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/token").permitAll() // Allow public access to the token endpoint
-                .requestMatchers( "/blogs","/login", "logout").permitAll() // Allow public access to the /blogs endpoint
-                .requestMatchers("/api/**", "/blogs/**").authenticated() // Secure all other API endpoints
+                .requestMatchers("/api/blogs", "/api/token").permitAll() // Allow public access to the token endpoint
+                //.requestMatchers( "/login", "logout").permitAll() // Allow public access to the /blogs endpoint
+                .requestMatchers("/api/**").authenticated() // Secure all other API endpoints
                 .anyRequest().permitAll()
             )
 

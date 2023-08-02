@@ -18,7 +18,6 @@ function getCookie(key) {
 
 // HTTP 요청을 보내는 함수
 function httpRequest(method, url, body, success, fail) {
-
     // Get the access_token from local storage
     const accessToken = localStorage.getItem('access_token');
     console.log(accessToken);
@@ -26,14 +25,13 @@ function httpRequest(method, url, body, success, fail) {
     fetch(url, {
         method: method,
         headers: {
-            // 쿠키에서 액세스 토큰 값을 가져와 헤더에 추가
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
         },
         body: body,
     }).then(response => {
         if (response.status === 200 || response.status === 201) {
-            return success();
+            return response.json(); // Parse the response body as JSON and return it as a Promise
         }
         const refreshToken = getCookie('refresh_token');
 
@@ -41,7 +39,6 @@ function httpRequest(method, url, body, success, fail) {
             fetch('/api/token', {
                 method: 'POST',
                 headers: {
-                    // 쿠키에서 액세스 토큰 값을 가져와 헤더에 추가
                     Authorization: `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 },
@@ -54,20 +51,47 @@ function httpRequest(method, url, body, success, fail) {
                         return res.json();
                     }
                 })
-                .then(result => { // 재발급이 성공하면 새로운 액세스 토큰으로 교체
+                .then(result => {
                     document.cookie = `access_token=${result.accessToken}`;
+                    // Call the httpRequest function again with the updated access_token
                     httpRequest(method, url, body, success, fail);
                 })
                 .catch(error => fail());
         } else {
             return fail();
         }
+    }).then(data => {
+        success(data); // Call the success callback with the parsed data
+    }).catch(error => {
+        fail();
     });
 }
 
-httpRequest('GET', '/blogs', null,
-    function successCallback() {
-        console.log('Request succeeded');
+const insertBlog = document.getElementById('insert-blog');
+
+if (insertBlog) {
+    insertBlog.addEventListener('click', event => {
+
+        const classNumber = insertBlog.classList[0];
+        httpRequest('GET',`/api/blogs?page=${classNumber}`, null,
+            function successCallback(data) {
+                console.log(data);
+            },
+            function errorCallback() {
+                console.log('Request failed');
+            }
+        );
+    });
+}
+
+
+const name = document.getElementById('name');
+httpRequest('GET',`/api/blogs?page=1`, null,
+    function successCallback(data) {
+        console.log(data);
+        const username = data.username;
+        const nameDiv = document.getElementById('name');
+        nameDiv.innerText = JSON.stringify(username);
     },
     function errorCallback() {
         console.log('Request failed');

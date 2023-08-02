@@ -1,19 +1,25 @@
 package com.serinryu.springproject.controller;
 
 import com.serinryu.springproject.dto.BlogCreateRequestDTO;
+import com.serinryu.springproject.dto.BlogResponseDTO;
 import com.serinryu.springproject.dto.BlogUpdateRequestDTO;
+import org.springframework.security.core.userdetails.User;
 import com.serinryu.springproject.service.BlogService;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @Log4j2
@@ -26,9 +32,19 @@ public class BlogApiController {
 
     private static final Logger logger = LogManager.getLogger(BlogApiController.class);
 
-    /*
+
     @GetMapping("/api/blogs")
-    public ResponseEntity<Map<String, Object>> findAllBlogs(@RequestParam(required = false, defaultValue = "1", value = "page") Long pageNum) {
+    public ResponseEntity<Map<String, Object>> findAllBlogs(
+            Authentication authentication,
+            @RequestParam(required = false, defaultValue = "1", value = "page") Long pageNum) {
+
+        String username = "Anonymous";
+        if (authentication != null && authentication.isAuthenticated()) {
+            User user = (User) authentication.getPrincipal();
+            username = user.getUsername();
+            log.info("🌈You are logged in as ... : " + user.getUsername());
+        }
+
         Page<BlogResponseDTO> pageInfo = blogService.findAll(pageNum);
 
         final int PAGE_BTN_NUM = 10; // 한 페이지에 보여야 하는 페이징 버튼 그룹의 개수
@@ -44,11 +60,12 @@ public class BlogApiController {
         response.put("endPageNum", endPageNum);
         response.put("startPageNum", startPageNum);
         response.put("pageInfo", pageInfo);
+        response.put("username", username);
 
         return ResponseEntity.ok(response);
     }
 
-
+    /*
     @GetMapping("/api/blogs/{blogId}")
     public ResponseEntity<BlogResponseDTO> findBlog(@PathVariable long blogId) {
         BlogResponseDTO blogFindByIdDTO = blogService.findById(blogId);

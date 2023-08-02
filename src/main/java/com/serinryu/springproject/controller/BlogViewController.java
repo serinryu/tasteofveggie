@@ -28,11 +28,11 @@ public class BlogViewController {
 
         Page<BlogResponseDTO> pageInfo = blogService.findAll(pageNum);
 
+        String username = "Anonymous";
         if (authentication != null && authentication.isAuthenticated()) {
             User user = (User) authentication.getPrincipal();
             log.info("🌈You are logged in as ... : " + user.getUsername());
-            String username = user.getUsername();
-            model.addAttribute("username", username);
+            username = user.getUsername();
         }
 
         final int PAGE_BTN_NUM = 10; // 한 페이지에 보여야 하는 페이징 버튼 그룹의 개수
@@ -47,6 +47,8 @@ public class BlogViewController {
         model.addAttribute("endPageNum", endPageNum);
         model.addAttribute("startPageNum", startPageNum);
         model.addAttribute("pageInfo", pageInfo);
+        model.addAttribute("username", username);
+
         return "blog/blogList"; // /WEB-INF/views/board/blogList.jsp
     }
 

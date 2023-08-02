@@ -6,6 +6,7 @@ import com.serinryu.springproject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +18,23 @@ public class UserApiController {
 
     private final UserService userService;
     private final TokenService tokenService;
+
+    /*
+    @GetMapping("/api/user")
+    public UserResponseDTO getUserInfo(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            // 사용자가 인증되지 않았을 경우 처리
+            return new UserResponseDTO("Anonymous", false);
+        }
+
+        User user = (User) authentication.getPrincipal();
+        String username = user.getUsername();
+        boolean isAuthenticated = authentication.isAuthenticated();
+
+        return new UserResponseDTO(username, isAuthenticated);
+    }
+
+     */
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(SignUpRequestDTO signUpRequestDTO){

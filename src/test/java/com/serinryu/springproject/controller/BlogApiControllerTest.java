@@ -1,6 +1,7 @@
 package com.serinryu.springproject.controller;
 
 import com.serinryu.springproject.dto.BlogCreateRequestDTO;
+import com.serinryu.springproject.dto.BlogResponseDTO;
 import com.serinryu.springproject.dto.BlogUpdateRequestDTO;
 import com.serinryu.springproject.service.BlogService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,10 +11,17 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+
+import java.util.Collections;
 
 import static org.mockito.Mockito.never;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -37,6 +45,28 @@ public class BlogApiControllerTest {
     // 컨트롤러는 서버에 url만 입력하면 동작하므로 컨트롤러를 따로 생성하지는 않는 것임.
 
     @Test
+    @WithMockUser(username = "testuser", password = "password", roles = "USER")
+    public void testFindAllBlogs() throws Exception {
+        // Mocking blogService.findAll(pageNum)
+        long totalElements = 15;
+        int pageSize = 5;
+        int currentPage = 1;
+        Page<BlogResponseDTO> mockPage = new PageImpl<>(Collections.emptyList(),
+                PageRequest.of(currentPage - 1, pageSize, Sort.by(Sort.Direction.DESC, "id")), totalElements);
+        Mockito.when(blogService.findAll(Mockito.any(Long.class))).thenReturn(mockPage);
+
+        mockMvc.perform(get("/api/blogs")
+                        .param("page", "1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.currentPageNum").value(currentPage))
+                .andExpect(jsonPath("$.endPageNum").value(3))
+                .andExpect(jsonPath("$.startPageNum").value(1))
+                .andExpect(jsonPath("$.pageInfo").exists())
+                .andExpect(jsonPath("$.username").value("testuser"));
+    }
+
+    @Test
     @WithMockUser
     public void DeleteTest_Success() throws Exception {
         long blogId = 1L;
@@ -54,8 +84,9 @@ public class BlogApiControllerTest {
         long blogIdToDelete = 1L;
 
         mockMvc.perform(delete("/api/blogs/{blogId}", blogIdToDelete)
-                        .with(csrf()))
-                .andExpect(status().isUnauthorized());
+                .with(csrf()))
+                //.andExpect(status().isUnauthorized());
+                .andExpect(status().is3xxRedirection());
 
         Mockito.verifyNoInteractions(blogService);
     }
