@@ -36,9 +36,6 @@ public class WebSecurityConfig {
     private final TokenService tokenService;
     private final UserDetailService userDetailService;
 
-    private final JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
-    private final JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler;
-
     private final OAuth2UserService oAuth2UserService;
 
     // 스프링 시큐리티 기능 비활성화 (모든 곳에 인증, 인가 서비스를 적용할 필요 없음. static 디렉토리의 파일들은 항상 인증 무시)
@@ -78,8 +75,11 @@ public class WebSecurityConfig {
             // Form based Auth  -> Spring Security 제공. POST /login 해서 로직 작성할 필요 없음
             .formLogin(form -> form
                 .loginPage("/login") // HTML Form 을 통해 POST /login
-                .successHandler(jwtAuthenticationSuccessHandler)
-                .failureHandler(jwtAuthenticationFailureHandler)
+                .successHandler(new JwtAuthenticationSuccessHandler(jwtProvider,
+                        refreshTokenRepository,
+                        userDetailService
+                ))
+                .failureHandler(new JwtAuthenticationFailureHandler())
             )
 
             // OAuth2
@@ -132,6 +132,20 @@ public class WebSecurityConfig {
                 userDetailService
         );
     }
+
+//    @Bean
+//    public JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler() {
+//        return new JwtAuthenticationSuccessHandler(jwtProvider,
+//                refreshTokenRepository,
+//                userDetailService
+//        );
+//    }
+//
+//    @Bean
+//    public JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler() {
+//        return new JwtAuthenticationFailureHandler();
+//    }
+
 
     @Bean
     public OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository() {
