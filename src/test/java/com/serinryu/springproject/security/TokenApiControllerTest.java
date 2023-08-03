@@ -1,10 +1,8 @@
 package com.serinryu.springproject.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.serinryu.springproject.config.AccessTokenRequest;
-import com.serinryu.springproject.config.jwt.JwtProvider;
-import com.serinryu.springproject.controller.TokenApiController;
-import com.serinryu.springproject.config.jwt.TokenService;
+import com.serinryu.springproject.security.jwt.JwtProvider;
+import com.serinryu.springproject.security.jwt.TokenService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -52,7 +50,7 @@ class TokenApiControllerTest {
         final String requestBody = objectMapper.writeValueAsString(request);
 
         // Perform the POST request to the endpoint
-        mockMvc.perform(post("/api/token")
+        mockMvc.perform(post("/api/issue-new-token")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(requestBody))

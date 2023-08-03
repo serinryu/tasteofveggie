@@ -1,4 +1,4 @@
-package com.serinryu.springproject.config.jwt;
+package com.serinryu.springproject.security.jwt;
 
 import lombok.Getter;
 import lombok.Setter;

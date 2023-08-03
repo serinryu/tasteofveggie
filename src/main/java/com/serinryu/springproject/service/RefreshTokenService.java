@@ -1,9 +1,11 @@
-package com.serinryu.springproject.config.jwt;
+package com.serinryu.springproject.service;
 
 import com.serinryu.springproject.entity.RefreshToken;
 import com.serinryu.springproject.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -18,6 +20,11 @@ public class RefreshTokenService {
 
     public RefreshToken save(RefreshToken refreshToken) {
         return refreshTokenRepository.save(refreshToken);
+    }
+
+    public Optional<RefreshToken> findByUserId(Long userId) {
+        return Optional.ofNullable(refreshTokenRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Token exists for the given user")));
     }
 }
 

@@ -1,14 +1,14 @@
-package com.serinryu.springproject.config;
+package com.serinryu.springproject.security;
 
-import com.serinryu.springproject.config.jwt.JwtAuthenticationFailureHandler;
-import com.serinryu.springproject.config.jwt.JwtAuthenticationSuccessHandler;
-import com.serinryu.springproject.config.jwt.JwtProvider;
-import com.serinryu.springproject.config.oauth.OAuth2AuthorizationRequestBasedOnCookieRepository;
-import com.serinryu.springproject.config.oauth.OAuth2SuccessHandler;
-import com.serinryu.springproject.config.oauth.OAuth2UserService;
+import com.serinryu.springproject.security.jwt.JwtAuthenticationFailureHandler;
+import com.serinryu.springproject.security.jwt.JwtAuthenticationSuccessHandler;
+import com.serinryu.springproject.security.jwt.JwtProvider;
+import com.serinryu.springproject.security.oauth.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import com.serinryu.springproject.security.oauth.OAuth2SuccessHandler;
+import com.serinryu.springproject.security.oauth.OAuth2UserService;
 import com.serinryu.springproject.repository.RefreshTokenRepository;
+import com.serinryu.springproject.security.jwt.TokenService;
 import com.serinryu.springproject.service.UserDetailService;
-import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,10 +32,8 @@ public class WebSecurityConfig {
 
     private final JwtProvider jwtProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenService tokenService;
     private final UserDetailService userDetailService;
-
-    private final JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
-    private final JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler;
 
     private final OAuth2UserService oAuth2UserService;
 
@@ -76,8 +74,11 @@ public class WebSecurityConfig {
             // Form based Auth  -> Spring Security 제공. POST /login 해서 로직 작성할 필요 없음
             .formLogin(form -> form
                 .loginPage("/login") // HTML Form 을 통해 POST /login
-                .successHandler(jwtAuthenticationSuccessHandler)
-                .failureHandler(jwtAuthenticationFailureHandler)
+                .successHandler(new JwtAuthenticationSuccessHandler(
+                        tokenService,
+                        userDetailService
+                ))
+                .failureHandler(new JwtAuthenticationFailureHandler())
             )
 
             // OAuth2
@@ -124,8 +125,7 @@ public class WebSecurityConfig {
 
     @Bean
     public OAuth2SuccessHandler oAuth2SuccessHandler() {
-        return new OAuth2SuccessHandler(jwtProvider,
-                refreshTokenRepository,
+        return new OAuth2SuccessHandler(tokenService,
                 oAuth2AuthorizationRequestBasedOnCookieRepository(),
                 userDetailService
         );

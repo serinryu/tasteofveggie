@@ -1,6 +1,6 @@
 package com.serinryu.springproject.service;
 
-import com.serinryu.springproject.config.PrincipalDetails;
+import com.serinryu.springproject.security.PrincipalDetails;
 import com.serinryu.springproject.entity.User;
 import com.serinryu.springproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

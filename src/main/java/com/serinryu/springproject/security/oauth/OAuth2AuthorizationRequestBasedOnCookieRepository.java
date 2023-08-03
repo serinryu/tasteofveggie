@@ -1,4 +1,4 @@
-package com.serinryu.springproject.config.oauth;
+package com.serinryu.springproject.security.oauth;
 
 
 import com.serinryu.springproject.util.CookieUtil;

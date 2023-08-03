@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@ControllerAdvice
+@ControllerAdvice // 예외 처리를 담당
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnauthorizedException.class)
@@ -18,17 +18,25 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> ForbiddenHandler(ForbiddenException e){
+        log.error("Forbidden", e);
+        ErrorResponse response = new ErrorResponse(ErrorCode.FORBIDDEN);
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(NotFoundBlogIdException.class)
+    public ResponseEntity<ErrorResponse> NotFoundBlogIdHandler(NotFoundBlogIdException e){
+        log.error("NotFoundBlogIdException", e);
+        ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(NotFoundReplyByReplyIdException.class)
     public ResponseEntity<ErrorResponse> NotFoundReplyByReplyIdHandler(NotFoundReplyByReplyIdException e){
         log.error("NotFoundReplyByReplyIdException", e);
         ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND);
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(NotFoundBlogIdException.class)
-    public String NotFoundBlogIdHandler(NotFoundBlogIdException e, HttpServletRequest request, Model model){
-        log.error("NotFoundBlogIdException", e);
-        return "error/NotFoundBlogIdExceptionResultPage";
     }
 
     @ExceptionHandler(InvalidTokenException.class)
@@ -37,4 +45,12 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    /*
+    @ExceptionHandler(NotFoundBlogIdException.class)
+    public String NotFoundBlogIdHandler(NotFoundBlogIdException e, HttpServletRequest request, Model model){
+        log.error("NotFoundBlogIdException", e);
+        return "error/NotFoundBlogIdExceptionResultPage";
+    }
+    */
 }

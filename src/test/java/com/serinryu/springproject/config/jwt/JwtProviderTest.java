@@ -1,8 +1,10 @@
 package com.serinryu.springproject.config.jwt;
 
-import com.serinryu.springproject.config.PrincipalDetails;
+import com.serinryu.springproject.security.PrincipalDetails;
 import com.serinryu.springproject.entity.User;
 import com.serinryu.springproject.repository.UserRepository;
+import com.serinryu.springproject.security.jwt.JwtProperties;
+import com.serinryu.springproject.security.jwt.JwtProvider;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

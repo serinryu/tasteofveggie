@@ -1,4 +1,4 @@
-package com.serinryu.springproject.config;
+package com.serinryu.springproject.security;
 
 import com.serinryu.springproject.entity.User;
 import lombok.AccessLevel;

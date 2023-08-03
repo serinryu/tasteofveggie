@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,26 +14,21 @@
         <h4 class="mb-3">블로그에 오신 것을 환영합니다.</h4>
     </div>
 
-
     <div class="container mt-5">
-        <div class="row">
+        <div id="blogContent" class="row">
             <div class="col-lg-8">
                 <article>
-                    <input type="hidden" id="blog-id" value="${blog.blogId}" />
+                    <input type="hidden" id="blog-id" value="" />
                     <header class="mb-4">
-                        <h1 class="fw-bolder mb-1">${blog.blogTitle}</h1>
-<%--                        <div class="text-muted fst-italic mb-2">Posted on ${blog.createdAt}</div>--%>
-                        <div class="text-muted fst-italic mb-2"> By : ${blog.blogWriter} </div>
-                        <div class="text-muted fst-italic mb-2"> View : ${blog.blogCount} </div>
+                        <h1 class="fw-bolder mb-1"></h1>
+                        <div class="text-muted fst-italic mb-2"> By : </div>
+                        <div class="text-muted fst-italic mb-2"> View : </div>
                     </header>
                     <section class="mb-5">
-                        <p class="fs-5 mb-4">${blog.blogContent}</p>
+                        <p class="fs-5 mb-4"></p>
                     </section>
-                    <button type="button" id="modify-btn"
-                            onclick="location.href='${pageContext.request.contextPath}/blogs/new?id=${blog.blogId}'"
-                            class="btn btn-primary btn-sm">수정</button>
+                    <button type="button" id="modify-btn-new" class="btn btn-primary btn-sm">수정</button>
                     <button type="button" id="delete-btn" class="btn btn-secondary btn-sm">삭제</button>
-
                 </article>
             </div>
         </div>
@@ -81,9 +77,9 @@
 
     </div><!-- .container -->
 
-    <script src="/js/reply.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-    <script src="/js/blog.js"></script>
+    <script src="/js/blogdetail.js"></script>
+    <script src="/js/reply.js"></script>
 
 </body>
 </html>
