@@ -32,20 +32,27 @@ function httpRequest(method, url, body, success, fail) {
     // 인증되지 않은 사용자는 /api/** 로 fetch 요청을 보내지 않고, /login 으로 이동
     if(!accessToken){
         window.location.replace('/login');
-        throw new Error('Unauthorized');
+        return; // Stop the function here to prevent further execution
     }
 
     fetch(url, {
         method: method,
         headers: {
             Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
         },
         body: body,
     }).then(response => {
+
         if (response.status === 200 || response.status === 201) {
-            return response.json(); // Parse the response body as JSON and return it as a Promise
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return response.json(); // Parse the response body as JSON and return it as a Promise
+            } else {
+                return response; // if the response is empty or not JSON
+            }
         }
+
         const refreshToken = getCookie('refresh_token');
 
         if (response.status === 401 && refreshToken) {
@@ -76,7 +83,7 @@ function httpRequest(method, url, body, success, fail) {
     }).then(data => {
         success(data); // Call the success callback with the parsed data
     }).catch(error => {
-        fail();
+        fail(error);
     });
 }
 
@@ -106,10 +113,6 @@ if(modifyBtn) {
     modifyBtn.addEventListener('click', function () {
         // Get the blog ID from the hidden input
         const blogId = document.getElementById('blog-id').value;
-
-        // Get the existing blog data
-        const blogTitle = blogTitleElem.textContent;
-        const blogContent = blogContentElem.textContent;
 
         // Create a URL with query parameters to pass existing data to the new modify page
         const modifyUrl = `/blogs/new?id=${blogId}`;

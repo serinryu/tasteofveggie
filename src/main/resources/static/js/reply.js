@@ -1,5 +1,3 @@
-const apiUrl = "http://localhost:8080/reply";
-
 const $replies = document.getElementById("replies");
 const $replySubmit = document.getElementById("replySubmit");
 const $replyUpdateBtn = document.getElementById("replyUpdateBtn");
@@ -16,131 +14,120 @@ function getDateFormatted(timestamp) {
 }
 
 function getAllReplies(blogId) {
-    const url = `${apiUrl}/${blogId}/all`;
+    const url = `/api/reply/${blogId}/all`;
 
-    fetch(url)
-        .then((res) => res.json())
-        .then((replies) => {
+    // Call the httpRequest method instead of fetch
+    httpRequest('GET', url, null,
+        (replies) => {
             $replies.innerHTML = replies
                 .map(
                     (reply, i) =>
                         `
-                        <div class="card mt-5">
-                        <div class="card-header">
-                            <span class="font-weight-bold">${reply.replyWriter}</span>
-                            <span class="text-muted">${getDateFormatted(reply.publishedAt)}</span>
-                        </div>
-                        
-                        <div class="card-body">
-                            <div class="card-text">${reply.replyContent}</div>
-                            <button class="btn btn-primary btn-sm updateReplyBtn" data-replyId="${reply.replyId}" data-bs-toggle="modal" data-bs-target="#replyUpdateModal">
-                            Edit
-                            </button>
-                            <button class="btn btn-secondary btn-sm deleteReplyBtn" data-replyId="${reply.replyId}">
-                            Delete
-                            </button>
-                        </div>
-                       </div>`
+            <div class="card mt-5">
+              <div class="card-header">
+                <span class="font-weight-bold">${reply.replyWriter}</span>
+                <span class="text-muted">${getDateFormatted(reply.publishedAt)}</span>
+              </div>
+              <div class="card-body">
+                <div class="card-text" data-replyId="${reply.replyId}">${reply.replyContent}</div>
+                <button class="btn btn-primary btn-sm updateReplyBtn" data-replyId="${reply.replyId}" data-bs-toggle="modal" data-bs-target="#replyUpdateModal">
+                  Edit
+                </button>
+                <button class="btn btn-secondary btn-sm deleteReplyBtn" data-replyId="${reply.replyId}">
+                  Delete
+                </button>
+              </div>
+            </div>`
                 )
                 .join("");
-        })
-        .catch((error) => {
+        },
+        (error) => {
             console.error("Error while getting all replies:", error);
-        });
+        }
+    );
 }
 
 function deleteReply(replyId) {
     if (confirm("Are you sure you want to delete this reply?")) {
-        const url = `${apiUrl}/${replyId}`;
+        const url = `/api/reply/${replyId}`;
 
-        fetch(url, { method: "delete" })
-            .then((res) => {
-                if (res.ok) {
-                    const replyElement = document.getElementById(`replyId${replyId}`);
-                    if (replyElement) {
-                        replyElement.remove();
-                    }
-                    alert("Reply deleted successfully.");
-                    getAllReplies(blogId); // UI update
-                } else {
-                    console.error("Failed to delete the reply:", res.status);
-                }
-            })
-            .catch((error) => {
+        httpRequest('DELETE', url, null,
+            () => {
+                // const replyElement = document.getElementById(`replyId${replyId}`);
+                // if (replyElement) {
+                //     replyElement.remove();
+                // }
+                getAllReplies(blogId); // UI update
+            },
+            (error) => {
                 console.error("Error while deleting the reply:", error);
-            });
+            }
+        );
     }
 }
 
 function addReply() {
-    //const replyWriter = document.getElementById("replyWriter").value.trim();
     const replyContent = document.getElementById("replyContent").value.trim();
+    const url = '/api/reply';
 
     if (replyContent === "") {
         alert("Please fill Content fields.");
         return;
     }
 
-    fetch(apiUrl, {
-        method: "post",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+    // Use the httpRequest function instead of fetch
+    httpRequest('POST', url,
+        JSON.stringify({
             replyContent,
             blogId,
         }),
-    })
-        .then((res) => {
-            if (res.ok) {
-                document.getElementById("replyContent").value = "";
-                alert("Reply posted successfully!");
-                getAllReplies(blogId); // UI update
-            } else {
-                console.error("Failed to insert the reply:", res.status);
-            }
-        })
-        .catch((error) => {
+        (data) => {
+            document.getElementById("replyContent").value = "";
+            getAllReplies(blogId); // UI update
+        },
+        (error) => {
             console.error("Error while inserting the reply:", error);
-        });
+        }
+    );
 }
 
 function openUpdateReplyModal(replyId) {
-    // Get the existing reply content
-    const existingReplyContent = document.querySelector(`.card-text`).textContent;
+    const url = `/api/reply/${replyId}`;
 
-    // Populate the reply content inside the modal input field
-    const $modalReplyContent = document.getElementById("modalReplyContent");
-    $modalReplyContent.value = existingReplyContent;
+    httpRequest('GET', url, null,
+        (data) => {
+            // Data received from the server
+            // Populate the reply content inside the modal input field
+            const $modalReplyContent = document.getElementById("modalReplyContent");
+            $modalReplyContent.value = data.replyContent;
 
-    // Store the replyId in a hidden input field for later use during the update
-    const $modalReplyId = document.getElementById("modalReplyId");
-    $modalReplyId.value = replyId;
+            // Store the replyId in a hidden input field for later use during the update
+            const $modalReplyId = document.getElementById("modalReplyId");
+            $modalReplyId.value = data.replyId;
+        },
+        (error) => {
+            console.error('Error while fetching reply data:', error);
+        }
+    );
 }
 
 function updateReply(replyId) {
-    const url = `${apiUrl}/${replyId}`;
+    const url = `/api/reply/${replyId}`;
 
-    fetch(url, {
-        method: "put",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            replyContent: $modalReplyContent.value,
+    console.log($modalReplyContent.value);
+
+    httpRequest('PUT', url,
+        JSON.stringify({
+            replyContent: $modalReplyContent.value
         }),
-    })
-        .then((res) => {
-            if (res.ok) {
-                $modalReplyContent.value = "";
-                getAllReplies(blogId);
-            } else {
-                console.error("Failed to update the reply:", res.status);
-            }
-        })
-        .catch((error) => {
-            console.error("Error while updating the reply:", error);
-        });
+        () => {
+            $modalReplyContent.value = "";
+            getAllReplies(blogId);
+        },
+        (error) => {
+            console.error("Error while updating the reply :", error);
+        }
+    );
 }
 
 // Invoke the functions

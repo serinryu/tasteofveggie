@@ -22,6 +22,13 @@ function httpRequest(method, url, body, success, fail) {
     const accessToken = localStorage.getItem('access_token');
     console.log(accessToken);
 
+    // IsLoggedIn? = Have accessToken?
+    // 인증되지 않은 사용자는 /api/** 로 fetch 요청을 보내지 않고, /login 으로 이동
+    if(!accessToken){
+        window.location.replace('/login');
+        return; // Stop the function here to prevent further execution
+    }
+
     fetch(url, {
         method: method,
         headers: {
@@ -30,9 +37,16 @@ function httpRequest(method, url, body, success, fail) {
         },
         body: body,
     }).then(response => {
+
         if (response.status === 200 || response.status === 201) {
-            return response.json(); // Parse the response body as JSON and return it as a Promise
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return response.json(); // Parse the response body as JSON and return it as a Promise
+            } else {
+                return response; // if the response is empty or not JSON
+            }
         }
+
         const refreshToken = getCookie('refresh_token');
 
         if (response.status === 401 && refreshToken) {
@@ -52,7 +66,8 @@ function httpRequest(method, url, body, success, fail) {
                     }
                 })
                 .then(result => {
-                    document.cookie = `access_token=${result.accessToken}`;
+                    //document.cookie = `access_token=${result.accessToken}`;
+                    localStorage.setItem('access_token', newAccessToken);
                     // Call the httpRequest function again with the updated access_token
                     httpRequest(method, url, body, success, fail);
                 })
@@ -142,16 +157,19 @@ if (modifyButton) {
             blogContent: document.getElementById('content').value
         })
 
-        function success() {
-            console.log('수정 완료되었습니다.');
-            location.replace(`/blogs/${id}`);
-        }
+        // Call the httpRequest function with the PUT method
+        httpRequest('PUT', `/api/blogs/${id}`, body,
+            (responseData) => {
+                // Success callback, handle the success scenario here
+                console.log('Blog updated successfully.');
+                location.replace(`/blogs/${id}`);
+            },
+            (error) => {
+                // Error callback, handle the error scenario here
+                console.error('Error while updating the blog:', error);
+                //location.replace(`/blogs/${id}`);
+            }
+        );
 
-        function fail() {
-            console.log('수정 실패했습니다.');
-            location.replace(`/blogs/${id}`);
-        }
-
-        httpRequest('PUT',`/api/blogs/${id}`, body, success, fail);
     });
 }

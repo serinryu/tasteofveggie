@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/reply")
+@RequestMapping("/api/reply")
 public class ReplyApiController {
     ReplyService replyService;
 
@@ -35,7 +35,7 @@ public class ReplyApiController {
     }
 
     @GetMapping( "/{replyId}")
-    public ResponseEntity<?> findByReplyId(@PathVariable long replyId){
+    public ResponseEntity<ReplyResponseDTO> findByReplyId(@PathVariable long replyId){
         ReplyResponseDTO replyFindByIdDTO = replyService.findByReplyId(replyId);
         return ResponseEntity.ok().body(replyFindByIdDTO);
     }
@@ -54,19 +54,19 @@ public class ReplyApiController {
 
         replyService.save(replyCreateRequestDTO);
         logger.info("Reply updated successfully.");
-        return ResponseEntity.ok().body("Reply added successfully.");
+        return ResponseEntity.ok().body("Success");
     }
 
     @DeleteMapping("/{replyId}")
     public ResponseEntity<String> deleteReply(@PathVariable long replyId){
         replyService.deleteByReplyId(replyId);
-        return ResponseEntity.ok().body("Reply deleted successfully.");
+        return ResponseEntity.ok().body("Success");
     }
 
     @PutMapping("/{replyId}")
     public ResponseEntity<String> updateReply(@PathVariable long replyId, @RequestBody @Valid ReplyUpdateRequestDTO replyUpdateRequestDTO){
         replyService.update(replyId, replyUpdateRequestDTO);
-        return ResponseEntity.ok().body("Reply updated successfully.");
+        return ResponseEntity.ok().body("Success");
     }
 
 }

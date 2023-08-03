@@ -83,15 +83,14 @@ public class BlogApiController {
     }
 
     @DeleteMapping("/api/blogs/{blogId}")
-    public ResponseEntity<Void> deleteBlog(@PathVariable long blogId) {
+    public ResponseEntity<String> deleteBlog(@PathVariable long blogId) {
         blogService.deleteById(blogId);
         logger.info("Blog deleted successfully.");
-        return ResponseEntity.ok()
-                .build();
+        return ResponseEntity.ok().body("Success");
     }
 
     @PostMapping("/api/blogs")
-    public ResponseEntity<Void> addBlog(@Valid @RequestBody BlogCreateRequestDTO blogCreateRequestDTO, BindingResult bindingResult) {
+    public ResponseEntity<String> addBlog(@Valid @RequestBody BlogCreateRequestDTO blogCreateRequestDTO, BindingResult bindingResult) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName(); // Get the username from the authentication object
@@ -104,18 +103,16 @@ public class BlogApiController {
 
         blogService.save(blogCreateRequestDTO);
         logger.info("Blog created successfully.");
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body("Success");
     }
 
     @PutMapping("/api/blogs/{blogId}")
-    public ResponseEntity<Void> updateBlog(@PathVariable long blogId, @Valid @RequestBody BlogUpdateRequestDTO blogUpdateRequestDTO, BindingResult bindingResult) {
+    public ResponseEntity<String> updateBlog(@PathVariable long blogId, @Valid @RequestBody BlogUpdateRequestDTO blogUpdateRequestDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             logger.error("Validation errors: {}", bindingResult.getAllErrors());
             return ResponseEntity.badRequest().build();
         }
         blogService.update(blogId, blogUpdateRequestDTO);
-        return ResponseEntity.ok()
-                .build();
+        return ResponseEntity.ok().body("Success");
     }
 }
