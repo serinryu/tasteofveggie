@@ -1,7 +1,7 @@
 package com.serinryu.springproject.controller;
 
 import com.serinryu.springproject.dto.SignUpRequestDTO;
-import com.serinryu.springproject.service.TokenService;
+import com.serinryu.springproject.config.jwt.TokenService;
 import com.serinryu.springproject.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -63,7 +63,7 @@ public class UserApiController {
     @GetMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
         // Delete the refresh token cookie
-        tokenService.deleteRefreshTokenCookie(response);
+        tokenService.deleteRefreshTokenCookie(request, response);
 
         // Perform logout actions, clearing session, etc.
         new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());

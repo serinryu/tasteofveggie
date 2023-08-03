@@ -2,6 +2,7 @@ package com.serinryu.springproject.config.oauth;
 
 import com.serinryu.springproject.config.jwt.JwtProvider;
 import com.serinryu.springproject.config.PrincipalDetails;
+import com.serinryu.springproject.config.jwt.TokenService;
 import com.serinryu.springproject.repository.RefreshTokenRepository;
 import com.serinryu.springproject.service.UserDetailService;
 import com.serinryu.springproject.entity.RefreshToken;
@@ -24,13 +25,7 @@ import java.time.Duration;
 @Slf4j
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
-    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
-    public static final Duration ACCESS_TOKEN_DURATION = Duration.ofDays(1);
-    public static final String REDIRECT_PATH = "/blogs";
-
-    private final JwtProvider jwtProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenService tokenService;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
     private final UserDetailService userDetailService;
 
@@ -43,15 +38,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         PrincipalDetails user = userDetailService.findByEmail(email);
 
-        // 1. refreshToken 생성 -> 저장 -> 쿠키에 저장
-        String refreshToken = jwtProvider.generateToken(user, REFRESH_TOKEN_DURATION);
-        saveRefreshToken(user.getId(), refreshToken);
-        addRefreshTokenToCookie(request, response, refreshToken);
+        // 1. refreshToken 생성 및 저장 -> 쿠키에 저장
+        String refreshToken = tokenService.generateAndSaveRefreshToken(user);
+        tokenService.addRefreshTokenToCookie(request, response, refreshToken);
         logger.info("🌈 refreshToken :" + refreshToken);
 
         // 2. accessToken 생성 -> 쿼리 파라미터에 accessToken 추가
-        String accessToken = jwtProvider.generateToken(user, ACCESS_TOKEN_DURATION);
-        String targetUrl = getTargetUrl(accessToken);
+        String accessToken = tokenService.generateAccessToken(user);
+        String targetUrl = tokenService.getTargetUrl(accessToken);
         logger.info("🌈 accessToken :" + accessToken);
 
         if (response.isCommitted()) {
@@ -67,34 +61,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info(targetUrl);
     }
 
-    // 생성된 refreshToken 을 전달받아 DB에 저장
-    private void saveRefreshToken(Long userId, String newRefreshToken) {
-        RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId)
-                .map(entity -> entity.update(newRefreshToken))
-                .orElse(new RefreshToken(userId, newRefreshToken));
-
-        refreshTokenRepository.save(refreshToken);
-    }
-
-    // 생성된 refreshToken 을 쿠키에 저장
-    private void addRefreshTokenToCookie(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
-        int cookieMaxAge = (int) REFRESH_TOKEN_DURATION.toSeconds();
-
-        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
-        CookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieMaxAge);
-    }
-
     // 인증 관련 설정값, 쿠키 제거
     private void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
         super.clearAuthenticationAttributes(request);
         authorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
     }
 
-    // 쿠키에서 리다이렉트 경로가 담긴 값을 가져와 쿼리 파라미터에 accessToken 추가
-    private String getTargetUrl(String token) {
-        return UriComponentsBuilder.fromUriString(REDIRECT_PATH)
-                .queryParam("token", token)
-                .build()
-                .toUriString();
-    }
 }

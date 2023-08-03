@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serinryu.springproject.config.AccessTokenRequest;
 import com.serinryu.springproject.config.jwt.JwtProvider;
 import com.serinryu.springproject.controller.TokenApiController;
-import com.serinryu.springproject.service.TokenService;
+import com.serinryu.springproject.config.jwt.TokenService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

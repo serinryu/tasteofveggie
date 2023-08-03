@@ -2,7 +2,7 @@ package com.serinryu.springproject.controller;
 
 import com.serinryu.springproject.config.AccessTokenRequest;
 import com.serinryu.springproject.config.AccessTokenResponse;
-import com.serinryu.springproject.service.TokenService;
+import com.serinryu.springproject.config.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

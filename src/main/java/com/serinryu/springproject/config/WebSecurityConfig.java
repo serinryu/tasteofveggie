@@ -7,9 +7,8 @@ import com.serinryu.springproject.config.oauth.OAuth2AuthorizationRequestBasedOn
 import com.serinryu.springproject.config.oauth.OAuth2SuccessHandler;
 import com.serinryu.springproject.config.oauth.OAuth2UserService;
 import com.serinryu.springproject.repository.RefreshTokenRepository;
-import com.serinryu.springproject.service.TokenService;
+import com.serinryu.springproject.config.jwt.TokenService;
 import com.serinryu.springproject.service.UserDetailService;
-import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -75,8 +74,8 @@ public class WebSecurityConfig {
             // Form based Auth  -> Spring Security 제공. POST /login 해서 로직 작성할 필요 없음
             .formLogin(form -> form
                 .loginPage("/login") // HTML Form 을 통해 POST /login
-                .successHandler(new JwtAuthenticationSuccessHandler(jwtProvider,
-                        refreshTokenRepository,
+                .successHandler(new JwtAuthenticationSuccessHandler(
+                        tokenService,
                         userDetailService
                 ))
                 .failureHandler(new JwtAuthenticationFailureHandler())
@@ -126,26 +125,11 @@ public class WebSecurityConfig {
 
     @Bean
     public OAuth2SuccessHandler oAuth2SuccessHandler() {
-        return new OAuth2SuccessHandler(jwtProvider,
-                refreshTokenRepository,
+        return new OAuth2SuccessHandler(tokenService,
                 oAuth2AuthorizationRequestBasedOnCookieRepository(),
                 userDetailService
         );
     }
-
-//    @Bean
-//    public JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler() {
-//        return new JwtAuthenticationSuccessHandler(jwtProvider,
-//                refreshTokenRepository,
-//                userDetailService
-//        );
-//    }
-//
-//    @Bean
-//    public JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler() {
-//        return new JwtAuthenticationFailureHandler();
-//    }
-
 
     @Bean
     public OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository() {
