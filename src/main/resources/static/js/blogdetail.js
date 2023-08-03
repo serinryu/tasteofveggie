@@ -28,6 +28,13 @@ function httpRequest(method, url, body, success, fail) {
     const accessToken = localStorage.getItem('access_token');
     console.log(accessToken);
 
+    // IsLoggedIn? = Have accessToken?
+    // 인증되지 않은 사용자는 /api/** 로 fetch 요청을 보내지 않고, /login 으로 이동
+    if(!accessToken){
+        window.location.replace('/login');
+        throw new Error('Unauthorized');
+    }
+
     fetch(url, {
         method: method,
         headers: {

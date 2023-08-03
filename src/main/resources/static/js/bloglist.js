@@ -58,7 +58,8 @@ function httpRequest(method, url, body, success, fail) {
                     httpRequest(method, url, body, success, fail);
                 })
                 .catch(error => fail());
-        } else {
+        }
+        else {
             return fail();
         }
     }).then(data => {
@@ -147,7 +148,7 @@ function fetchPageData(pageNum) {
 }
 
 const name = document.getElementById('name');
-httpRequest('GET',`/api/blogs?page=1`, null,
+httpRequest('GET', `/api/blogs?page=1`, null,
     function successCallback(data) {
         const username = data.username;
         const nameDiv = document.getElementById('name');
@@ -159,3 +160,4 @@ httpRequest('GET',`/api/blogs?page=1`, null,
         console.log('Request failed');
     }
 );
+
