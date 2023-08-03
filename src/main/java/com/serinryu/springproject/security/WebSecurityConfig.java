@@ -1,13 +1,13 @@
-package com.serinryu.springproject.config;
+package com.serinryu.springproject.security;
 
-import com.serinryu.springproject.config.jwt.JwtAuthenticationFailureHandler;
-import com.serinryu.springproject.config.jwt.JwtAuthenticationSuccessHandler;
-import com.serinryu.springproject.config.jwt.JwtProvider;
-import com.serinryu.springproject.config.oauth.OAuth2AuthorizationRequestBasedOnCookieRepository;
-import com.serinryu.springproject.config.oauth.OAuth2SuccessHandler;
-import com.serinryu.springproject.config.oauth.OAuth2UserService;
+import com.serinryu.springproject.security.jwt.JwtAuthenticationFailureHandler;
+import com.serinryu.springproject.security.jwt.JwtAuthenticationSuccessHandler;
+import com.serinryu.springproject.security.jwt.JwtProvider;
+import com.serinryu.springproject.security.oauth.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import com.serinryu.springproject.security.oauth.OAuth2SuccessHandler;
+import com.serinryu.springproject.security.oauth.OAuth2UserService;
 import com.serinryu.springproject.repository.RefreshTokenRepository;
-import com.serinryu.springproject.config.jwt.TokenService;
+import com.serinryu.springproject.security.jwt.TokenService;
 import com.serinryu.springproject.service.UserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

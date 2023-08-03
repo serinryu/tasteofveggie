@@ -53,7 +53,7 @@ public class ReplyApiControllerTest {
 
         // when
         StringBuilder url = new StringBuilder();
-        url.append("/reply/").append(blogId).append("/all");
+        url.append("/api/reply/").append(blogId).append("/all");
         ResultActions response = mockMvc.perform(get(String.valueOf(url))
                 .accept(MediaType.APPLICATION_JSON));
 
@@ -77,7 +77,7 @@ public class ReplyApiControllerTest {
 
         // when
         StringBuilder url = new StringBuilder();
-        url.append("/reply/").append(replyId);
+        url.append("/api/reply/").append(replyId);
         ResultActions response = mockMvc.perform(get(String.valueOf(url))
                 .accept(MediaType.APPLICATION_JSON));
 
@@ -100,7 +100,7 @@ public class ReplyApiControllerTest {
         Mockito.doNothing().when(replyService).save(replyCreateRequestDTO);
 
         // when
-        ResultActions response = mockMvc.perform(post("/reply")
+        ResultActions response = mockMvc.perform(post("/api/reply")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replyCreateRequestDTO)));  // java object -> json (serialization)
@@ -113,14 +113,16 @@ public class ReplyApiControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "testuser@example")
     public void deleteByReplyIdTest() throws Exception {
         // given
         long replyId = 2;
-        Mockito.doNothing().when(replyService).deleteByReplyId(replyId);
+        String username = "testuser@example";
+        ReplyResponseDTO reply = new ReplyResponseDTO(replyId, username, "content", null, null);
+        Mockito.when(replyService.findByReplyId(replyId)).thenReturn(reply);
 
         // when
-        ResultActions response = mockMvc.perform(delete("/reply/{replyId}", replyId)
+        ResultActions response = mockMvc.perform(delete("/api/reply/{replyId}", replyId)
                 .with(csrf()));
 
         // then
@@ -130,14 +132,18 @@ public class ReplyApiControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "testuser@example")
     public void updateReplyTest_ValidData() throws Exception {
         // given
         long replyId = 1L;
+        String username = "testuser@example";
+        ReplyResponseDTO reply = new ReplyResponseDTO(replyId, username, "content", null, null);
+        Mockito.when(replyService.findByReplyId(replyId)).thenReturn(reply);
+
         ReplyUpdateRequestDTO replyUpdateRequestDTO = new ReplyUpdateRequestDTO("updated content");
 
         // when
-        ResultActions response = mockMvc.perform(put("/reply/{replyId}", replyId)
+        ResultActions response = mockMvc.perform(put("/api/reply/{replyId}", replyId)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replyUpdateRequestDTO)));  // java object -> json
@@ -155,10 +161,14 @@ public class ReplyApiControllerTest {
     public void updateReplyTest_InvalidData() throws Exception {
         // given
         long replyId = 1L;
+        String username = "testuser@example";
+        ReplyResponseDTO reply = new ReplyResponseDTO(replyId, username, "content", null, null);
+        Mockito.when(replyService.findByReplyId(replyId)).thenReturn(reply);
+
         ReplyUpdateRequestDTO replyUpdateRequestDTO = new ReplyUpdateRequestDTO((String) null);
 
         // when
-        ResultActions response = mockMvc.perform(put("/reply/{replyId}", replyId)
+        ResultActions response = mockMvc.perform(put("/api/reply/{replyId}", replyId)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replyUpdateRequestDTO)));  // java object -> json

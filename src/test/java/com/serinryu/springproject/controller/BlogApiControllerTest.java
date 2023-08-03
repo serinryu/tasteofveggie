@@ -25,6 +25,7 @@ import java.util.Collections;
 
 import static org.mockito.Mockito.never;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -67,15 +68,19 @@ public class BlogApiControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "testuser@example")
     public void DeleteTest_Success() throws Exception {
+        // given
         long blogId = 1L;
-        Mockito.doNothing().when(blogService).deleteById(blogId); // void 함수를 검증할 수 있는 방법은 이 함수가 호츌되었는지
+        String username = "testuser@example";
+        BlogResponseDTO blog = new BlogResponseDTO(blogId, username, "original title", "original content", null, null, 0);
+        Mockito.when(blogService.findById(blogId)).thenReturn(blog);
 
+        // when
         mockMvc.perform(delete("/api/blogs/{blogId}", blogId)
                     .with(csrf()))
                 .andExpect(status().isOk());
-
+        // then
         Mockito.verify(blogService).deleteById(blogId);
     }
 
@@ -116,11 +121,18 @@ public class BlogApiControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "testuser@example")
     public void updateTest_Success() throws Exception {
         // given
         long blogId = 1;
-        BlogUpdateRequestDTO blogUpdateRequestDTO = new BlogUpdateRequestDTO("title", "content");
+        String username = "testuser@example";
+        BlogUpdateRequestDTO blogUpdateRequestDTO = new BlogUpdateRequestDTO();
+        blogUpdateRequestDTO.setBlogTitle("title");
+        blogUpdateRequestDTO.setBlogContent("content");
+
+        BlogResponseDTO blog = new BlogResponseDTO(blogId, username, "original title", "original content", null, null, 0);
+
+        Mockito.when(blogService.findById(blogId)).thenReturn(blog);
 
         // when
         ResultActions response = mockMvc.perform(
@@ -134,7 +146,6 @@ public class BlogApiControllerTest {
         response.andExpect(status().isOk())
                 .andDo(print());
 
-        //Mockito.verify(blogService).update(blogId, blogUpdateRequestDTO);
     }
 
     @Test

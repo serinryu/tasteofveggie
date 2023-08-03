@@ -1,6 +1,6 @@
-package com.serinryu.springproject.config.jwt;
+package com.serinryu.springproject.security.jwt;
 
-import com.serinryu.springproject.config.PrincipalDetails;
+import com.serinryu.springproject.security.PrincipalDetails;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

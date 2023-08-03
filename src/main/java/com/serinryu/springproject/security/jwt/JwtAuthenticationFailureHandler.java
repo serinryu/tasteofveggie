@@ -1,4 +1,4 @@
-package com.serinryu.springproject.config.jwt;
+package com.serinryu.springproject.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serinryu.springproject.dto.ApiResponse;

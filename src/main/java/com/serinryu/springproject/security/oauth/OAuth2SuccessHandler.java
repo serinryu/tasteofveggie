@@ -1,12 +1,8 @@
-package com.serinryu.springproject.config.oauth;
+package com.serinryu.springproject.security.oauth;
 
-import com.serinryu.springproject.config.jwt.JwtProvider;
-import com.serinryu.springproject.config.PrincipalDetails;
-import com.serinryu.springproject.config.jwt.TokenService;
-import com.serinryu.springproject.repository.RefreshTokenRepository;
+import com.serinryu.springproject.security.PrincipalDetails;
+import com.serinryu.springproject.security.jwt.TokenService;
 import com.serinryu.springproject.service.UserDetailService;
-import com.serinryu.springproject.entity.RefreshToken;
-import com.serinryu.springproject.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.time.Duration;
 
 @RequiredArgsConstructor
 @Component

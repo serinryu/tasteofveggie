@@ -1,14 +1,12 @@
-package com.serinryu.springproject.config.jwt;
+package com.serinryu.springproject.security.jwt;
 
-import com.serinryu.springproject.config.PrincipalDetails;
-import com.serinryu.springproject.config.jwt.JwtProvider;
+import com.serinryu.springproject.security.PrincipalDetails;
 import com.serinryu.springproject.entity.RefreshToken;
 import com.serinryu.springproject.exception.InvalidTokenException;
 import com.serinryu.springproject.repository.RefreshTokenRepository;
 import com.serinryu.springproject.service.RefreshTokenService;
 import com.serinryu.springproject.service.UserDetailService;
 import com.serinryu.springproject.util.CookieUtil;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
-import java.util.UUID;
 
+/*
+JwtProvider is a utility class for handling low-level JWT operations,
+while the TokenService is a higher-level service that manages token-related operations specific to your application.
+ */
 @RequiredArgsConstructor
 @Service
 public class TokenService {
