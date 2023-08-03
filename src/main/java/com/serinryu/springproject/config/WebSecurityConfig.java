@@ -7,6 +7,7 @@ import com.serinryu.springproject.config.oauth.OAuth2AuthorizationRequestBasedOn
 import com.serinryu.springproject.config.oauth.OAuth2SuccessHandler;
 import com.serinryu.springproject.config.oauth.OAuth2UserService;
 import com.serinryu.springproject.repository.RefreshTokenRepository;
+import com.serinryu.springproject.service.TokenService;
 import com.serinryu.springproject.service.UserDetailService;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class WebSecurityConfig {
 
     private final JwtProvider jwtProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenService tokenService;
     private final UserDetailService userDetailService;
 
     private final JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;

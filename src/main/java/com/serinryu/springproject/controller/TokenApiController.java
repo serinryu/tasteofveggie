@@ -2,7 +2,7 @@ package com.serinryu.springproject.controller;
 
 import com.serinryu.springproject.config.AccessTokenRequest;
 import com.serinryu.springproject.config.AccessTokenResponse;
-import com.serinryu.springproject.config.jwt.TokenService;
+import com.serinryu.springproject.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +16,9 @@ public class TokenApiController {
 
     private final TokenService tokenService;
 
-    @PostMapping("/api/token")
+    @PostMapping("/api/issue-new-token")
     public ResponseEntity<AccessTokenResponse> createNewAccessToken(@RequestBody AccessTokenRequest request) {
-        // refreshToken 기반으로 새로운 액세스 토큰 제작 혹은 refreshToken 이 유효하지 않다면 TokenService 단에서 에러 던짐
+        // refreshToken 기반으로 새로운 accessToken 제작
         String newAccessToken = tokenService.createNewAccessToken(request.getRefreshToken());
 
         return ResponseEntity.status(HttpStatus.CREATED)

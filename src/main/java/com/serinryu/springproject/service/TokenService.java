@@ -1,9 +1,11 @@
-package com.serinryu.springproject.config.jwt;
+package com.serinryu.springproject.service;
 
 import com.serinryu.springproject.config.PrincipalDetails;
+import com.serinryu.springproject.config.jwt.JwtProvider;
 import com.serinryu.springproject.entity.RefreshToken;
 import com.serinryu.springproject.exception.InvalidTokenException;
-import com.serinryu.springproject.service.UserDetailService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +20,12 @@ public class TokenService {
     private final RefreshTokenService refreshTokenService;
     private final UserDetailService userService;
 
+    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
+    public static final Duration ACCESS_TOKEN_DURATION = Duration.ofDays(1);
+
     // Create a new access token based on the provided PrincipalDetails and set its expiration time.
     public String generateAccessToken(PrincipalDetails principalDetails) {
-        return jwtProvider.generateToken(principalDetails, Duration.ofHours(2));
+        return jwtProvider.generateToken(principalDetails, ACCESS_TOKEN_DURATION);
     }
 
     // Generate a new refresh token for the given user and save it in the database.
@@ -31,6 +36,11 @@ public class TokenService {
         return refreshToken;
     }
 
+    // Check if a refresh token exists for the given user in the database.
+    public boolean hasRefreshToken(Long userId) {
+        return refreshTokenService.findByUserId(userId).isPresent();
+    }
+
     // Generate a new refresh token.
     private String generateRefreshToken() {
         // Implement the logic to generate a new refresh token.
@@ -38,7 +48,8 @@ public class TokenService {
         return UUID.randomUUID().toString();
     }
 
-    // 전달받은 refreshToken 으로 토큰 유효성 검사 진행하고, 유효한 토큰이라면 새로운 액세스 토큰 생성
+    // 전달받은 refreshToken 으로 토큰 유효성 검사 진행하고,
+    // 유효한 토큰이라면 1) 새로운 액세스 토큰 생성, 이 때 2) 리프레시 토큰도 다시 생성할 수 O
     public String createNewAccessToken(String refreshToken) {
         // 토큰 유효성 검사에 실패하면 예외 발생
         if(!jwtProvider.validToken(refreshToken)) {
@@ -48,6 +59,17 @@ public class TokenService {
         Long userId = refreshTokenService.findByRefreshToken(refreshToken).getUserId();
         PrincipalDetails principalDetails = userService.findById(userId);
 
-        return jwtProvider.generateToken(principalDetails, Duration.ofHours(2));
+        //String newRefreshToken = generateAndSaveRefreshToken(principalDetails);
+
+        return generateAccessToken(principalDetails);
     }
+
+    public void deleteRefreshTokenCookie(HttpServletResponse response) {
+        Cookie refreshTokenCookie = new Cookie("refresh_token", null);
+        refreshTokenCookie.setMaxAge(0);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
+        response.addCookie(refreshTokenCookie);
+    }
+
 }

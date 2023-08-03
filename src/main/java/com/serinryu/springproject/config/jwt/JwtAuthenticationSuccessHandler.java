@@ -3,6 +3,7 @@ package com.serinryu.springproject.config.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serinryu.springproject.dto.ApiResponse;
 import com.serinryu.springproject.config.PrincipalDetails;
+import com.serinryu.springproject.service.TokenService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,10 +18,10 @@ import java.time.Duration;
 @Slf4j
 @Component
 public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-    private final JwtProvider jwtProvider;
+    private final TokenService tokenService;
 
-    public JwtAuthenticationSuccessHandler(JwtProvider jwtProvider) {
-        this.jwtProvider = jwtProvider;
+    public JwtAuthenticationSuccessHandler(TokenService tokenService) {
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -31,11 +32,11 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
         // 1. 로그인 인증을 마친 사용자 가져오기
         PrincipalDetails principalDetailsDetails = (PrincipalDetails) authentication.getPrincipal();
 
-        // 2. 토큰 생성
-        String token = jwtProvider.generateToken(principalDetailsDetails, Duration.ofDays(1));
+        // 2. 액세스 토큰 생성
+        String accessToken = tokenService.generateAccessToken(principalDetailsDetails);
 
         // 3. response
-        response.addHeader("Authorization", "Bearer " + token);
+        response.addHeader("Authorization", "Bearer " + accessToken);
 
         ApiResponse apiResponse = new ApiResponse(true, "Successfully Logged in. Token is issued");
         ObjectMapper objectMapper = new ObjectMapper();

@@ -17,5 +17,5 @@ function searchParam(key) {
 function performLogout() {
     // Remove the 'access_token' from local storage
     localStorage.removeItem('access_token');
-    window.location.href = '/login';
+    window.location.href = '/logout';
 }

@@ -56,7 +56,7 @@ function httpRequest(method, url, body, success, fail) {
         const refreshToken = getCookie('refresh_token');
 
         if (response.status === 401 && refreshToken) {
-            fetch('/api/token', {
+            fetch('/api/issue-new-token', {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -72,7 +72,8 @@ function httpRequest(method, url, body, success, fail) {
                     }
                 })
                 .then(result => {
-                    document.cookie = `access_token=${result.accessToken}`;
+                    // document.cookie = `access_token=${result.accessToken}`;
+                    localStorage.setItem('access_token', newAccessToken);
                     // Call the httpRequest function again with the updated access_token
                     httpRequest(method, url, body, success, fail);
                 })

@@ -50,7 +50,7 @@ function httpRequest(method, url, body, success, fail) {
         const refreshToken = getCookie('refresh_token');
 
         if (response.status === 401 && refreshToken) {
-            fetch('/api/token', {
+            fetch('/api/issue-new-token', {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
