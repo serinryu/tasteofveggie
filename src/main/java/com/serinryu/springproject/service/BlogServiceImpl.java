@@ -58,33 +58,26 @@ public class BlogServiceImpl implements BlogService {
     @Override
     @Transactional // updateBlogCount() 를 Dirty-Checking 으로 수행하므로 (readOnly=true) 걸어놓으면 안됨
     public BlogResponseDTO findById(long blogId) {
-        try {
-            Blog blog = blogJpaRepository.findById(blogId)
-                    .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
+        Blog blog = blogJpaRepository.findById(blogId)
+                .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
 
-            blog.updateBlogCount();
-            // blogJpaRepository.updateBlogCount(blogId); // Dirty-Checking
+        blog.updateBlogCount();
+        // blogJpaRepository.updateBlogCount(blogId); // Dirty-Checking
 
-            return BlogResponseDTO.fromEntity(blog);
-
-        } catch (Exception e) {
-            throw new InternalServerErrorException("Error occurred while retrieving the blog.");
-        }
+        return BlogResponseDTO.fromEntity(blog);
     }
 
     @Override
     @Transactional
     public void save(BlogCreateRequestDTO blogCreateRequestDTO) {
+
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        blogCreateRequestDTO.updateBlogWriter(userName);
+        Blog blog = blogCreateRequestDTO.toEntity(); // DTO to Entity
+
         try {
-            String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-
-            blogCreateRequestDTO.updateBlogWriter(userName);
-            Blog blog = blogCreateRequestDTO.toEntity(); // DTO to Entity
-
             blogJpaRepository.save(blog);
-
-        } catch (InvalidDataException e){
-            throw new InvalidDataException("Invalid data format. Please check your input data.");
         } catch (Exception e) {
             throw new InternalServerErrorException("Error occurred while saving the blog.");
         }
@@ -94,14 +87,14 @@ public class BlogServiceImpl implements BlogService {
     @Override
     @Transactional
     public void deleteById(long blogId) {
+        // blogId == null 이거나 해당되는 블로그가 없을 때 예외
+        Blog blog = blogJpaRepository.findById(blogId)
+                .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
+
+        // 게시글을 작성한 유저인지 확인
+        authorizeBlogWriter(blog);
+
         try {
-            // blogId == null 이거나 해당되는 블로그가 없을 때 예외
-            Blog blog = blogJpaRepository.findById(blogId)
-                    .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
-
-            // 게시글을 작성한 유저인지 확인
-            authorizeBlogWriter(blog);
-
             // MyBatis 에서 한 메소드당 쿼리문 1개 사용이 보편적이므로 이 두 로직을 합치는 것은 Repository 가 아니라 Service 단에서 진행했음.
             replyJpaRepository.deleteAllByBlogId(blogId);
             blogJpaRepository.deleteById(blogId);
@@ -113,13 +106,13 @@ public class BlogServiceImpl implements BlogService {
     @Override
     @Transactional
     public void update(long blogId, BlogUpdateRequestDTO blogUpdateRequestDTO) {
+        Blog blog = blogJpaRepository.findById(blogId)
+                .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
+
+        // 게시글을 작성한 유저인지 확인
+        authorizeBlogWriter(blog);
+
         try {
-            Blog blog = blogJpaRepository.findById(blogId)
-                    .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
-
-            // 게시글을 작성한 유저인지 확인
-            authorizeBlogWriter(blog);
-
             blog.updateTitleAndContent(blogUpdateRequestDTO.getBlogTitle(), blogUpdateRequestDTO.getBlogContent());
             // // blogJpaRepository.save(blog); // Dirty-Checking
         } catch (InvalidDataException e) {
