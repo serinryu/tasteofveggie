@@ -131,7 +131,7 @@ public class BlogServiceTest {
     @Transactional
     public void saveTest(){
         // given
-        BlogCreateRequestDTO blogCreateRequestDTO = new BlogCreateRequestDTO( "Writer 1", "Title 1", "Content 1");
+        BlogCreateRequestDTO blogCreateRequestDTO = new BlogCreateRequestDTO( "Title 1", "Content 1");
         Mockito.when(blogJpaRepository.save(any(Blog.class))).thenReturn(any(Blog.class));
 
         // when

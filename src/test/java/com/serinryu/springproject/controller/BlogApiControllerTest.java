@@ -68,6 +68,21 @@ public class BlogApiControllerTest {
     }
 
     @Test
+    @WithMockUser
+    public void givenValidBlogId_whenFindBlog_thenReturnsBlog() throws Exception {
+        // Given (Setup)
+        long validBlogId = 1L;
+
+        // When (Perform the request and get the response)
+        mockMvc.perform(get("/api/blogs/{blogId}", validBlogId))
+                .andExpect(status().isOk());
+                //.andExpect(jsonPath("$.blogId").value(validBlogId)); // Assuming the response has a "blogId" field
+
+        // Then (Verify the result)
+        // You can add additional assertions if needed
+    }
+
+    @Test
     @WithMockUser(username = "testuser@example")
     public void DeleteTest_Success() throws Exception {
         // given

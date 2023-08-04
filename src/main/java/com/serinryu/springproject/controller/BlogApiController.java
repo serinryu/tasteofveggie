@@ -64,46 +64,26 @@ public class BlogApiController {
         response.put("pageInfo", pageInfo);
         response.put("username", username);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/api/blogs/{blogId}")
     public ResponseEntity<BlogResponseDTO> findBlog(@PathVariable long blogId) {
         BlogResponseDTO blog = blogService.findById(blogId);
-
-        if (blog == null) {
-            throw new NotFoundBlogIdException("Blog Not Found with id" + blogId);
-        }
-
         return ResponseEntity.ok().body(blog);
     }
 
     @GetMapping("/api/blogs/new")
     public ResponseEntity<BlogResponseDTO> getNewBlogForm(@RequestParam(required = false, value = "id") Long blogId) {
-        if (blogId == null) {
-            throw new NotFoundBlogIdException("Blog Not Found with id" + blogId);
-        } else {
-            BlogResponseDTO blog = blogService.findById(blogId);
-            return ResponseEntity.ok().body(blog);
-        }
+        BlogResponseDTO blog = blogService.findById(blogId);
+        return ResponseEntity.ok().body(blog);
     }
 
     @DeleteMapping("/api/blogs/{blogId}")
     public ResponseEntity<String> deleteBlog(@PathVariable long blogId) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        BlogResponseDTO blog = blogService.findById(blogId);
-
-        if (blog == null) {
-            throw new NotFoundBlogIdException("Blog Not Found with id" + blogId);
-        }
-
-        if (!blog.getBlogWriter().equals(username)) {
-            throw new ForbiddenException("You are not allowed to delete this blog.");
-        }
-
         blogService.deleteById(blogId);
+
         logger.info("Blog deleted successfully.");
         return ResponseEntity.ok().body("Success");
     }
@@ -116,11 +96,8 @@ public class BlogApiController {
             return ResponseEntity.badRequest().build();
         }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName(); // Get the username from the authentication object
-        blogCreateRequestDTO.setBlogWriter(username);
-
         blogService.save(blogCreateRequestDTO);
+
         logger.info("Blog created successfully.");
         return ResponseEntity.status(HttpStatus.CREATED).body("Success");
     }
@@ -131,18 +108,6 @@ public class BlogApiController {
         if (bindingResult.hasErrors()) {
             logger.error("Validation errors: {}", bindingResult.getAllErrors());
             return ResponseEntity.badRequest().build();
-        }
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        BlogResponseDTO blog = blogService.findById(blogId);
-
-        if (blog == null) {
-            throw new NotFoundBlogIdException("Blog Not Found with id : " + blogId);
-        }
-
-        if (!blog.getBlogWriter().equals(username)) {
-            throw new ForbiddenException("You are not allowed to delete this blog.");
         }
 
         blogService.update(blogId, blogUpdateRequestDTO);

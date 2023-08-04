@@ -1,15 +1,27 @@
 package com.serinryu.springproject.exception;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@ControllerAdvice // 예외 처리를 담당
+@RestControllerAdvice // 여러 컨트롤러에 대해 전역적으로 ExceptionHandler를 적용
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(InternalServerErrorException.class)
+    public ResponseEntity<ErrorResponse> handleInternalServerError(InternalServerErrorException e) {
+        log.error("InternalServerErrorException", e);
+        ErrorResponse response = new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(InvalidDataException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(InvalidDataException e) {
+        log.error("InvalidDataException", e);
+        ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> UnauthorizedHandler(UnauthorizedException e){

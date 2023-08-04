@@ -4,6 +4,8 @@ import com.serinryu.springproject.dto.BlogCreateRequestDTO;
 import com.serinryu.springproject.dto.BlogResponseDTO;
 import com.serinryu.springproject.dto.BlogUpdateRequestDTO;
 import com.serinryu.springproject.entity.Blog;
+import com.serinryu.springproject.exception.InvalidDataException;
+import com.serinryu.springproject.exception.InternalServerErrorException;
 import com.serinryu.springproject.exception.UnauthorizedException;
 import com.serinryu.springproject.exception.NotFoundBlogIdException;
 import com.serinryu.springproject.repository.BlogJpaRepository;
@@ -34,75 +36,101 @@ public class BlogServiceImpl implements BlogService {
     @Override
     @Transactional(readOnly = true)
     public Page<BlogResponseDTO> findAll(Long pageNum){
-        final int pageSize = 10;
+        try {
+            final int pageSize = 10;
+            pageNum = (pageNum <= 0L) ? 1L : pageNum; // 사용자가 0이나 음수를 넣을 경우, 1로 리턴
 
-        /*
-        // 사용자가 totalPageCount 보다 큰 값을 넣을 경우, totalPageCount 값으로 조회하는 로직 (실제적으로 리다이렉션 X)
-        int totalPagesCount = (int) Math.ceil(blogJpaRepository.count() / (double) pageSize);
-        pageNum = Math.min(pageNum, totalPagesCount);
-         */
+            Pageable pageable = PageRequest.of(pageNum.intValue() - 1, pageSize);
+            Page<Blog> blogPage = blogJpaRepository.findAll(pageable); // JpaRepository 에서 Page<Blog> findAll(Pageable pageable) 자동생성
 
-        pageNum = (pageNum <= 0L) ? 1L : pageNum; // 사용자가 0이나 음수를 넣을 경우, 1로 리턴
+            if(pageNum > Math.ceil(blogPage.getTotalElements() / (double) pageSize)){
+                throw new InvalidDataException("Invalid Page Number");
+                // 이후 프론트에서 redirection 처리
+            }
 
-        Pageable pageable = PageRequest.of(pageNum.intValue() - 1, pageSize);
-        Page<Blog> blogPage = blogJpaRepository.findAll(pageable); // JpaRepository 에서 Page<Blog> findAll(Pageable pageable) 자동생성
+            return blogPage.map(BlogResponseDTO::fromEntity);
 
-        System.out.println(pageNum);
-        System.out.println(blogPage.getTotalElements() / (double) pageSize);
-
-        if(pageNum > Math.ceil(blogPage.getTotalElements() / (double) pageSize)){
-            throw new RuntimeException("Not Found Page Number");
-            // 이후 프론트에서 redirection 처리
+        } catch (Exception e){
+            throw new InternalServerErrorException("Error occurred while retrieving the blog.");
         }
-
-        return blogPage.map(BlogResponseDTO::fromEntity);
     };
 
     @Override
     @Transactional // updateBlogCount() 를 Dirty-Checking 으로 수행하므로 (readOnly=true) 걸어놓으면 안됨
     public BlogResponseDTO findById(long blogId) {
-        Blog blog = blogJpaRepository.findById(blogId)
-                .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
-        blog.updateBlogCount();
-        // blogJpaRepository.updateBlogCount(blogId); // Dirty-Checking
-        return BlogResponseDTO.fromEntity(blog);
+        try {
+            Blog blog = blogJpaRepository.findById(blogId)
+                    .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
+
+            blog.updateBlogCount();
+            // blogJpaRepository.updateBlogCount(blogId); // Dirty-Checking
+
+            return BlogResponseDTO.fromEntity(blog);
+
+        } catch (Exception e) {
+            throw new InternalServerErrorException("Error occurred while retrieving the blog.");
+        }
     }
 
     @Override
     @Transactional
     public void save(BlogCreateRequestDTO blogCreateRequestDTO) {
-        Blog blog = blogCreateRequestDTO.toEntity(); // DTO to Entity
-        blogJpaRepository.save(blog);
+        try {
+            String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            blogCreateRequestDTO.updateBlogWriter(userName);
+            Blog blog = blogCreateRequestDTO.toEntity(); // DTO to Entity
+
+            blogJpaRepository.save(blog);
+
+        } catch (InvalidDataException e){
+            throw new InvalidDataException("Invalid data format. Please check your input data.");
+        } catch (Exception e) {
+            throw new InternalServerErrorException("Error occurred while saving the blog.");
+        }
+
     }
 
     @Override
     @Transactional
     public void deleteById(long blogId) {
-        Blog blog = blogJpaRepository.findById(blogId)
-                .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
+        try {
+            // blogId == null 이거나 해당되는 블로그가 없을 때 예외
+            Blog blog = blogJpaRepository.findById(blogId)
+                    .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
 
-        // 게시글을 작성한 유저인지 확인
-        authorizeBlogWriter(blog);
+            // 게시글을 작성한 유저인지 확인
+            authorizeBlogWriter(blog);
 
-        // MyBatis 에서 한 메소드당 쿼리문 1개 사용이 보편적이므로 이 두 로직을 합치는 것은 Repository 가 아니라 Service 단에서 진행했음.
-        replyJpaRepository.deleteAllByBlogId(blogId);
-        blogJpaRepository.deleteById(blogId);
+            // MyBatis 에서 한 메소드당 쿼리문 1개 사용이 보편적이므로 이 두 로직을 합치는 것은 Repository 가 아니라 Service 단에서 진행했음.
+            replyJpaRepository.deleteAllByBlogId(blogId);
+            blogJpaRepository.deleteById(blogId);
+        } catch (Exception e) {
+            throw new InternalServerErrorException("Error occurred while deleting the blog.");
+        }
     }
 
     @Override
     @Transactional
     public void update(long blogId, BlogUpdateRequestDTO blogUpdateRequestDTO) {
-        Blog blog = blogJpaRepository.findById(blogId)
-                .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
+        try {
+            Blog blog = blogJpaRepository.findById(blogId)
+                    .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
 
-        // 게시글을 작성한 유저인지 확인
-        authorizeBlogWriter(blog);
+            // 게시글을 작성한 유저인지 확인
+            authorizeBlogWriter(blog);
 
-        blog.updateTitleAndContent(blogUpdateRequestDTO.getBlogTitle(), blogUpdateRequestDTO.getBlogContent());
-        // blogJpaRepository.save(blog); // Dirty-Checking
+            blog.updateTitleAndContent(blogUpdateRequestDTO.getBlogTitle(), blogUpdateRequestDTO.getBlogContent());
+            // // blogJpaRepository.save(blog); // Dirty-Checking
+        } catch (InvalidDataException e) {
+            throw new InvalidDataException("Invalid data format. Please check your input data.");
+        } catch (Exception e) {
+            throw new InternalServerErrorException("Error occurred while updating the blog.");
+        }
+
     }
 
-    // 게시글을 작성한 유저인지 확인
+    // 게시글을 작성한 유저인지 확인 (삭제, 수정 시 사용)
     private static void authorizeBlogWriter(Blog blog) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!blog.getBlogWriter().equals(userName)) {
