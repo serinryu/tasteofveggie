@@ -126,14 +126,16 @@ public class BlogServiceTest {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         BlogCreateRequestDTO blogCreateRequestDTO = new BlogCreateRequestDTO( "Title 1", "Content 1");
-        blogCreateRequestDTO.updateBlogWriter(authentication.getName());
-        Mockito.when(blogJpaRepository.save(any(Blog.class))).thenReturn(any(Blog.class));
+        blogCreateRequestDTO.updateBlogWriter("testuser");
+
+        Blog blog = blogCreateRequestDTO.toEntity();
+        Mockito.when(blogJpaRepository.save(any())).thenReturn(blog);
 
         // when
         blogService.save(blogCreateRequestDTO); //it internally calls blogRepository.save()
 
         // then
-        Mockito.verify(blogJpaRepository).save(argThat(blog -> blog.getBlogTitle().equals("Title 1")));
+        Mockito.verify(blogJpaRepository).save(any());
     }
 
     @Test

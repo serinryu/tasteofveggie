@@ -76,9 +76,16 @@ public class BlogServiceImpl implements BlogService {
         blogCreateRequestDTO.updateBlogWriter(userName);
         Blog blog = blogCreateRequestDTO.toEntity(); // DTO to Entity
 
+        /*
         try {
             blogJpaRepository.save(blog);
         } catch (Exception e) {
+            throw new InternalServerErrorException("Error occurred while saving the blog.");
+        }
+         */
+
+        Blog savedBlog = blogJpaRepository.save(blog);
+        if(savedBlog == null){
             throw new InternalServerErrorException("Error occurred while saving the blog.");
         }
 
@@ -101,6 +108,7 @@ public class BlogServiceImpl implements BlogService {
         } catch (Exception e) {
             throw new InternalServerErrorException("Error occurred while deleting the blog.");
         }
+
     }
 
     @Override
