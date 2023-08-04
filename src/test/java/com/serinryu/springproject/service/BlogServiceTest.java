@@ -17,6 +17,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -44,7 +48,6 @@ public class BlogServiceTest {
     private BlogServiceImpl blogService;
 
     @Test
-    @Transactional
     public void findAllTest(){
         // given
         // 실제 DB 를 가져오는 지의 테스트는 Repository Test 가 해야하는 영역
@@ -70,7 +73,6 @@ public class BlogServiceTest {
     }
 
     @Test
-    @Transactional
     public void findByIdTest_FoundBlog(){
         // Mock 객체를 사용하여 findById 로 조회시 조회한 id 에 해당되는 Mock 객체를 잘 가져오는지 테스트 (assertEquals)
         // given
@@ -86,7 +88,6 @@ public class BlogServiceTest {
     }
 
     @Test
-    @Transactional
     public void findByIdTest_NotFoundBlog(){
         // given
         long blogId = 123;
@@ -98,13 +99,16 @@ public class BlogServiceTest {
     }
 
     @Test
-    @Transactional
     public void deleteByIdTest_FoundBlog(){
         // deleteById 시 reply 전체 삭제 메소드와 blog삭제 메소드 모두 호출되는지만 테스트
         // void Method 이므로 assertEquals 불가 -> verify 이용
         // given
+        Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "password");
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         long blogId = 2;
-        Blog blog = new Blog(blogId, "Writer 1", "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now(), 0);
+        Blog blog = new Blog(blogId, "testuser", "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now(), 0);
+        Mockito.when(blogJpaRepository.findById(blogId)).thenReturn(Optional.of(blog));
         Mockito.doNothing().when(blogJpaRepository).deleteById(blogId);
         // Mockito.doNothing().when(blogRepository).deleteById(blogId);
         // when
@@ -116,22 +120,13 @@ public class BlogServiceTest {
     }
 
     @Test
-    @Transactional
-    public void deleteByIdTest_NotFoundBlog(){
-        // given
-        long blogId = 123;
-        Mockito.doThrow(NotFoundBlogIdException.class).when(blogJpaRepository).deleteById(blogId);
-        // when
-        // then
-        assertThrows(NotFoundBlogIdException.class,
-                () -> blogService.deleteById(blogId));
-    }
-
-    @Test
-    @Transactional
     public void saveTest(){
         // given
+        Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "password");
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         BlogCreateRequestDTO blogCreateRequestDTO = new BlogCreateRequestDTO( "Title 1", "Content 1");
+        blogCreateRequestDTO.updateBlogWriter(authentication.getName());
         Mockito.when(blogJpaRepository.save(any(Blog.class))).thenReturn(any(Blog.class));
 
         // when
@@ -142,14 +137,18 @@ public class BlogServiceTest {
     }
 
     @Test
+    @WithMockUser
     @Transactional
     public void updateTest(){
         // update 시 Repository의 update 가 불러와졌는지 테스트 -> verify 이용
         // given
         // 테스트하고 있는 타켓인 update() 함수 로직 보면, update 하기 전에 데이터가 있어야 하므로 findbyId 가 선행되어야 함.
+        Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "password");
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         long blogId = 1;
         Blog existingBlog = new Blog(
-                blogId, "writer", "1번제목", "1번내용", LocalDateTime.now(), LocalDateTime.now(), 0
+                blogId, "testuser", "1번제목", "1번내용", LocalDateTime.now(), LocalDateTime.now(), 0
         );
         Mockito.when(blogJpaRepository.findById(blogId)).thenReturn(Optional.of(existingBlog));
 

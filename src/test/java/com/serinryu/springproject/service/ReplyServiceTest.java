@@ -12,6 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -41,13 +44,13 @@ public class ReplyServiceTest {
     private ReplyServiceImpl replyService;
 
     @Test
-    @Transactional
     public void findAllBlogIdTest(){
         // given
         long blogId = 1;
         List<Reply> replies = new ArrayList<>();
         replies.add(new Reply(1L, 1L, "writer", "content", LocalDateTime.now(), LocalDateTime.now()));
-        Mockito.when(replyJpaRepository.findAllByBlogId(blogId)).thenReturn(replies);
+
+        Mockito.when(replyJpaRepository.findAllByBlogId(blogId)).thenReturn(Optional.of(replies));
         // when
         List<ReplyResponseDTO> result = replyService.findAllByBlogId(blogId);
         // then
@@ -90,8 +93,11 @@ public class ReplyServiceTest {
     public void deleteByReplyIdTest_FoundReply(){
         // 이 메소드 호출 시 Repository의 deleteByReplyId 가 불러와지는지 테스트 (verify 만 이용)
         // given
+        Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "password");
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         long replyId = 2;
-        Reply reply =  new Reply(replyId, 1L, "writer", "content", LocalDateTime.now(), LocalDateTime.now());
+        Reply reply =  new Reply(replyId, 1L, "testuser", "content", LocalDateTime.now(), LocalDateTime.now());
         Mockito.when(replyJpaRepository.findById(replyId)).thenReturn(Optional.of(reply));
         // when
         replyService.deleteByReplyId(replyId);
@@ -117,9 +123,11 @@ public class ReplyServiceTest {
     public void saveTest(){
         // 이 메소드 호출 시 Repository의 save 가 불러와졌지 테스트 (verify 만 이용)
         // given
-        // 서비스 레이어에서 데이터 넘겨주는지의 테스트이므로 DTO 만 제작
+        Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "password");
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         ReplyCreateRequestDTO reply = new ReplyCreateRequestDTO(
-                0, "Writer", "Content"
+                0, "testuser", "Content"
         );
         Mockito.when(replyJpaRepository.save(any(Reply.class))).thenReturn(any(Reply.class));
 
@@ -135,8 +143,11 @@ public class ReplyServiceTest {
     public void updateTest_FoundReply(){
         // 이 메소드 호출 시 Repository의 update 가 불러와졌는지 테스트 (verify 만 이용)
         // given
+        Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "password");
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         long replyId = 1;
-        Reply existingReply = new Reply(replyId, 1L, "writer", "content", null, null);
+        Reply existingReply = new Reply(replyId, 1L, "testuser", "content", null, null);
         Mockito.when(replyJpaRepository.findById(replyId)).thenReturn(Optional.of(existingReply));
 
         // when

@@ -4,6 +4,8 @@ import com.serinryu.springproject.entity.Reply;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +15,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class ReplyRepositoryTest {
     @Autowired
     ReplyJpaRepository replyJpaRepository;
@@ -24,7 +27,7 @@ public class ReplyRepositoryTest {
         // given
         long blogId = 1;
         // when
-        List<Reply> result = replyJpaRepository.findAllByBlogId(blogId);
+        List<Reply> result = replyJpaRepository.findAllByBlogId(blogId).get();
         // then
         assertEquals(1, result.size());
         assertEquals(1, result.get(0).getReplyId());
@@ -50,7 +53,7 @@ public class ReplyRepositoryTest {
         // when
         replyJpaRepository.deleteById(replyId);
         // then
-        assertEquals(0, replyJpaRepository.findAllByBlogId(2).size());
+        assertEquals(0, replyJpaRepository.findAllByBlogId(2).get().size());
         assertEquals(Optional.empty(), replyJpaRepository.findById(replyId));
     }
 
@@ -62,7 +65,7 @@ public class ReplyRepositoryTest {
         // when
         replyJpaRepository.deleteAllByBlogId(blogId);
         // then
-        assertEquals(0, replyJpaRepository.findAllByBlogId(blogId).size());
+        assertEquals(0, replyJpaRepository.findAllByBlogId(blogId).get().size());
     }
 
     @Test
@@ -87,9 +90,9 @@ public class ReplyRepositoryTest {
         replyJpaRepository.save(reply);
 
         // then
-        List<Reply> resultList = replyJpaRepository.findAllByBlogId(blogId);
+        List<Reply> resultList = replyJpaRepository.findAllByBlogId(blogId).get();
         Reply result = resultList.get(resultList.size() - 1); // 마지막 인텍스 요소만 가져오기
-        assertEquals(2, replyJpaRepository.findAllByBlogId(blogId).size());
+        assertEquals(2, replyJpaRepository.findAllByBlogId(blogId).get().size());
         assertEquals(replyWriter, result.getReplyWriter());
         assertEquals(replyContent, result.getReplyContent());
     }
