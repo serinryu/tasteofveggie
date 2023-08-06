@@ -1,6 +1,7 @@
 package com.serinryu.springproject.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.serinryu.springproject.dto.AccessTokenRequestDTO;
 import com.serinryu.springproject.security.jwt.JwtProvider;
 import com.serinryu.springproject.security.jwt.TokenService;
 import org.junit.jupiter.api.DisplayName;
@@ -45,7 +46,7 @@ class TokenApiControllerTest {
         Mockito.when(tokenService.createNewAccessToken(refreshToken)).thenReturn(newAccessToken);
 
         // Create the request body
-        AccessTokenRequest request = new AccessTokenRequest();
+        AccessTokenRequestDTO request = new AccessTokenRequestDTO();
         request.setRefreshToken(refreshToken);
         final String requestBody = objectMapper.writeValueAsString(request);
 

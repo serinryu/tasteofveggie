@@ -1,4 +1,4 @@
-package com.serinryu.springproject.controller;
+package com.serinryu.springproject.rest;
 
 import com.serinryu.springproject.dto.SignUpRequestDTO;
 import com.serinryu.springproject.security.jwt.TokenService;

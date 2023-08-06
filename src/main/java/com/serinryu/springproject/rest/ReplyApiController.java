@@ -1,20 +1,14 @@
-package com.serinryu.springproject.controller;
+package com.serinryu.springproject.rest;
 
-import com.serinryu.springproject.dto.BlogResponseDTO;
 import com.serinryu.springproject.dto.ReplyCreateRequestDTO;
 import com.serinryu.springproject.dto.ReplyResponseDTO;
 import com.serinryu.springproject.dto.ReplyUpdateRequestDTO;
-import com.serinryu.springproject.exception.ForbiddenException;
-import com.serinryu.springproject.exception.NotFoundReplyByReplyIdException;
 import com.serinryu.springproject.service.ReplyService;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 

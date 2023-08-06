@@ -3,6 +3,7 @@ package com.serinryu.springproject.controller;
 import com.serinryu.springproject.dto.ReplyCreateRequestDTO;
 import com.serinryu.springproject.dto.ReplyResponseDTO;
 import com.serinryu.springproject.dto.ReplyUpdateRequestDTO;
+import com.serinryu.springproject.rest.ReplyApiController;
 import com.serinryu.springproject.service.ReplyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;

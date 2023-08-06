@@ -1,5 +1,7 @@
 package com.serinryu.springproject.security;
 
+import com.serinryu.springproject.dto.AccessTokenRequestDTO;
+import com.serinryu.springproject.dto.AccessTokenResponseDTO;
 import com.serinryu.springproject.security.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,11 +17,11 @@ public class TokenApiController {
     private final TokenService tokenService;
 
     @PostMapping("/api/issue-new-token")
-    public ResponseEntity<AccessTokenResponse> createNewAccessToken(@RequestBody AccessTokenRequest request) {
+    public ResponseEntity<AccessTokenResponseDTO> createNewAccessToken(@RequestBody AccessTokenRequestDTO request) {
         // refreshToken 기반으로 새로운 accessToken 제작
         String newAccessToken = tokenService.createNewAccessToken(request.getRefreshToken());
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new AccessTokenResponse(newAccessToken));
+                .body(new AccessTokenResponseDTO(newAccessToken));
     }
 }

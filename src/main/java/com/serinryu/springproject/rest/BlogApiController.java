@@ -1,10 +1,8 @@
-package com.serinryu.springproject.controller;
+package com.serinryu.springproject.rest;
 
 import com.serinryu.springproject.dto.BlogCreateRequestDTO;
 import com.serinryu.springproject.dto.BlogResponseDTO;
 import com.serinryu.springproject.dto.BlogUpdateRequestDTO;
-import com.serinryu.springproject.exception.ForbiddenException;
-import com.serinryu.springproject.exception.NotFoundBlogIdException;
 import org.springframework.security.core.userdetails.User;
 import com.serinryu.springproject.service.BlogService;
 import jakarta.validation.Valid;
@@ -16,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 

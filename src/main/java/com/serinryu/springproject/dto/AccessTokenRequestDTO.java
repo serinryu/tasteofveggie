@@ -1,9 +1,9 @@
-package com.serinryu.springproject.security;
+package com.serinryu.springproject.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class AccessTokenRequest {
+public class AccessTokenRequestDTO {
     private String refreshToken;
 }
