@@ -1,12 +1,18 @@
 package com.serinryu.springproject.service;
 
+import com.serinryu.springproject.entity.Role;
 import com.serinryu.springproject.security.PrincipalDetails;
 import com.serinryu.springproject.entity.User;
 import com.serinryu.springproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -21,7 +27,7 @@ public class UserDetailService implements UserDetailsService { // 실제 DB 로�
     public PrincipalDetails loadUserByUsername(String email){
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException((email)));
-        return new PrincipalDetails(user);
+        return new PrincipalDetails(user); // 유저 정보가 저장된다.
     }
 
     public PrincipalDetails findById(Long userId) {

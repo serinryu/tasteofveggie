@@ -5,7 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
+
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -20,7 +21,7 @@ public class Role {
     private String rolename;
 
     @ManyToMany(mappedBy="roles") // mapped to the target User entity
-    private List<User> users;
+    private Set<User> users;
 
     public Role(String rolename) {
         this.rolename = rolename;

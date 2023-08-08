@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -33,13 +33,14 @@ public class User {
             name="user_role",
             joinColumns={@JoinColumn(name="USER_ID", referencedColumnName="ID")},
             inverseJoinColumns={@JoinColumn(name="ROLE_ID", referencedColumnName="ID")})
-    private List<Role> roles;
+    private Set<Role> roles;
 
     @Builder
-    public User(String email, String password, String nickname){
+    public User(String email, String password, String nickname, Set<Role> roles){
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.roles = roles;
     }
 
     public User update(String nickname){
