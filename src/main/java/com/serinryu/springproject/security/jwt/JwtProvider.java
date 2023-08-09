@@ -1,19 +1,20 @@
 package com.serinryu.springproject.security.jwt;
 
+import com.serinryu.springproject.exception.InvalidTokenException;
 import com.serinryu.springproject.security.PrincipalDetails;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /*
 JWT 토큰을 생성, 검증, 추출 등의 동작을 하는 클래스
@@ -33,12 +34,17 @@ public class JwtProvider {
     private String makeToken(Date expiry, PrincipalDetails principalDetails) {
         Date now = new Date();
 
+        String authorities = principalDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(", "));
+
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .setSubject(principalDetails.getEmail())
+                .claim("auth", authorities)
                 .claim("id", principalDetails.getId())
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
                 .compact();
@@ -61,8 +67,17 @@ public class JwtProvider {
     }
 
     public Authentication getAuthentication(String token) {
+        // 토큰 복호화
         Claims claims = getClaims(token);
-        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
+
+        if(claims.get("auth") == null){
+            throw new InvalidTokenException("권한 정보가 없는 토큰입니다.");
+        }
+
+        //Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
+        List<SimpleGrantedAuthority> authorities = Arrays.stream(claims.get("auth").toString().split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
 
         return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject
                 (), "", authorities), token, authorities);

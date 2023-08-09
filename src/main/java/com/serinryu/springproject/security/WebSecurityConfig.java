@@ -62,7 +62,7 @@ public class WebSecurityConfig {
             // Set permissions on endpoints
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/blogs", "/api/token").permitAll() // Allow public access to the token endpoint
-                //.requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/**").authenticated() // Secure all other API endpoints
                 .anyRequest().permitAll()
             )
