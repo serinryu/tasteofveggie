@@ -30,7 +30,6 @@ public class PrincipalDetails implements UserDetails, OAuth2User { // UserDetail
     // 일반 로그인
     @Builder
     public PrincipalDetails(User user){
-
         this.user = user;
     }
 

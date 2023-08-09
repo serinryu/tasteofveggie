@@ -1,6 +1,8 @@
 package com.serinryu.springproject.rest;
 
 import com.serinryu.springproject.dto.SignUpRequestDTO;
+import com.serinryu.springproject.exception.ForbiddenException;
+import com.serinryu.springproject.exception.InvalidDataException;
 import com.serinryu.springproject.security.jwt.TokenService;
 import com.serinryu.springproject.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,9 +25,15 @@ public class UserApiController {
     private final UserService userService;
     private final TokenService tokenService;
 
+    @GetMapping("/api/admin")
+    public ResponseEntity<String> getAdminPage(Authentication authentication){
+        System.out.println(authentication.getAuthorities());
+        return ResponseEntity.ok("ADMIN PAGE");
+    }
+
     /*
     @GetMapping("/api/user")
-    public UserResponseDTO getUserInfo(Authentication authentication) {
+    public ResponseEntity<UserResponseDTO> getUserInfo(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             // 사용자가 인증되지 않았을 경우 처리
             return new UserResponseDTO("Anonymous", false);
@@ -38,6 +47,7 @@ public class UserApiController {
     }
 
      */
+
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(SignUpRequestDTO signUpRequestDTO){
@@ -70,7 +80,5 @@ public class UserApiController {
 
         return ResponseEntity.ok().build();
     }
-
-
 
 }

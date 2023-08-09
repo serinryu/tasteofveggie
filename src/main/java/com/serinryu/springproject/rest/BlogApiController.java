@@ -42,6 +42,7 @@ public class BlogApiController {
             User user = (User) authentication.getPrincipal();
             username = user.getUsername();
             log.info("🌈You are logged in as ... : " + user.getUsername());
+            log.info(user.getAuthorities());
         }
 
         Page<BlogResponseDTO> pageInfo = blogService.findAll(pageNum);

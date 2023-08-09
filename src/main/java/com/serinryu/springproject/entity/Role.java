@@ -14,13 +14,13 @@ import java.util.Set;
 public class Role {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
 
     @Column(nullable=false, unique=true)
     private String rolename;
 
-    @ManyToMany(mappedBy="roles") // mapped to the target User entity
+    @ManyToMany(mappedBy="roles", fetch = FetchType.EAGER) // mapped to the target User entity
     private Set<User> users;
 
     public Role(String rolename) {

@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidDataException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(InvalidDataException e) {
         log.error("InvalidDataException", e);
-        ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST);
+        ErrorResponse response = new ErrorResponse(ErrorCode.INVALID_DATA);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -54,7 +54,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ErrorResponse> handleInvalidTokenException(InvalidTokenException e) {
         log.error("InvalidTokenException", e);
-        ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST);
+        ErrorResponse response = new ErrorResponse(ErrorCode.INVALID_TOKEN);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
