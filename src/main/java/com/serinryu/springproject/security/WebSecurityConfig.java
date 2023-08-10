@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -36,6 +37,7 @@ public class WebSecurityConfig {
     private final UserDetailService userDetailService;
 
     private final OAuth2UserService oAuth2UserService;
+    private final AuthenticationConfiguration authenticationConfiguration;
 
     // 스프링 시큐리티 기능 비활성화 (모든 곳에 인증, 인가 서비스를 적용할 필요 없음. static 디렉토리의 파일들은 항상 인증 무시)
     @Bean
@@ -56,6 +58,9 @@ public class WebSecurityConfig {
             // disable CSRF (JWT 를 사용하므로 disable)
             .csrf(csrf -> csrf.disable())
 
+            // 시큐리티에서 제공헤주는 기본 form login 은 사용하지 않을 것. (Html form 방식이 아닌 JSON data 로 받아 처리할 것이므로)
+            .formLogin(form -> form.disable())
+
             // 시큐리티는 기본적으로 세션을 사용. 여기서는 세션을 사용하지 않기 때문에 세션 설정을 Stateless 로 설정
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
@@ -68,18 +73,21 @@ public class WebSecurityConfig {
             )
 
             // 커스텀 필터 추가 -> jwtAuthenticationFilter will be executed before the UsernamePasswordAuthenticationFilter
+            .addFilter(customUsernamePasswordAuthenticationFilter())
             .addFilterBefore(jwtAuthenticationFilter(),
                     UsernamePasswordAuthenticationFilter.class)
 
+            /*
             // Form based Auth  -> Spring Security 제공. POST /login 해서 로직 작성할 필요 없음
             .formLogin(form -> form
                 .loginPage("/login") // HTML Form 을 통해 POST /login
+                .loginProcessingUrl("/login")
                 .successHandler(new JwtAuthenticationSuccessHandler(
                         tokenService,
                         userDetailService
                 ))
                 .failureHandler(new JwtAuthenticationFailureHandler())
-            )
+            )*/
 
             // OAuth2
             .oauth2Login(oauth2 -> oauth2
@@ -111,6 +119,19 @@ public class WebSecurityConfig {
         return http.build();
     }
 
+    private CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter() throws Exception{
+        CustomUsernamePasswordAuthenticationFilter filter = new CustomUsernamePasswordAuthenticationFilter(authenticationManagerBean());
+        filter.setAuthenticationSuccessHandler(new JwtAuthenticationSuccessHandler(tokenService, userDetailService));
+        filter.setAuthenticationFailureHandler(new JwtAuthenticationFailureHandler());
+        filter.setFilterProcessesUrl("/api/login"); // 해당 필터가 "/api/login" 경로에서 동작하도록 설정
+        // 즉, 컨트롤러에서 /api/login 엔드포인트를 별도로 만들지 않았더라도, 위 설정으로 인해 해당 경로로 들어오는 요청은 CustomUsernamePasswordAuthenticationFilter에서 처리
+        return filter;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
     // 인증 관리자 관련 설정
     @Bean

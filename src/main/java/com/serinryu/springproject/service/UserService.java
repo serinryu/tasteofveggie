@@ -25,6 +25,7 @@ public class UserService {
 
         signUpRequestDTO.setPassword(bCryptPasswordEncoder.encode(signUpRequestDTO.getPassword()));
 
+        // 기본적으로 회원가입한 사람은 다 USER
         Set<Role> rolesSet = new HashSet<>();
         rolesSet.add(roleRepository.findByRolename("ROLE_USER").get());
         User user = signUpRequestDTO.toEntity(rolesSet);

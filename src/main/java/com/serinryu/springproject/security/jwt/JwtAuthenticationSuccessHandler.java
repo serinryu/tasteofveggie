@@ -62,26 +62,20 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
         //getRedirectStrategy().sendRedirect(request, response, targetUrl);
 
         sendJsonResponse(response, accessToken);
-
     }
 
     private void sendJsonResponse(HttpServletResponse response, String accessToken) throws IOException {
-        // JSON 페이로드 생성
-        Map<String, Object> responsePayload = new HashMap<>();
-        responsePayload.put("access_token", accessToken);
-        //responsePayload.put("expiresIn", ACCESS_TOKEN_DURATION);
+        // JSON 응답 생성
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("access_token", accessToken);
+        responseBody.put("token_type", "Bearer");
 
-        // Jackson ObjectMapper를 사용하여 JSON 문자열로 변환
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonPayload = objectMapper.writeValueAsString(responsePayload);
-
-        // 응답 설정
+        // JSON 응답 전송
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-
-        // JSON 페이로드 전송
-        response.getWriter().write(jsonPayload);
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
     }
 
 
