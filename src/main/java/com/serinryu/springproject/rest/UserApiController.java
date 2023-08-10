@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,10 +23,18 @@ public class UserApiController {
 
     private final UserService userService;
     private final TokenService tokenService;
+    private AuthenticationManager authenticationManager;
+
+
+    @GetMapping("/api/admin")
+    public ResponseEntity<String> getAdminPage(Authentication authentication){
+        System.out.println(authentication.getAuthorities());
+        return ResponseEntity.ok("ADMIN PAGE");
+    }
 
     /*
     @GetMapping("/api/user")
-    public UserResponseDTO getUserInfo(Authentication authentication) {
+    public ResponseEntity<UserResponseDTO> getUserInfo(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             // 사용자가 인증되지 않았을 경우 처리
             return new UserResponseDTO("Anonymous", false);
@@ -39,26 +49,12 @@ public class UserApiController {
 
      */
 
+
     @PostMapping("/signup")
     public ResponseEntity<String> signup(SignUpRequestDTO signUpRequestDTO){
         userService.save(signUpRequestDTO);
         return ResponseEntity.ok(signUpRequestDTO.toString());
     }
-
-    /* 현재는 스프링 시큐리티에서 제공하는 .formlogin() 을 사용하고 있음
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequestDTO loginRequestDTO) {
-        PrincipalDetails userPrinciple = userService.findByEmail(loginRequestDTO.getEmail());
-
-        String accessToken = tokenService.generateAccessToken(userPrinciple);
-        String refreshToken = tokenService.generateAndSaveRefreshToken(userPrinciple); // Implement this method to generate a new refresh token.
-
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("access_token", accessToken);
-        tokens.put("refresh_token", refreshToken);
-        return ResponseEntity.ok(tokens);
-    }
-     */
 
     @GetMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
@@ -70,7 +66,5 @@ public class UserApiController {
 
         return ResponseEntity.ok().build();
     }
-
-
 
 }

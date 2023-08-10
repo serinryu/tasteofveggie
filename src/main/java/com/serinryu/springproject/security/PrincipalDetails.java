@@ -1,5 +1,6 @@
 package com.serinryu.springproject.security;
 
+import com.serinryu.springproject.entity.Role;
 import com.serinryu.springproject.entity.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -9,10 +10,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -34,6 +34,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User { // UserDetail
         this.user = user;
     }
 
+
     // OAuth2 로그인
     @Builder
     public PrincipalDetails(User user, Map<String, Object> attributes){
@@ -41,25 +42,23 @@ public class PrincipalDetails implements UserDetails, OAuth2User { // UserDetail
         this.attributes = attributes;
     }
 
-    // UserDetails 인터페이스 메소드 (User의 권한을 리턴하는곳.)
+    /*
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("user"));
     }
-
-    /*
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> collect = new ArrayList<>();
-        collect.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return user.getRole();
-            }
-        });
-        return collect;
-    }
      */
+
+    @Override
+    @Transactional // @Transactional 없다면 LazyInitializationException 이 발생한다.
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Collection<GrantedAuthority> grantedAuthorities = new HashSet<>();
+        for(Role role : user.getRoles()){
+            grantedAuthorities.add(new SimpleGrantedAuthority(role.getRolename()));
+        }
+        return grantedAuthorities;
+    }
+
 
     // OAuth2User 인터페이스 메소드
     @Override
