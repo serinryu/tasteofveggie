@@ -1,6 +1,5 @@
-package com.serinryu.springproject.config.jwt;
+package com.serinryu.springproject.security.jwt;
 
-import com.serinryu.springproject.security.jwt.JwtProperties;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
