@@ -54,7 +54,7 @@ public class ReplyApiControllerTest {
 
         // when
         StringBuilder url = new StringBuilder();
-        url.append("/api/reply/").append(blogId).append("/all");
+        url.append("/api/blogs/").append(blogId).append("/replies");
         ResultActions response = mockMvc.perform(get(String.valueOf(url))
                 .accept(MediaType.APPLICATION_JSON));
 
@@ -78,7 +78,7 @@ public class ReplyApiControllerTest {
 
         // when
         StringBuilder url = new StringBuilder();
-        url.append("/api/reply/").append(replyId);
+        url.append("/api/replies/").append(replyId);
         ResultActions response = mockMvc.perform(get(String.valueOf(url))
                 .accept(MediaType.APPLICATION_JSON));
 
@@ -101,7 +101,7 @@ public class ReplyApiControllerTest {
         Mockito.doNothing().when(replyService).save(replyCreateRequestDTO);
 
         // when
-        ResultActions response = mockMvc.perform(post("/api/reply")
+        ResultActions response = mockMvc.perform(post("/api/replies")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replyCreateRequestDTO)));  // java object -> json (serialization)
@@ -123,7 +123,7 @@ public class ReplyApiControllerTest {
         Mockito.when(replyService.findByReplyId(replyId)).thenReturn(reply);
 
         // when
-        ResultActions response = mockMvc.perform(delete("/api/reply/{replyId}", replyId)
+        ResultActions response = mockMvc.perform(delete("/api/replies/{replyId}", replyId)
                 .with(csrf()));
 
         // then
@@ -144,7 +144,7 @@ public class ReplyApiControllerTest {
         ReplyUpdateRequestDTO replyUpdateRequestDTO = new ReplyUpdateRequestDTO("updated content");
 
         // when
-        ResultActions response = mockMvc.perform(put("/api/reply/{replyId}", replyId)
+        ResultActions response = mockMvc.perform(put("/api/replies/{replyId}", replyId)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replyUpdateRequestDTO)));  // java object -> json
@@ -169,7 +169,7 @@ public class ReplyApiControllerTest {
         ReplyUpdateRequestDTO replyUpdateRequestDTO = new ReplyUpdateRequestDTO((String) null);
 
         // when
-        ResultActions response = mockMvc.perform(put("/api/reply/{replyId}", replyId)
+        ResultActions response = mockMvc.perform(put("/api/replies/{replyId}", replyId)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replyUpdateRequestDTO)));  // java object -> json

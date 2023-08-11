@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/reply")
 public class ReplyApiController {
     ReplyService replyService;
 
@@ -26,7 +25,10 @@ public class ReplyApiController {
         this.replyService = replyService;
     }
 
-    @GetMapping( "/{blogId}/all")
+    /**
+     * Retrieve all replies for a blog
+     */
+    @GetMapping( "/api/blogs/{blogId}/replies")
     public ResponseEntity<List<ReplyResponseDTO>> findAllReplies(@PathVariable long blogId){
 
         List<ReplyResponseDTO> replies = replyService.findAllByBlogId(blogId);
@@ -34,14 +36,20 @@ public class ReplyApiController {
         return ResponseEntity.ok().body(replies);
     }
 
-    @GetMapping( "/{replyId}")
+    /**
+     * Retrieve a reply by ID
+     */
+    @GetMapping( "/api/replies/{replyId}")
     public ResponseEntity<ReplyResponseDTO> findByReplyId(@PathVariable long replyId){
         ReplyResponseDTO reply = replyService.findByReplyId(replyId);
 
         return ResponseEntity.ok().body(reply);
     }
 
-    @PostMapping
+    /**
+     * Create a reply
+     */
+    @PostMapping("/api/replies")
     public ResponseEntity<String> addReply(@RequestBody @Valid ReplyCreateRequestDTO replyCreateRequestDTO, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -54,14 +62,20 @@ public class ReplyApiController {
         return ResponseEntity.ok().body("Success");
     }
 
-    @DeleteMapping("/{replyId}")
+    /**
+     * Delete a reply
+     */
+    @DeleteMapping("/api/replies/{replyId}")
     public ResponseEntity<String> deleteReply(@PathVariable long replyId){
 
         replyService.deleteByReplyId(replyId);
         return ResponseEntity.ok().body("Success");
     }
 
-    @PutMapping("/{replyId}")
+    /**
+     * Update an existing reply
+     */
+    @PutMapping("/api/replies/{replyId}")
     public ResponseEntity<String> updateReply(@PathVariable long replyId, @RequestBody @Valid ReplyUpdateRequestDTO replyUpdateRequestDTO){
 
         replyService.update(replyId, replyUpdateRequestDTO);

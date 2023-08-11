@@ -32,6 +32,9 @@ public class BlogApiController {
     private static final Logger logger = LogManager.getLogger(BlogApiController.class);
 
 
+    /**
+     * Retrieve a list of blogs
+     */
     @GetMapping("/api/blogs")
     public ResponseEntity<Map<String, Object>> findAllBlogs(
             Authentication authentication,
@@ -65,27 +68,18 @@ public class BlogApiController {
         return ResponseEntity.ok().body(response);
     }
 
+    /**
+     * Retrieve a blog by ID
+     */
     @GetMapping("/api/blogs/{blogId}")
     public ResponseEntity<BlogResponseDTO> findBlog(@PathVariable long blogId) {
         BlogResponseDTO blog = blogService.findById(blogId);
         return ResponseEntity.ok().body(blog);
     }
 
-    @GetMapping("/api/blogs/new")
-    public ResponseEntity<BlogResponseDTO> getNewBlogForm(@RequestParam(required = false, value = "id") Long blogId) {
-        BlogResponseDTO blog = blogService.findById(blogId);
-        return ResponseEntity.ok().body(blog);
-    }
-
-    @DeleteMapping("/api/blogs/{blogId}")
-    public ResponseEntity<String> deleteBlog(@PathVariable long blogId) {
-
-        blogService.deleteById(blogId);
-
-        logger.info("Blog deleted successfully.");
-        return ResponseEntity.ok().body("Success");
-    }
-
+    /**
+     * Create new blog
+     */
     @PostMapping("/api/blogs")
     public ResponseEntity<String> addBlog(@Valid @RequestBody BlogCreateRequestDTO blogCreateRequestDTO, BindingResult bindingResult) {
 
@@ -97,9 +91,24 @@ public class BlogApiController {
         blogService.save(blogCreateRequestDTO);
 
         logger.info("Blog created successfully.");
-        return ResponseEntity.status(HttpStatus.CREATED).body("Success");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Successfully Created");
     }
 
+    /**
+     * Delete a blog by ID
+     */
+    @DeleteMapping("/api/blogs/{blogId}")
+    public ResponseEntity<String> deleteBlog(@PathVariable long blogId) {
+
+        blogService.deleteById(blogId);
+
+        logger.info("Blog deleted successfully.");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Successfully deleted");
+    }
+
+    /**
+     * Update an existing blog by ID
+     */
     @PutMapping("/api/blogs/{blogId}")
     public ResponseEntity<String> updateBlog(@PathVariable long blogId, @Valid @RequestBody BlogUpdateRequestDTO blogUpdateRequestDTO, BindingResult bindingResult) {
 
@@ -109,6 +118,6 @@ public class BlogApiController {
         }
 
         blogService.update(blogId, blogUpdateRequestDTO);
-        return ResponseEntity.ok().body("Success");
+        return ResponseEntity.ok().body("Successfully updated");
     }
 }

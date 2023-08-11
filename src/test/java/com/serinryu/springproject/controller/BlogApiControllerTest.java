@@ -94,7 +94,7 @@ public class BlogApiControllerTest {
         // when
         mockMvc.perform(delete("/api/blogs/{blogId}", blogId)
                     .with(csrf()))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
         // then
         Mockito.verify(blogService).deleteById(blogId);
     }

@@ -83,11 +83,9 @@ function httpRequest(method, url, body, success, fail) {
 }
 
 // Fetch the blog data and update the content
-function fetchPrevioudBlogData(blogId) {
-    httpRequest('GET', `/api/blogs/new?id=${blogId}`, null,
+function fetchPreviousBlogData(blogId) {
+    httpRequest('GET', `/api/blogs/${blogId}`, null,
         function successCallback(data) {
-
-            console.log(data);
 
             const titleElem = document.getElementById('title');
             const contentElem = document.getElementById('content');
@@ -115,7 +113,7 @@ const blogId = urlParams.get('id');
 if (blogId) {
     createBtn.style.display = 'none';
     modifyBtn.style.display = 'block';
-    fetchPrevioudBlogData(blogId);
+    fetchPreviousBlogData(blogId);
 } else {
     createBtn.style.display = 'block';
     modifyBtn.style.display = 'none';

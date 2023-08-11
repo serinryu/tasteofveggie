@@ -14,7 +14,7 @@ function getDateFormatted(timestamp) {
 }
 
 function getAllReplies(blogId) {
-    const url = `/api/reply/${blogId}/all`;
+    const url = `/api/blogs/${blogId}/replies`;
 
     // Call the httpRequest method instead of fetch
     httpRequest('GET', url, null,
@@ -49,7 +49,7 @@ function getAllReplies(blogId) {
 
 function deleteReply(replyId) {
     if (confirm("Are you sure you want to delete this reply?")) {
-        const url = `/api/reply/${replyId}`;
+        const url = `/api/replies/${replyId}`;
 
         httpRequest('DELETE', url, null,
             () => {
@@ -68,7 +68,7 @@ function deleteReply(replyId) {
 
 function addReply() {
     const replyContent = document.getElementById("replyContent").value.trim();
-    const url = '/api/reply';
+    const url = '/api/replies';
 
     if (replyContent === "") {
         alert("Please fill Content fields.");
@@ -92,7 +92,7 @@ function addReply() {
 }
 
 function openUpdateReplyModal(replyId) {
-    const url = `/api/reply/${replyId}`;
+    const url = `/api/replies/${replyId}`;
 
     httpRequest('GET', url, null,
         (data) => {
@@ -112,7 +112,7 @@ function openUpdateReplyModal(replyId) {
 }
 
 function updateReply(replyId) {
-    const url = `/api/reply/${replyId}`;
+    const url = `/api/replies/${replyId}`;
 
     console.log($modalReplyContent.value);
 
