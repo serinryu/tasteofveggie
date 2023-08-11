@@ -19,25 +19,24 @@ function getAllReplies(blogId) {
     // Call the httpRequest method instead of fetch
     httpRequest('GET', url, null,
         (replies) => {
-            $replies.innerHTML = replies
+            $replies.innerHTML = replies.data
                 .map(
-                    (reply, i) =>
-                        `
-            <div class="card mt-5">
-              <div class="card-header">
-                <span class="font-weight-bold">${reply.replyWriter}</span>
-                <span class="text-muted">${getDateFormatted(reply.publishedAt)}</span>
-              </div>
-              <div class="card-body">
-                <div class="card-text" data-replyId="${reply.replyId}">${reply.replyContent}</div>
-                <button class="btn btn-primary btn-sm updateReplyBtn" data-replyId="${reply.replyId}" data-bs-toggle="modal" data-bs-target="#replyUpdateModal">
-                  Edit
-                </button>
-                <button class="btn btn-secondary btn-sm deleteReplyBtn" data-replyId="${reply.replyId}">
-                  Delete
-                </button>
-              </div>
-            </div>`
+                    (reply, i) => `
+                        <div class="card mt-5">
+                          <div class="card-header">
+                            <span class="font-weight-bold">${reply.replyWriter}</span>
+                            <span class="text-muted">${getDateFormatted(reply.publishedAt)}</span>
+                          </div>
+                          <div class="card-body">
+                            <div class="card-text" data-replyId="${reply.replyId}">${reply.replyContent}</div>
+                            <button class="btn btn-primary btn-sm updateReplyBtn" data-replyId="${reply.replyId}" data-bs-toggle="modal" data-bs-target="#replyUpdateModal">
+                              Edit
+                            </button>
+                            <button class="btn btn-secondary btn-sm deleteReplyBtn" data-replyId="${reply.replyId}">
+                              Delete
+                            </button>
+                          </div>
+                        </div>`
                 )
                 .join("");
         },

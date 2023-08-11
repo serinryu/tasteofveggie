@@ -48,7 +48,7 @@ public class ReplyServiceImpl implements ReplyService {
 
     @Override
     @Transactional
-    public void save(ReplyCreateRequestDTO replyCreateRequestDTO) {
+    public Long save(ReplyCreateRequestDTO replyCreateRequestDTO) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         replyCreateRequestDTO.updateReplyWriter(userName);
         Reply reply = replyCreateRequestDTO.toEntity(); // DTO to Entity
@@ -58,11 +58,13 @@ public class ReplyServiceImpl implements ReplyService {
         } catch (Exception e) {
             throw new InternalServerErrorException("Error occurred while saving the reply.");
         }
+
+        return reply.getReplyId();
     }
 
     @Override
     @Transactional
-    public void deleteByReplyId(long replyId) {
+    public Long deleteByReplyId(long replyId) {
         Reply reply = replyJpaRepository.findById(replyId)
                 .orElseThrow(() -> new NotFoundReplyByReplyIdException("Not Found replyId : " + replyId));
 
@@ -74,11 +76,13 @@ public class ReplyServiceImpl implements ReplyService {
         } catch (Exception e){
             throw new InternalServerErrorException("Error occurred while deleting the reply.");
         }
+
+        return reply.getReplyId();
     }
 
     @Override
     @Transactional
-    public void update(long replyId, ReplyUpdateRequestDTO replyUpdateRequestDTO) {
+    public Long update(long replyId, ReplyUpdateRequestDTO replyUpdateRequestDTO) {
         Reply reply = replyJpaRepository.findById(replyId)
                 .orElseThrow(() -> new NotFoundReplyByReplyIdException("Not Found Reply"));
 
@@ -93,6 +97,9 @@ public class ReplyServiceImpl implements ReplyService {
         } catch (Exception e) {
             throw new InternalServerErrorException("Error occurred while updating the blog.");
         }
+
+        return reply.getReplyId();
+
     }
 
     // 게시글을 작성한 유저인지 확인 (삭제, 수정 시 사용)

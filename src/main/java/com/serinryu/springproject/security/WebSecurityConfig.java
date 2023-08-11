@@ -101,8 +101,9 @@ public class WebSecurityConfig {
                 .successHandler(oAuth2SuccessHandler())
             )
 
+
             .logout(logout -> logout
-                .logoutUrl("/logout")
+                .logoutUrl("/api/logout")
                 .logoutSuccessUrl("/login")
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)

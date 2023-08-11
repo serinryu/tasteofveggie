@@ -9,9 +9,9 @@ public interface BlogService {
     //List<BlogResponseDTO> findAll();
     Page<BlogResponseDTO> findAll(Long pageNum);
     BlogResponseDTO findById(long blogId);
-    void deleteById(long blogId);
-    void save(BlogCreateRequestDTO blogCreateRequestDTO);
-    void update(long blogId, BlogUpdateRequestDTO blogUpdateRequestDTO);
+    Long deleteById(long blogId);
+    Long save(BlogCreateRequestDTO blogCreateRequestDTO);
+    Long update(long blogId, BlogUpdateRequestDTO blogUpdateRequestDTO);
 }
 
 

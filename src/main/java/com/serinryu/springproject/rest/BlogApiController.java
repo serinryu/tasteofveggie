@@ -30,8 +30,6 @@ public class BlogApiController {
         this.blogService = blogService;
     }
 
-    private static final Logger logger = LogManager.getLogger(BlogApiController.class);
-
 
     /**
      * Retrieve a list of blogs
@@ -109,10 +107,14 @@ public class BlogApiController {
             return ResponseEntity.badRequest().body(response);
         }
 
-        blogService.save(blogCreateRequestDTO);
+        Long savedBlogId = blogService.save(blogCreateRequestDTO);
 
         response.put("message", "Blog created successfully.");
         response.put("timestamp", LocalDateTime.now());
+
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("blogId", savedBlogId);
+        response.put("data", responseData);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -123,11 +125,15 @@ public class BlogApiController {
     @DeleteMapping("/api/blogs/{blogId}")
     public ResponseEntity<Map<String, Object>> deleteBlog(@PathVariable long blogId) {
 
-        blogService.deleteById(blogId);
+        Long deletedBlogId = blogService.deleteById(blogId);
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Blog deleted successfully.");
         response.put("timestamp", LocalDateTime.now());
+
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("blogId", deletedBlogId);
+        response.put("data", responseData);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
     }
@@ -148,11 +154,15 @@ public class BlogApiController {
             return ResponseEntity.badRequest().body(response);
         }
 
-        blogService.update(blogId, blogUpdateRequestDTO);
+        Long updatedBlogId = blogService.update(blogId, blogUpdateRequestDTO);
 
         response.put("message", "Blog updated successfully");
         response.put("timestamp", LocalDateTime.now());
-        //response.put("data", null);
+
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("blogId", updatedBlogId);
+        response.put("data", responseData);
+
         return ResponseEntity.ok().body(response);
     }
 }

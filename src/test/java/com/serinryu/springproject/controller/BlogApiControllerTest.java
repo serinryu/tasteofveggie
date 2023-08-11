@@ -60,11 +60,11 @@ public class BlogApiControllerTest {
                         .param("page", "1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$.currentPageNum").value(currentPage))
-                .andExpect(jsonPath("$.endPageNum").value(3))
-                .andExpect(jsonPath("$.startPageNum").value(1))
-                .andExpect(jsonPath("$.pageInfo").exists())
-                .andExpect(jsonPath("$.username").value("testuser"));
+                .andExpect(jsonPath("$.data.currentPageNum").value(currentPage))
+                .andExpect(jsonPath("$.data.endPageNum").value(3))
+                .andExpect(jsonPath("$.data.startPageNum").value(1))
+                .andExpect(jsonPath("$.data.pageInfo").exists())
+                .andExpect(jsonPath("$.data.username").value("testuser"));
     }
 
     @Test

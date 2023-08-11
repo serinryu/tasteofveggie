@@ -9,9 +9,9 @@ import java.util.List;
 public interface ReplyService {
     List<ReplyResponseDTO> findAllByBlogId(long blogId);
     ReplyResponseDTO findByReplyId(long replyId);
-    void deleteByReplyId(long replyId);
-    void save(ReplyCreateRequestDTO replyCreateRequestDTO);
-    void update(long replyId, ReplyUpdateRequestDTO replyUpdateRequestDTO);
+    Long deleteByReplyId(long replyId);
+    Long save(ReplyCreateRequestDTO replyCreateRequestDTO);
+    Long update(long replyId, ReplyUpdateRequestDTO replyUpdateRequestDTO);
 
 
 }

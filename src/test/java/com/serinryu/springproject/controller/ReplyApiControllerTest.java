@@ -60,9 +60,9 @@ public class ReplyApiControllerTest {
 
         // then
         response.andExpect(status().isOk())
-               .andExpect(jsonPath("$[0].replyWriter").value("writer 1")) // json의 첫번째 요소의 replyWriter 검사
-                .andExpect(jsonPath("$[0].replyContent").value("content 1")) // json의 첫번째 요소의 replyWriter 검사
-               .andExpect(jsonPath("$[0].replyId").value(1)) // json의 첫번째 요소의 replyId 검사
+               .andExpect(jsonPath("$.data[0].replyWriter").value("writer 1")) // json의 첫번째 요소의 replyWriter 검사
+                .andExpect(jsonPath("$.data[0].replyContent").value("content 1")) // json의 첫번째 요소의 replyWriter 검사
+               .andExpect(jsonPath("$.data[0].replyId").value(1)) // json의 첫번째 요소의 replyId 검사
                 .andDo(print());
 
         Mockito.verify(replyService).findAllByBlogId(blogId);
@@ -84,9 +84,9 @@ public class ReplyApiControllerTest {
 
         // then
         response.andExpect(status().isOk())
-                .andExpect(jsonPath("$.replyWriter").value("writer 1"))
-                .andExpect(jsonPath("$.replyContent").value("content 1"))
-                .andExpect(jsonPath("$.replyId").value(1))
+                .andExpect(jsonPath("$.data.replyWriter").value("writer 1"))
+                .andExpect(jsonPath("$.data.replyContent").value("content 1"))
+                .andExpect(jsonPath("$.data.replyId").value(1))
                 .andDo(print());
 
         Mockito.verify(replyService).findByReplyId(replyId);

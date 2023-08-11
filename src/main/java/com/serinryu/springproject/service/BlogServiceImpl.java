@@ -69,31 +69,19 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     @Transactional
-    public void save(BlogCreateRequestDTO blogCreateRequestDTO) {
+    public Long save(BlogCreateRequestDTO blogCreateRequestDTO) {
 
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 
         blogCreateRequestDTO.updateBlogWriter(userName);
-        Blog blog = blogCreateRequestDTO.toEntity(); // DTO to Entity
+        Blog savedBlog = blogJpaRepository.save(blogCreateRequestDTO.toEntity());
 
-        /*
-        try {
-            blogJpaRepository.save(blog);
-        } catch (Exception e) {
-            throw new InternalServerErrorException("Error occurred while saving the blog.");
-        }
-         */
-
-        Blog savedBlog = blogJpaRepository.save(blog);
-        if(savedBlog == null){
-            throw new InternalServerErrorException("Error occurred while saving the blog.");
-        }
-
+        return savedBlog.getBlogId();
     }
 
     @Override
     @Transactional
-    public void deleteById(long blogId) {
+    public Long deleteById(long blogId) {
         // blogId == null 이거나 해당되는 블로그가 없을 때 예외
         Blog blog = blogJpaRepository.findById(blogId)
                 .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
@@ -101,19 +89,15 @@ public class BlogServiceImpl implements BlogService {
         // 게시글을 작성한 유저인지 확인
         authorizeBlogWriter(blog);
 
-        try {
-            // MyBatis 에서 한 메소드당 쿼리문 1개 사용이 보편적이므로 이 두 로직을 합치는 것은 Repository 가 아니라 Service 단에서 진행했음.
-            replyJpaRepository.deleteAllByBlogId(blogId);
-            blogJpaRepository.deleteById(blogId);
-        } catch (Exception e) {
-            throw new InternalServerErrorException("Error occurred while deleting the blog.");
-        }
+        replyJpaRepository.deleteAllByBlogId(blogId);
+        blogJpaRepository.deleteById(blogId);
 
+        return blog.getBlogId();
     }
 
     @Override
     @Transactional
-    public void update(long blogId, BlogUpdateRequestDTO blogUpdateRequestDTO) {
+    public Long update(long blogId, BlogUpdateRequestDTO blogUpdateRequestDTO) {
         Blog blog = blogJpaRepository.findById(blogId)
                 .orElseThrow(() -> new NotFoundBlogIdException("Not Found blogId : " + blogId));
 
@@ -128,6 +112,8 @@ public class BlogServiceImpl implements BlogService {
         } catch (Exception e) {
             throw new InternalServerErrorException("Error occurred while updating the blog.");
         }
+
+        return blog.getBlogId();
 
     }
 
