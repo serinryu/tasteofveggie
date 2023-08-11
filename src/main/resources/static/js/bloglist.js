@@ -121,13 +121,12 @@ function createPagination(currentPageNum, startPageNum, endPageNum) {
 // Function to fetch data and update the table
 function fetchPageData(pageNum) {
     httpRequest('GET', `/api/blogs?page=${pageNum}`, null,
-        function successCallback(data) {
-            console.log(data);
+        function successCallback(response) {
             // Received data from the API
             // Update the table with the received data
             const blogTableBody = document.getElementById('blogTableBody');
             blogTableBody.innerHTML = ''; // Clear the table body before adding new rows
-            data.pageInfo.content.forEach(blog => {
+            response.data.pageInfo.content.forEach(blog => {
                 const row = blogTableBody.insertRow();
                 row.insertCell().textContent = blog.blogId;
                 row.insertCell().textContent = blog.blogWriter;
@@ -139,7 +138,7 @@ function fetchPageData(pageNum) {
             });
 
             // Create pagination buttons with the received data
-            createPagination(data.currentPageNum, data.startPageNum, data.endPageNum);
+            createPagination(response.data.currentPageNum, response.data.startPageNum, response.data.endPageNum);
         },
         function errorCallback() {
             console.log('Request failed');
@@ -149,8 +148,8 @@ function fetchPageData(pageNum) {
 
 const name = document.getElementById('name');
 httpRequest('GET', `/api/blogs?page=1`, null,
-    function successCallback(data) {
-        const username = data.username;
+    function successCallback(response) {
+        const username = response.data.username;
         const nameDiv = document.getElementById('name');
         nameDiv.innerText = JSON.stringify(username);
 

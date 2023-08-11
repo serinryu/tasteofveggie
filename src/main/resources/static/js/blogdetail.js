@@ -124,18 +124,19 @@ if(modifyBtn) {
 // Fetch the blog data and update the content
 function fetchBlogData(blogId) {
     httpRequest('GET', `/api/blogs/${blogId}`, null,
-        function successCallback(data) {
+        function successCallback(response) {
 
-        console.log(data);
+            console.log(response);
+
             // Update the content with the received data
-            blogTitleElem.textContent = data.blogTitle;
-            blogWriterElem.textContent = `By : ${data.blogWriter}`;
-            blogViewElem.textContent = `View : ${data.blogCount}`;
-            blogContentElem.textContent = data.blogContent;
+            blogTitleElem.textContent = response.data.blogTitle;
+            blogWriterElem.textContent = `By : ${response.data.blogWriter}`;
+            blogViewElem.textContent = `View : ${response.data.blogCount}`;
+            blogContentElem.textContent = response.data.blogContent;
 
             // Set the blog ID as the value of the hidden input
             const blogIdInput = blogContentDiv.querySelector('#blog-id');
-            blogIdInput.value = data.blogId;
+            blogIdInput.value = response.data.blogId;
 
         },
         function errorCallback() {

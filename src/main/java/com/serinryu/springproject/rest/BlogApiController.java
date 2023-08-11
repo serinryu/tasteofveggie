@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,16 +55,25 @@ public class BlogApiController {
         int currentPageNum = pageInfo.getNumber() + 1; // 현재 조회중인 페이지(0부터 셈). 강조 스타일 위해 필요
         int endPageNum = (int) Math.ceil(currentPageNum / (double) PAGE_BTN_NUM) * PAGE_BTN_NUM;  // 현재 조회중인 페이지 그룹의 끝번호
         int startPageNum = endPageNum - PAGE_BTN_NUM + 1; // 현재 조회중인 페이지 그룹의 시작번호
-
         // 마지막 그룹 번호 보정
         endPageNum = Math.min(endPageNum, pageInfo.getTotalPages());
 
+        Map<String, Object> pageInfoResponse = new HashMap<>();
+        pageInfoResponse.put("content", pageInfo.getContent());
+        pageInfoResponse.put("totalPages", pageInfo.getTotalPages());
+        pageInfoResponse.put("totalElements", pageInfo.getTotalElements());
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("currentPageNum", currentPageNum);
+        data.put("endPageNum", endPageNum);
+        data.put("startPageNum", startPageNum);
+        data.put("pageInfo", pageInfoResponse);
+        data.put("username", username);
+
         Map<String, Object> response = new HashMap<>();
-        response.put("currentPageNum", currentPageNum);
-        response.put("endPageNum", endPageNum);
-        response.put("startPageNum", startPageNum);
-        response.put("pageInfo", pageInfo);
-        response.put("username", username);
+        response.put("message", "성공적으로 조회되었습니다.");
+        response.put("timestamp", LocalDateTime.now());
+        response.put("data", data);
 
         return ResponseEntity.ok().body(response);
     }
@@ -72,52 +82,77 @@ public class BlogApiController {
      * Retrieve a blog by ID
      */
     @GetMapping("/api/blogs/{blogId}")
-    public ResponseEntity<BlogResponseDTO> findBlog(@PathVariable long blogId) {
+    public ResponseEntity<Map<String, Object>> findBlog(@PathVariable long blogId) {
         BlogResponseDTO blog = blogService.findById(blogId);
-        return ResponseEntity.ok().body(blog);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "성공적으로 조회하였습니다.");
+        response.put("timestamp", LocalDateTime.now());
+        response.put("data", blog);
+
+        return ResponseEntity.ok().body(response);
     }
 
     /**
      * Create new blog
      */
     @PostMapping("/api/blogs")
-    public ResponseEntity<String> addBlog(@Valid @RequestBody BlogCreateRequestDTO blogCreateRequestDTO, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, Object>> addBlog(@Valid @RequestBody BlogCreateRequestDTO blogCreateRequestDTO, BindingResult bindingResult) {
+
+        Map<String, Object> response = new HashMap<>();
 
         if (bindingResult.hasErrors()) {
-            logger.error("Validation errors: {}", bindingResult.getAllErrors());
-            return ResponseEntity.badRequest().build();
+            response.put("code", 400);
+            response.put("message", "Bad Request");
+            response.put("errors", bindingResult.getAllErrors());
+            response.put("timestamp", LocalDateTime.now());
+            return ResponseEntity.badRequest().body(response);
         }
 
         blogService.save(blogCreateRequestDTO);
 
-        logger.info("Blog created successfully.");
-        return ResponseEntity.status(HttpStatus.CREATED).body("Successfully Created");
+        response.put("message", "Blog created successfully.");
+        response.put("timestamp", LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
      * Delete a blog by ID
      */
     @DeleteMapping("/api/blogs/{blogId}")
-    public ResponseEntity<String> deleteBlog(@PathVariable long blogId) {
+    public ResponseEntity<Map<String, Object>> deleteBlog(@PathVariable long blogId) {
 
         blogService.deleteById(blogId);
 
-        logger.info("Blog deleted successfully.");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Successfully deleted");
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Blog deleted successfully.");
+        response.put("timestamp", LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
     }
 
     /**
      * Update an existing blog by ID
      */
     @PutMapping("/api/blogs/{blogId}")
-    public ResponseEntity<String> updateBlog(@PathVariable long blogId, @Valid @RequestBody BlogUpdateRequestDTO blogUpdateRequestDTO, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, Object>> updateBlog(@PathVariable long blogId, @Valid @RequestBody BlogUpdateRequestDTO blogUpdateRequestDTO, BindingResult bindingResult) {
+
+        Map<String, Object> response = new HashMap<>();
 
         if (bindingResult.hasErrors()) {
-            logger.error("Validation errors: {}", bindingResult.getAllErrors());
-            return ResponseEntity.badRequest().build();
+            response.put("message", "Bad Request");
+            response.put("timestamp", LocalDateTime.now());
+            response.put("data", null);
+            response.put("errors", bindingResult.getAllErrors());
+            return ResponseEntity.badRequest().body(response);
         }
 
         blogService.update(blogId, blogUpdateRequestDTO);
-        return ResponseEntity.ok().body("Successfully updated");
+
+        response.put("message", "Blog updated successfully");
+        response.put("timestamp", LocalDateTime.now());
+        //response.put("data", null);
+        return ResponseEntity.ok().body(response);
     }
 }
