@@ -12,13 +12,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ReplyApiController {
     ReplyService replyService;
-
-    private static final Logger logger = LogManager.getLogger(ReplyApiController.class);
 
     @Autowired
     public ReplyApiController(ReplyService replyService){
@@ -29,57 +30,89 @@ public class ReplyApiController {
      * Retrieve all replies for a blog
      */
     @GetMapping( "/api/blogs/{blogId}/replies")
-    public ResponseEntity<List<ReplyResponseDTO>> findAllReplies(@PathVariable long blogId){
+    public ResponseEntity<Map<String, Object>> findAllReplies(@PathVariable long blogId){
 
         List<ReplyResponseDTO> replies = replyService.findAllByBlogId(blogId);
 
-        return ResponseEntity.ok().body(replies);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "성공적으로 조회하였습니다.");
+        response.put("timestamp", LocalDateTime.now());
+        response.put("data", replies);
+
+        return ResponseEntity.ok().body(response);
     }
 
     /**
      * Retrieve a reply by ID
      */
     @GetMapping( "/api/replies/{replyId}")
-    public ResponseEntity<ReplyResponseDTO> findByReplyId(@PathVariable long replyId){
+    public ResponseEntity<Map<String, Object>> findByReplyId(@PathVariable long replyId){
         ReplyResponseDTO reply = replyService.findByReplyId(replyId);
 
-        return ResponseEntity.ok().body(reply);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "댓글 조회 성공");
+        response.put("timestamp", LocalDateTime.now());
+        response.put("data", reply);
+
+        return ResponseEntity.ok().body(response);
     }
 
     /**
      * Create a reply
      */
     @PostMapping("/api/replies")
-    public ResponseEntity<String> addReply(@RequestBody @Valid ReplyCreateRequestDTO replyCreateRequestDTO, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, Object>> addReply(@RequestBody @Valid ReplyCreateRequestDTO replyCreateRequestDTO, BindingResult bindingResult) {
+
+        Map<String, Object> response = new HashMap<>();
 
         if (bindingResult.hasErrors()) {
-            logger.error("Validation errors: {}", bindingResult.getAllErrors());
-            return ResponseEntity.badRequest().build();
+            response.put("message", "댓글 등록 실패");
+            response.put("timestamp", LocalDateTime.now());
+            response.put("data", null);
+            return ResponseEntity.badRequest().body(response);
         }
 
         replyService.save(replyCreateRequestDTO);
-        logger.info("Reply updated successfully.");
-        return ResponseEntity.ok().body("Success");
+        // ReplyResponseDTO savedReply = replyService.save(replyCreateRequestDTO);
+
+        response.put("message", "성공적으로 댓글이 등록되었습니다.");
+        response.put("timestamp", LocalDateTime.now());
+        Map<String, Object> responseData = new HashMap<>();
+        //responseData.put("replyId", savedReply.getReplyId());
+        response.put("data", responseData);
+
+        return ResponseEntity.ok().body(response);
     }
 
     /**
      * Delete a reply
      */
     @DeleteMapping("/api/replies/{replyId}")
-    public ResponseEntity<String> deleteReply(@PathVariable long replyId){
+    public ResponseEntity<Map<String, Object>> deleteReply(@PathVariable long replyId){
+
+        Map<String, Object> response = new HashMap<>();
 
         replyService.deleteByReplyId(replyId);
-        return ResponseEntity.ok().body("Success");
+
+        response.put("message", "댓글 삭제 성공");
+        response.put("timestamp", LocalDateTime.now());
+        response.put("data", null);
+        return ResponseEntity.ok().body(response);
     }
 
     /**
      * Update an existing reply
      */
     @PutMapping("/api/replies/{replyId}")
-    public ResponseEntity<String> updateReply(@PathVariable long replyId, @RequestBody @Valid ReplyUpdateRequestDTO replyUpdateRequestDTO){
+    public ResponseEntity<Map<String, Object>> updateReply(@PathVariable long replyId, @RequestBody @Valid ReplyUpdateRequestDTO replyUpdateRequestDTO){
+
+        Map<String, Object> response = new HashMap<>();
 
         replyService.update(replyId, replyUpdateRequestDTO);
-        return ResponseEntity.ok().body("Success");
+        response.put("message", "댓글 수정 성공");
+        response.put("timestamp", LocalDateTime.now());
+        response.put("data", null);
+        return ResponseEntity.ok().body(response);
     }
 
 }
