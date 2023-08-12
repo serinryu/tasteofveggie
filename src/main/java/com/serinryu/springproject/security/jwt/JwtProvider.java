@@ -1,6 +1,6 @@
 package com.serinryu.springproject.security.jwt;
 
-import com.serinryu.springproject.exception.InvalidTokenException;
+import com.serinryu.springproject.exception.InvalidMemberRoleException;
 import com.serinryu.springproject.security.PrincipalDetails;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +71,7 @@ public class JwtProvider {
         Claims claims = getClaims(token);
 
         if(claims.get("auth") == null){
-            throw new InvalidTokenException("권한 정보가 없는 토큰입니다.");
+            throw new InvalidMemberRoleException("권한 정보가 없는 토큰입니다.");
         }
 
         //Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));

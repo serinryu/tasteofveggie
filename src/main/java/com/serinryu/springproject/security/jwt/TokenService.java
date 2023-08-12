@@ -2,7 +2,7 @@ package com.serinryu.springproject.security.jwt;
 
 import com.serinryu.springproject.security.PrincipalDetails;
 import com.serinryu.springproject.entity.RefreshToken;
-import com.serinryu.springproject.exception.InvalidTokenException;
+import com.serinryu.springproject.exception.InvalidMemberRoleException;
 import com.serinryu.springproject.repository.RefreshTokenRepository;
 import com.serinryu.springproject.service.RefreshTokenService;
 import com.serinryu.springproject.service.UserDetailService;
@@ -76,7 +76,7 @@ public class TokenService {
     public String createNewAccessToken(String refreshToken) {
         // 토큰 유효성 검사에 실패하면 예외 발생
         if(!jwtProvider.validToken(refreshToken)) {
-            throw new InvalidTokenException("Unexpected token");
+            throw new InvalidMemberRoleException("Unexpected token");
         }
 
         Long userId = refreshTokenService.findByRefreshToken(refreshToken).getUserId();

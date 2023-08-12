@@ -2,6 +2,7 @@ package com.serinryu.springproject.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,57 +13,42 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InternalServerErrorException.class)
     public ResponseEntity<ErrorResponse> handleInternalServerError(InternalServerErrorException e) {
         log.error("InternalServerErrorException", e);
-        ErrorResponse response = new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(InvalidDataException.class)
-    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(InvalidDataException e) {
-        log.error("InvalidDataException", e);
-        ErrorResponse response = new ErrorResponse(ErrorCode.INVALID_DATA);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        ErrorResponse response = new ErrorResponse(ErrorCode.SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(500));
     }
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> UnauthorizedHandler(UnauthorizedException e){
         log.error("UnauthorizedException", e);
-        ErrorResponse response = new ErrorResponse(ErrorCode.UNAUTHORIZED);
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        ErrorResponse response = new ErrorResponse(ErrorCode.AUTHENTICATION_ERROR);
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(401));
     }
 
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<ErrorResponse> ForbiddenHandler(ForbiddenException e){
-        log.error("Forbidden", e);
-        ErrorResponse response = new ErrorResponse(ErrorCode.FORBIDDEN);
-        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    @ExceptionHandler(InvalidMemberRoleException.class)
+    public ResponseEntity<ErrorResponse> InvalidMemberRoleHandler(InvalidMemberRoleException e){
+        log.error("InvalidMemberRoleException", e);
+        ErrorResponse response = new ErrorResponse(ErrorCode.INVALID_MEMBER_ROLE);
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(403));
     }
 
     @ExceptionHandler(NotFoundBlogIdException.class)
     public ResponseEntity<ErrorResponse> NotFoundBlogIdHandler(NotFoundBlogIdException e){
         log.error("NotFoundBlogIdException", e);
-        ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND);
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        ErrorResponse response = new ErrorResponse(ErrorCode.BLOG_NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(400));
     }
 
     @ExceptionHandler(NotFoundReplyByReplyIdException.class)
     public ResponseEntity<ErrorResponse> NotFoundReplyByReplyIdHandler(NotFoundReplyByReplyIdException e){
         log.error("NotFoundReplyByReplyIdException", e);
-        ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND);
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        ErrorResponse response = new ErrorResponse(ErrorCode.REPLY_NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(400));
     }
 
-    @ExceptionHandler(InvalidTokenException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidTokenException(InvalidTokenException e) {
-        log.error("InvalidTokenException", e);
+    @ExceptionHandler(InvalidMemberRoleException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidTokenException(InvalidMemberRoleException e) {
+        log.error("InvalidMemberRoleException", e);
         ErrorResponse response = new ErrorResponse(ErrorCode.INVALID_TOKEN);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(401));
     }
-
-    /*
-    @ExceptionHandler(NotFoundBlogIdException.class)
-    public String NotFoundBlogIdHandler(NotFoundBlogIdException e, HttpServletRequest request, Model model){
-        log.error("NotFoundBlogIdException", e);
-        return "error/NotFoundBlogIdExceptionResultPage";
-    }
-    */
 }
