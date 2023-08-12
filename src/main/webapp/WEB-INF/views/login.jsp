@@ -22,24 +22,32 @@
                 <p class="text-white-50 mt-2 mb-5">서비스를 사용하려면 로그인을 해주세요!</p>
 
                 <div class = "mb-2">
-                    <form action="/login" method="POST">
+                    <div>
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                         <div class="mb-3">
                             <label class="form-label text-white">Email address</label>
-                            <input type="email" class="form-control" name="username">
+                            <input type="email" class="form-control" name="email" id="email">
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-white">Password</label>
-                            <input type="password" class="form-control" name="password">
+                            <input type="password" class="form-control" name="password" id="password">
                         </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </form>
+                        <button type="submit" class="btn btn-primary" onclick="login()">Submit</button>
+                    </div>
 
                     <button type="button" class="btn btn-secondary mt-3" onclick="location.href='/signup'">회원가입</button>
                 </div>
+
+                <div class = "mb-2">
+                    <a href="/oauth2/authorization/google">
+                        <img src="/img/google.png">
+                    </a>
+                </div>
+
             </div>
         </div>
     </div>
 </section>
+<script src="/js/login.js"></script>
 </body>
 </html>

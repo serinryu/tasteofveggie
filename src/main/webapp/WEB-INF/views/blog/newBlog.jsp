@@ -18,27 +18,21 @@
     <div class="row">
         <div class="col-lg-8">
             <article>
-                <input type="hidden" id="blog-id" value="${blog.blogId}" />
+                <input type="hidden" id="blog-id" value="" />
 
                 <header class="mb-4">
-                    <input type="text" class="form-control" placeholder="제목" id="title" value="${blog.blogTitle}" />
+                    <input type="text" class="form-control" placeholder="제목" id="title" value="" />
                 </header>
                 <section class="mb-5">
-                    <textarea class="form-control h-25" rows="10" placeholder="내용" id="content">${blog.blogContent}</textarea>
+                    <textarea class="form-control h-25" rows="10" placeholder="내용" id="content"></textarea>
                 </section>
-                <c:choose>
-                    <c:when test="${blog.blogId != null}">
-                        <button type="button" id="modify-btn" class="btn btn-primary btn-sm">수정</button>
-                    </c:when>
-                    <c:otherwise>
-                        <button type="button" id="create-btn" class="btn btn-primary btn-sm">등록</button>
-                    </c:otherwise>
-                </c:choose>
+                <button type="button" id="create-btn" class="btn btn-primary btn-sm">등록</button>
+                <button type="button" id="modify-btn" class="btn btn-primary btn-sm">수정</button>
             </article>
         </div>
     </div>
 </div>
 
-<script src="/js/blog.js"></script>
+<script src="/js/newblog.js"></script>
 </body>
 </html>

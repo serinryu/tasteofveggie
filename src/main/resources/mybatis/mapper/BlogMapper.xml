@@ -2,8 +2,8 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.blog.repository.BlogRepository">
-    <select id="findAll" resultType="com.example.blog.entity.Blog"> <!--리턴타입이 entity 등의 클래스 인 경우, 패키지명부터 적어준다 -->
+<mapper namespace="com.serinryu.springproject.repository.BlogRepository">
+    <select id="findAll" resultType="com.serinryu.springproject.entity.Blog"> <!--리턴타입이 entity 등의 클래스 인 경우, 패키지명부터 적어준다 -->
         SELECT
             blog_id as blogId,
             blog_writer as blogWriter,
@@ -15,7 +15,7 @@
         FROM blog
         ORDER BY blog_id DESC
     </select>
-    <select id="findById" resultType="com.example.blog.entity.Blog" parameterType="long">
+    <select id="findById" resultType="com.serinryu.springproject.entity.Blog" parameterType="long">
         SELECT
             blog_id as blogId,
             blog_writer as blogWriter,
@@ -33,13 +33,13 @@
         WHERE
             blog_id = #{blogId}
     </delete>
-    <insert id="save" parameterType="com.example.blog.entity.Blog"> <!-- parameter type 이 클래스이므로 자료형 지정 필요 -->
+    <insert id="save" parameterType="com.serinryu.springproject.entity.Blog"> <!-- parameter type 이 클래스이므로 자료형 지정 필요 -->
         INSERT INTO
             blog (blog_writer, blog_title, blog_content)
         VALUES
             (#{blogWriter}, #{blogTitle}, #{blogContent})
     </insert>
-    <update id="update" parameterType="com.example.blog.entity.Blog">
+    <update id="update" parameterType="com.serinryu.springproject.entity.Blog">
         UPDATE
             blog
         SET
@@ -49,7 +49,7 @@
         WHERE
             blog_id = #{blogId}
     </update>
-    <update id="updateBlogCount" parameterType="com.example.blog.entity.Blog">
+    <update id="updateBlogCount" parameterType="com.serinryu.springproject.entity.Blog">
         UPDATE
             blog
         SET
