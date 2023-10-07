@@ -10,4 +10,4 @@
 - Code Generation: Lombok
 
 ## 🧾 Docs
-https://github.com/serinryu/tasteofveggie/wiki/%5Bv1.0.0%5D-MVC-structure-including--RESTful-APIs
+https://github.com/serinryu/tasteofveggie/wiki
